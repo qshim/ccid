@@ -7,13 +7,16 @@ import Nav from "./components/nav/nav";
 import Navmobile from "./components/nav/navmobile";
 
 import Cover from "./components/landing/cover";
-import LiquidBackground from "./components/landing/liquidBackground";
+import { neuehaas } from "@/fonts/fonts";
+import ScrollFloat from "./components/common/ScrollFloat";
+import GradFlowBackground from "./components/landing/GradFlowBackground";
 import AboutIntro from "./components/about/_about";
 import Works from "./components/works/works";
 import Members from "./components/members";
 import Contact from "./components/contact/contact";
 import { sheetsStatic } from "./data/sheetsStatic";
-import GradualBlurTop from "./components/common/GradualBlurTop";
+import CoverAudio from "./components/common/CoverAudio";
+import CustomCursor from "./components/cursor/cursor";
 
 export default function HomeClient() {
   const mainRef = useRef(null);
@@ -120,7 +123,30 @@ export default function HomeClient() {
         setContactTopFade(1 - hideT);
       }
     };
+
+    // Robust active-section detection from scroll position, run synchronously on
+    // every scroll event (not via rAF, which can be throttled). The
+    // IntersectionObserver can miss updates (fast scrolls, programmatic jumps),
+    // which would leave the nav stuck in its "cover" color on light sections.
+    // Pick the section whose span contains the viewport center.
+    const detectSection = () => {
+      const st = mainEl.scrollTop || 0;
+      const viewCenter = st + (mainEl.clientHeight || 0) / 2;
+      let activeId = currentSectionRef.current;
+      mainEl.querySelectorAll("section").forEach((sec) => {
+        if (!sec.id) return;
+        const top = sec.offsetTop;
+        if (viewCenter >= top && viewCenter < top + sec.offsetHeight) {
+          activeId = sec.id;
+        }
+      });
+      if (activeId && activeId !== currentSectionRef.current) {
+        currentSectionRef.current = activeId;
+        setSectionOn(activeId);
+      }
+    };
     const onScroll = () => {
+      detectSection();
       if (raf) return;
       raf = window.requestAnimationFrame(update);
     };
@@ -163,15 +189,6 @@ export default function HomeClient() {
 
         currentSectionRef.current = bestId;
         setSectionOn(bestId);
-
-        if (bestId === "about") {
-          setActiveAboutId("who");
-          setIsAboutLocked(true);
-          aboutLockTimeRef.current = Date.now();
-          lastStepTimeRef.current = Date.now();
-        } else {
-          setIsAboutLocked(false);
-        }
       },
       {
         threshold: [0, 0.15, 0.3, 0.45, 0.6, 0.75],
@@ -186,60 +203,6 @@ export default function HomeClient() {
       ratioById.clear();
     };
   }, []);
-
-  useEffect(() => {
-    const mainEl = mainRef.current;
-    if (!mainEl) return;
-
-    const handleWheel = (e) => {
-      if (sectionOn !== "about") return;
-      if (!isAboutLocked) return;
-
-      const delta = e.deltaY;
-      if (delta === 0) return;
-
-      const now = Date.now();
-      // About 섹션으로 막 진입했을 때는 섹션이 완전히 자리 잡을 때까지
-      // 휠 입력으로 탭이 바뀌지 않도록 더 여유를 둔다.
-      if (now - aboutLockTimeRef.current < ABOUT_INITIAL_LOCK_MS) {
-        e.preventDefault();
-        return;
-      }
-      if (now - lastStepTimeRef.current < ABOUT_STEP_COOLDOWN_MS) {
-        e.preventDefault();
-        return;
-      }
-
-      const currentIndex = ABOUT_ORDER.indexOf(activeAboutId);
-      const lastIndex = ABOUT_ORDER.length - 1;
-
-      if (delta > 0) {
-        if (currentIndex < lastIndex) {
-          e.preventDefault();
-          lastStepTimeRef.current = now;
-          setActiveAboutId(ABOUT_ORDER[currentIndex + 1]);
-        } else {
-          lastStepTimeRef.current = now;
-          setIsAboutLocked(false);
-        }
-        return;
-      }
-
-      if (delta < 0) {
-        if (currentIndex > 0) {
-          e.preventDefault();
-          lastStepTimeRef.current = now;
-          setActiveAboutId(ABOUT_ORDER[currentIndex - 1]);
-        } else {
-          lastStepTimeRef.current = now;
-          setIsAboutLocked(false);
-        }
-      }
-    };
-
-    mainEl.addEventListener("wheel", handleWheel, { passive: false });
-    return () => mainEl.removeEventListener("wheel", handleWheel);
-  }, [ABOUT_ORDER, activeAboutId, isAboutLocked, sectionOn]);
 
   // Smooth background transition when entering/leaving the People section (no hard cut, no flicker).
   useEffect(() => {
@@ -341,7 +304,8 @@ export default function HomeClient() {
 
   return (
     <div className="w-[100%] absolute scrollbar-hide bg-white z-[-2] overflow-x-hidden">
-      <GradualBlurTop />
+      <CustomCursor />
+      <CoverAudio sectionOn={sectionOn} src="/audio/design-intelligence-loops.mp3" />
       <Header sectionOn={sectionOn} />
       <Nav
         sectionOn={sectionOn}
@@ -349,14 +313,6 @@ export default function HomeClient() {
           const target = nextSection || "cover";
           currentSectionRef.current = target;
           setSectionOn(target);
-          if (target === "about") {
-            setActiveAboutId("who");
-            setIsAboutLocked(true);
-            aboutLockTimeRef.current = Date.now();
-            lastStepTimeRef.current = Date.now();
-          } else {
-            setIsAboutLocked(false);
-          }
         }}
       />
 
@@ -365,22 +321,78 @@ export default function HomeClient() {
       <div
         style={{
           transition: "opacity 1.5s ease-in-out",
-          opacity: sectionOn === "cover" ? "1" : "0",
+          opacity: sectionOn === "cover" || sectionOn === "brand" ? "1" : "0",
           top: 0,
-          visibility: sectionOn === "cover" || sectionOn === "about" ? "visible" : "hidden",
+          visibility:
+            sectionOn === "cover" || sectionOn === "brand" || sectionOn === "about"
+              ? "visible"
+              : "hidden",
         }}
         className="left-0 fixed z-[-5] bg-[url('/img/bgt.png')] bg-repeat bg-contain bg-center w-full h-[118dvh]"
       />
+      {/* Three stacked flowing-gradient layers (Alex Harri shader), no blobs:
+          a light base + two purple flowing layers blended on top for depth. */}
       <div
         style={{
           transition: "opacity 1.5s ease-in-out",
-          opacity: sectionOn === "cover" ? 1 : 0,
+          opacity: sectionOn === "cover" || sectionOn === "brand" ? 1 : 0,
           top: 0,
-          visibility: sectionOn === "cover" ? "visible" : "hidden",
+          visibility: sectionOn === "cover" || sectionOn === "brand" ? "visible" : "hidden",
         }}
         className="left-0 fixed z-[-4] w-full h-[118dvh] pointer-events-none"
       >
-        <LiquidBackground colorPalette={colorPalette} />
+        <GradFlowBackground
+          className="w-full h-full"
+          amp={0.5}
+          contrast={1.18}
+          noiseScale={0.45}
+          wave1Y={0.42}
+          wave2Y={0.72}
+          phase={16192.0}
+          stops={["#2E1585", "#4E22D6", "#6E3DEE", "#B5ABA0", "#CCC4B8"]}
+        />
+      </div>
+      <div
+        style={{
+          transition: "opacity 1.5s ease-in-out",
+          opacity: sectionOn === "cover" || sectionOn === "brand" ? 0.6 : 0,
+          top: 0,
+          visibility: sectionOn === "cover" || sectionOn === "brand" ? "visible" : "hidden",
+          mixBlendMode: "multiply",
+        }}
+        className="left-0 fixed z-[-3] w-full h-[118dvh] pointer-events-none"
+      >
+        <GradFlowBackground
+          className="w-full h-full"
+          amp={0.45}
+          contrast={1.15}
+          noiseScale={0.4}
+          wave1Y={0.32}
+          wave2Y={0.62}
+          phase={8421.0}
+          stops={["#2a1466", "#3d1f9e", "#5a2fd6", "#7c3aed", "#A99C8E", "#CCC4B8"]}
+        />
+      </div>
+      <div
+        style={{
+          transition: "opacity 1.5s ease-in-out",
+          opacity: sectionOn === "cover" || sectionOn === "brand" ? 0.45 : 0,
+          top: 0,
+          visibility: sectionOn === "cover" || sectionOn === "brand" ? "visible" : "hidden",
+          mixBlendMode: "multiply",
+        }}
+        className="left-0 fixed z-[-2] w-full h-[118dvh] pointer-events-none"
+      >
+        <GradFlowBackground
+          className="w-full h-full"
+          amp={0.5}
+          contrast={1.2}
+          noiseScale={0.5}
+          wave1Y={0.5}
+          wave2Y={0.85}
+          phase={24310.0}
+          stops={["#2a1466", "#3d1f9e", "#5a2fd6", "#7c3aed", "#A99C8E", "#CCC4B8"]}
+        />
       </div>
       {/* Base background layer */}
       <div
@@ -417,55 +429,71 @@ export default function HomeClient() {
           className="relative z-10 w-[100%] h-[100%] snap-start flex items-start justify-start"
         >
           {/* Mask stays off text wrapper — same-node mask can clip descenders (g, j, p, y) in WebKit. */}
-          <div className="relative z-10 w-full max-w-[var(--siteMax)] mx-auto pr-[var(--siteGutter)] pl-[calc(var(--siteGutter)*1.25)] md:pl-[calc(var(--siteGutter)*1.1)] lg:pl-[calc(var(--siteGutter)*0.4)]">
+          <div className="relative z-10 w-full max-w-[var(--siteMax)] mx-auto pr-[var(--siteGutter)] pl-[var(--siteGutter)] md:pl-[calc(var(--siteGutter)*0.6)] lg:pl-0">
             <Cover textColor={BASE_TEXT} />
           </div>
+          {/* Bottom gradient: the brand section's purple, 0% -> 100% opacity,
+              so the cover blends into the next section's purple top. */}
           <div
             aria-hidden="true"
-            className="absolute bottom-0 left-0 w-full h-[12vh] md:h-[16vh] pointer-events-none z-0"
+            className="pointer-events-none absolute bottom-0 left-0 w-full h-[22vh] md:h-[26vh] z-[5]"
             style={{
-              opacity: coverBottomFade,
-              transform: `translateY(${(1 - coverBottomFade) * 16}px)`,
-              transition:
-                "opacity 420ms cubic-bezier(0.16, 1, 0.3, 1), transform 520ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 520ms cubic-bezier(0.16, 1, 0.3, 1)",
-              backdropFilter: `blur(${4 + coverBottomFade * 10}px) saturate(1.02)`,
-              WebkitBackdropFilter: `blur(${4 + coverBottomFade * 10}px) saturate(1.02)`,
-              maskImage:
-                "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.9) 44%, rgba(0,0,0,0.24) 74%, rgba(0,0,0,0) 100%)",
-              WebkitMaskImage:
-                "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.9) 44%, rgba(0,0,0,0.24) 74%, rgba(0,0,0,0) 100%)",
-              backgroundColor: BASE_BG,
               background:
-                "linear-gradient(to top, rgba(240, 240, 236, 1) 0%, rgba(240, 240, 236, 1) 26%, rgba(240, 240, 236, 0.46) 54%, rgba(240, 240, 236, 0.14) 76%, rgba(240, 240, 236, 0) 100%)",
+                "linear-gradient(to bottom, rgba(78,34,214,0) 0%, rgba(78,34,214,1) 100%)",
             }}
           />
         </section>
         <section
-          id="about"
-          data-section="about"
-          className="relative z-10 w-[100%] h-[100dvh] snap-start overflow-hidden pb-[26vh] lg:pb-[30vh] flex justify-center items-start"
+          id="brand"
+          className="relative z-10 w-[100%] h-[62dvh] lg:h-[100dvh] -mt-px pt-px snap-start flex items-center justify-center overflow-hidden"
         >
-          <div
-            className="hidden lg:block absolute left-0 top-0 bottom-0 right-0 z-0"
-            style={{
-              background: "linear-gradient(180deg, #F0F0ED 54.58%, #E0E0FF 100%)",
-            }}
-          />
+          {/* Base: opaque lavender -> ivory (never transparent, so the section
+              can't reveal the page background as a band). */}
           <div
             aria-hidden="true"
-            className="absolute bottom-0 left-0 w-full h-[10vh] pointer-events-none z-0"
+            className="absolute -top-px inset-x-0 bottom-0 z-0"
             style={{
               background:
-                "linear-gradient(to bottom, rgba(240, 240, 237, 0.12) 0%, rgba(226, 226, 255, 0.4) 55%, rgba(226, 226, 255, 0.75) 100%)",
+                "linear-gradient(to bottom, #E0E0FF 0%, #E6E6FB 22%, #F0F0ED 60%, #F0F0ED 100%)",
             }}
           />
+          {/* Blue top: the cover's purple-blue at 100%, fixed (no animation),
+              fading down into the lavender base. */}
           <div
-            className="relative z-10 w-full max-w-[var(--siteMax)] px-[var(--siteGutter)] mx-auto h-full flex flex-col justify-start"
-            style={SCROLL_CONTENT_EDGE_MASK}
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-px inset-x-0 z-[1] h-[52%]"
+            style={{
+              background:
+                "linear-gradient(to bottom, #4E22D6 0%, #4E22D6 16%, rgba(78,34,214,0.55) 40%, rgba(78,34,214,0) 80%)",
+            }}
+          />
+          <ScrollFloat
+            scrollContainerRef={mainRef}
+            animationDuration={1}
+            ease="back.inOut(2)"
+            scrollStart="center bottom+=50%"
+            scrollEnd="bottom bottom-=40%"
+            stagger={0.03}
+            containerClassName={`${neuehaas.className} relative z-10 select-none text-[#5D009C] leading-none tracking-[-0.04em]`}
+            textClassName="text-[34vw] md:text-[26vw] lg:text-[22vw] leading-none"
           >
-            <div className="w-full pt-[7vh] md:pt-[8vh] lg:pt-[9vh] pb-[34vh] lg:pb-[38vh]">
-              <AboutIntro activeId={activeAboutId} onChange={setActiveAboutId} aboutStyle={aboutStyle} />
-            </div>
+            cciD
+          </ScrollFloat>
+        </section>
+        <section
+          id="about"
+          data-section="about"
+          className="relative z-10 w-[100%]"
+        >
+          {/* Continuous vertical gradient across all three about blocks */}
+          <div
+            className="absolute left-0 top-0 bottom-0 right-0 z-0"
+            style={{
+              background: "linear-gradient(180deg, #F0F0ED 0%, #F0F0ED 40%, #E6E6FB 78%, #E0E0FF 100%)",
+            }}
+          />
+          <div className="relative z-10 w-full">
+            <AboutIntro />
           </div>
         </section>
         <section
@@ -477,25 +505,14 @@ export default function HomeClient() {
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-0 right-0 top-0 h-[12vh] z-10"
-            style={{
-              background:
-                "linear-gradient(to bottom, rgba(224,224,255,0.82) 0%, rgba(224,224,255,0.55) 45%, rgba(224,224,255,0.12) 80%, rgba(224,224,255,0) 100%)",
-            }}
-          />
-          <div
-            aria-hidden="true"
             className="pointer-events-none absolute left-0 right-0 bottom-0 h-[10vh] z-10"
             style={{
               background:
                 "linear-gradient(to bottom, rgba(224,224,255,0.85) 0%, rgba(224,224,255,0.7) 55%, rgba(224,224,255,0.98) 100%)",
             }}
           />
-          <div className="relative z-10 w-full max-w-[var(--siteMaxWide)] px-[var(--siteGutter)] mx-auto">
-            {/* Works 섹션: 상단으로 올라갈수록 컨텐츠 자체가 투명해지도록 마스크 적용 */}
-            <div style={SCROLL_CONTENT_EDGE_MASK}>
-              <Works textColor={BASE_TEXT} sectionOn={sectionOn} />
-            </div>
+          <div className="relative z-20 w-full max-w-[var(--siteMaxWide)] px-[var(--siteGutter)] mx-auto">
+            <Works textColor={BASE_TEXT} sectionOn={sectionOn} />
           </div>
         </section>
         <section
@@ -522,20 +539,24 @@ export default function HomeClient() {
           id="contact"
           className="relative z-10 w-[100%] h-[100dvh] snap-end overflow-hidden"
         >
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute top-0 left-0 right-0 h-[4vh] z-20"
-            style={{
-              background:
-                "linear-gradient(to bottom, rgba(240,240,236,0.72) 0%, rgba(240,240,236,0.36) 55%, rgba(240,240,236,0.10) 80%, transparent 100%)",
-              opacity: contactTopFade,
-            }}
-          />
           <div className="relative z-10 h-full">
             <Contact borderRadius={borderRadius} sectionOn={sectionOn} colorPalette={colorPalette} />
           </div>
-          <footer className="transition duration-500 text-white absolute bottom-0 left-0 w-full h-auto text-center p-4 md:p-8 font-[400] leading-[1.5] text-[2.6vw] md:text-[1.8vw] lg:text-[0.9vw] xl:text-[0.75vw]">
-            {aboutInfo?.[0]?.[3] || "© 2025. All rights reserved."}
+          <footer className="absolute bottom-0 left-0 z-20 w-full pb-3 md:pb-6">
+            <div className="w-full max-w-[var(--siteMaxWide)] mx-auto px-[var(--siteGutter)] text-center lg:text-left">
+              {/* Mobile: large centered cciD mark */}
+              <div
+                className={`lg:hidden ${neuehaas.className} select-none text-[#5D009C] leading-none tracking-[-0.04em] text-[17vw] md:text-[13vw]`}
+              >
+                cciD
+              </div>
+              {/* Desktop: full name, aligned with the Hiring column */}
+              <div
+                className={`hidden lg:block ${neuehaas.className} select-none text-[#5D009C] leading-[1.05] tracking-[-0.03em] text-[1.7vw]`}
+              >
+                cciD Center for Creative Intelligence Design
+              </div>
+            </div>
           </footer>
         </section>
       </main>

@@ -168,12 +168,17 @@ export default function Works({ textColor, sectionOn }) {
           ? imagesByClient2025[client]
           : [];
 
+      // Sheet row below the title = the project description/explanation.
+      const detail = normalizeOneLine(krRow?.[j]);
+
       out.push({
         year: currentYear,
         title: titleRaw,
         client,
         // Use existing project text as the description body for now.
         description,
+        // Longer description from the sheet (row under the project title).
+        detail,
         // Placeholder; user will fill later.
         tf,
         categories,
@@ -201,21 +206,19 @@ export default function Works({ textColor, sectionOn }) {
   const initialYearNum = Number(INITIAL_YEAR);
   const isValidYearProject = (p) => {
     const yStr = String(p?.year ?? "").trim();
-    if (!/^\d{4}$/.test(yStr)) return false;
-    const y = Number(yStr);
-    return Number.isFinite(y) && y <= initialYearNum;
+    return /^\d{4}$/.test(yStr);
   };
 
-  // Expanded: show all projects up to INITIAL_YEAR (includes years before 2025).
-  const projectsAll = selectedProjects
-    .filter(isValidYearProject)
-    .sort((a, b) => Number(b.year) - Number(a.year));
+  // Include every valid-year project (incl. 2026) in the spreadsheet's own
+  // column order — no year sorting.
+  const projectsAll = selectedProjects.filter(isValidYearProject);
   const initialYearProjects = projectsAll.filter((p) => p.year === INITIAL_YEAR);
   // Collapsed: show 3 full rows + 1 partially visible row (faded/blurred at bottom).
   const collapsedProjects = (initialYearProjects.length > 0 ? initialYearProjects : projectsAll).slice(0, 4);
-  const visibleProjects = isExpanded ? projectsAll : collapsedProjects;
+  // Show every project at once (no collapse).
+  const visibleProjects = projectsAll;
 
-  const hasMore = projectsAll.length > collapsedProjects.length;
+  const hasMore = false;
   const COLLAPSED_ROW_H = 192;
   const toggleAriaLabel = isExpanded
     ? (lang === "kr" ? "접기" : "Collapse")
@@ -245,7 +248,8 @@ export default function Works({ textColor, sectionOn }) {
     const clientKey = String(p?.client || "").toLowerCase();
     const isCJ = clientKey === "cj cgv & naver cloud";
     // Match Figma content height (160px); 150px was clipping descenders (g, j, p, y).
-    const contentH = 160;
+    // Image is 394.66px wide; 16:9 -> 222px tall. Row height follows.
+    const contentH = 222;
     const rowH = contentH + 32;
     const contentHHover = 280;
     const rowHHover = contentHHover + 32;
@@ -301,7 +305,7 @@ export default function Works({ textColor, sectionOn }) {
           });
         }}
         className={`group pt-0 pb-[32px] overflow-hidden transition-[max-height] duration-300 ease-out outline-none ${
-          isLast ? "" : "border-b border-primaryB"
+          ""
         } cursor-pointer hover:opacity-[0.96] focus-visible:ring-1 focus-visible:ring-primaryB/50`}
         style={{
           maxHeight: isRowExpanded ? `${rowHHover}px` : `${rowH}px`,
@@ -311,55 +315,32 @@ export default function Works({ textColor, sectionOn }) {
           className="flex flex-col lg:flex-row gap-y-4 lg:gap-y-0 lg:gap-x-8 items-stretch transition-[height] duration-300 ease-out"
           style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
         >
-          {/* Left: Client + Year (296×contentH) */}
+          {/* Left: Project name > Client > Year (all same size as project name) */}
           <div className="lg:basis-[296px] lg:flex-none min-w-0">
-              <div className={`${pxGrotesk.className} tracking-[-0.03em] flex flex-col`}>
-              {/* Title block: pb 5px */}
-              <div className="pb-[5px]">
-                <div className="text-[22px] leading-[1.45] font-medium text-primaryB w-[220px]">
-                  {isCJ ? (
-                    <>
-                      <p className="m-0">CJ CGV &amp; NAVER</p>
-                      <p className="m-0">CLOUD</p>
-                    </>
-                  ) : (
-                    (p.client ? p.client.toUpperCase() : p.project.toUpperCase())
-                  )}
-                </div>
-              </div>
-
-              {/* Year: 16px, light */}
-              <div className="text-[16px] leading-[1.45] font-light text-primaryB">
-                {p.year || ""}
-              </div>
+            <div className={`${pxGrotesk.className} tracking-[-0.03em] flex flex-col gap-[3px] text-[0.95rem] leading-[1.3] text-primaryB`}>
+              {/* Project name */}
+              <div className="font-medium">{p.description || p.project || ""}</div>
+              {/* Client (발주처) */}
+              <div className="font-medium">{p.client || ""}</div>
+              {/* Year (연도) */}
+              <div className="font-light">{p.year || ""}</div>
             </div>
           </div>
 
         {/* Middle: meta (≈296px) */}
-        <div className="lg:basis-[296px] lg:flex-none px-1 md:px-3 lg:px-0">
+        <div className="lg:flex-1 min-w-0 px-1 md:px-3 lg:px-0">
           <div
             className={`${pxGrotesk.className} h-full flex flex-col text-[0.95rem] leading-[1.45]`}
           >
             {/* Title + description block (Frame 3 + Frame 2) */}
             {/* Figma: title→names spacing is 17px */}
-            <div className="min-w-0 shrink-0 pr-2 lg:pr-4 flex flex-col gap-[17px] w-full max-w-[17.625rem]">
-              {/* Title: 16px, weight 500, full opacity */}
-              <span
-                className="truncate font-medium leading-[1.45]"
-                style={
-                  contentFont === "hel"
-                    ? { fontFamily: "Helvetica, Arial, sans-serif" }
-                    : contentFont === "pre"
-                    ? {
-                        fontFamily:
-                          'pretendardR, Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
-                      }
-                    : undefined
-                }
-              >
-                {p.description || ""}
-              </span>
-
+            <div className="min-w-0 shrink-0 pr-2 lg:pr-6 flex flex-col gap-[17px] w-full max-w-[34rem]">
+              {/* Project description (sheet row under the title), before names */}
+              {p.detail && p.detail.trim() !== "" && (
+                <div className="text-[15px] leading-[1.3] tracking-[-0.01em] text-primaryB">
+                  {p.detail}
+                </div>
+              )}
               {/* Expanded body uses the old "names" slot */}
               {isRowExpanded ? (
                 <div
@@ -381,7 +362,7 @@ export default function Works({ textColor, sectionOn }) {
                 p.tf &&
                 String(p.tf).trim() !== "" && (
                   <div
-                    className="opacity-70 text-[1rem] leading-[1.45] min-w-0 max-w-full"
+                    className="opacity-70 text-[0.8rem] leading-[1.45] min-w-0 max-w-full"
                     style={
                       contentFont === "hel"
                         ? { fontFamily: "Helvetica, Arial, sans-serif" }
@@ -413,178 +394,40 @@ export default function Works({ textColor, sectionOn }) {
               )}
             </div>
 
-            {/* Tags pinned to bottom (Frame 1) */}
-            {!isRowExpanded && Array.isArray(p.categories) && p.categories.length > 0 && (
-              <div className="mt-auto pt-[1.5rem] flex flex-wrap gap-[0.625rem]">
-                {[...p.categories]
-                  .sort((a, b) => (a === "Cooperation") - (b === "Cooperation"))
-                  .map((c) => (
-                    <span
-                      key={`${keyPrefix}-${p.year}-${idx}-${c}`}
-                      className={`${pxGrotesk.className} inline-flex items-center justify-center rounded-full border border-primaryB px-[0.9375rem] py-[5px] leading-none text-[0.75rem] text-primaryB`}
-                    >
-                      {c}
-                    </span>
-                  ))}
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Right: image boxes (3-up, ≈624px wide) */}
-        <div
-          className="flex-1 pt-0 lg:pt-0 overflow-hidden"
-          style={{
-            WebkitMaskImage:
-              "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 78%, rgba(0,0,0,0) 100%)",
-            maskImage:
-              "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 78%, rgba(0,0,0,0) 100%)",
-          }}
-        >
-          {/* Figma: image grid gap 16px */}
-          <div
-            className={`flex flex-wrap lg:flex-nowrap gap-[1rem] transition-[gap] duration-300 ease-out ${
-              isRowExpanded && useHeroOnHover ? "lg:gap-0" : ""
-            }`}
-          >
-            {Array.isArray(p.images) && p.images.length > 0 ? (
-              <>
-                {p.images[0] ? (
-                  <div
-                    className={`w-full bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none transition-[width,height,opacity,transform] duration-300 ease-out ${
-                      !isRowExpanded && hasTwoImages ? "lg:w-[197.33px]" : "lg:w-[197.33px]"
-                    } ${isRowExpanded && useHeroOnHover ? "lg:flex-1 lg:w-auto" : ""}`}
-                    style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
-                  >
-                    {heroIsVideo ? (
-                      <video
-                        key={heroMedia}
-                        src={heroMedia}
-                        className="w-full h-full object-cover"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
-                      />
-                    ) : (
-                      <img
-                        key={heroMedia}
-                        src={heroMedia || p.images[0]}
-                        alt={`${p.client || "project"} image 1`}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </div>
-                ) : (
-                  <GreyPlaceholder
-                    className={`w-full bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none transition-[width,height,opacity] duration-300 ease-out ${
-                      "lg:w-[197.33px]"
-                    } ${isRowExpanded && useHeroOnHover ? "lg:flex-1 lg:w-auto" : ""}`}
-                    style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
-                  />
-                )}
-
-                {p.images[1] ? (
-                  <div
-                    className={`w-full bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none transition-[width,height,opacity,transform] duration-300 ease-out ${
-                      "lg:w-[197.33px]"
-                    } ${isRowExpanded && useHeroOnHover ? "lg:w-0 lg:max-w-0 lg:opacity-0" : ""}`}
-                    style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setExpandedRowKey(rowKey);
-                      setExpandedRowMedia(mediaList);
-                      setExpandedMediaIndex(1);
-                    }}
-                  >
-                    <img
-                      src={p.images[1]}
-                      alt={`${p.client || "project"} image 2`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <GreyPlaceholder
-                    className={`w-full bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none transition-[width,height,opacity] duration-300 ease-out ${
-                      "lg:w-[197.33px]"
-                    } ${
-                      isRowExpanded && useHeroOnHover
-                        ? "lg:w-0 lg:max-w-0 lg:opacity-0"
-                        : ""
-                    }`}
-                    style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
-                  />
-                )}
-
-                {!(p.year === "2025" && p.client === "CJ CGV & Naver Cloud") &&
-                  (p.images[2] ? (
-                    String(p.images[2]).toLowerCase().endsWith(".mp4") ? (
-                      <div
-                        className={`w-full lg:w-[197.33px] bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none transition-[width,height,opacity] duration-300 ease-out ${
-                          isRowExpanded && useHeroOnHover
-                            ? "lg:w-0 lg:max-w-0 lg:opacity-0"
-                            : "lg:opacity-100"
-                        }`}
-                        style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpandedRowKey(rowKey);
-                          setExpandedRowMedia(mediaList);
-                          setExpandedMediaIndex(2);
-                        }}
-                      >
-                        <video
-                          src={p.images[2]}
-                          className="w-full h-full object-cover"
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          preload="metadata"
-                        />
-                      </div>
-                    ) : (
-                      <div
-                        className={`w-full lg:w-[197.33px] bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none transition-[width,height,opacity] duration-300 ease-out ${
-                          isRowExpanded && useHeroOnHover
-                            ? "lg:w-0 lg:max-w-0 lg:opacity-0"
-                            : "lg:opacity-100"
-                        }`}
-                        style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpandedRowKey(rowKey);
-                          setExpandedRowMedia(mediaList);
-                          setExpandedMediaIndex(2);
-                        }}
-                      >
-                        <img
-                          src={p.images[2]}
-                          alt={`${p.client || "project"} image 3`}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )
-                  ) : (
-                    <GreyPlaceholder
-                      className={`w-full lg:w-[197.33px] bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none transition-[width,height,opacity] duration-300 ease-out ${
-                        isRowExpanded && useHeroOnHover ? "lg:w-0 lg:max-w-0 lg:opacity-0" : ""
-                      }`}
-                      style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
-                    />
-                  ))}
-              </>
-            ) : (
-              <>
-                <GreyPlaceholder className="w-full lg:w-[197.33px] rounded-[3px]" />
-                <GreyPlaceholder className="w-full lg:w-[197.33px] rounded-[3px]" />
-                {!(p.year === "2025" && p.client === "CJ CGV & Naver Cloud") && (
-                  <GreyPlaceholder className="w-full lg:w-[197.33px] rounded-[3px]" />
-                )}
-              </>
-            )}
-          </div>
+        {/* Right: single image (2x the previous size) */}
+        <div className="flex-none pt-0 overflow-hidden">
+          {p.images && p.images[0] ? (
+            <div
+              className="w-full lg:w-[394.66px] bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none"
+              style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
+            >
+              {String(p.images[0]).toLowerCase().endsWith(".mp4") ? (
+                <video
+                  src={p.images[0]}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+              ) : (
+                <img
+                  src={p.images[0]}
+                  alt={`${p.client || "project"} image`}
+                  className="w-full h-full object-cover"
+                />
+              )}
+            </div>
+          ) : (
+            <GreyPlaceholder
+              className="w-full lg:w-[394.66px] bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none"
+              style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
+            />
+          )}
         </div>
       </div>
       </div>
@@ -599,7 +442,7 @@ export default function Works({ textColor, sectionOn }) {
     return (
       <div
         key={`mcard-${year || "y"}-${idx}-${title || "t"}`}
-        className="border-b border-primaryB pb-6"
+        className="pb-6"
       >
         <div className="w-full overflow-hidden rounded-[3px] bg-[#F6F0FF] aspect-[16/9]">
           {img ? (
@@ -630,10 +473,10 @@ export default function Works({ textColor, sectionOn }) {
           <div className="relative z-10 text-primaryB">
             <div className="w-full flex flex-col" style={{ backgroundColor: "transparent" }}>
               {/* Header row */}
-              <div className="min-h-[3.875rem] border-b border-primaryB flex items-end pb-4">
+              <div className="min-h-[3.875rem] flex items-end pb-4">
                 <motion.div
                   animate={headerControls}
-                  className={`${pxGrotesk.className} tracking-[-0.03em] leading-[1.22] whitespace-nowrap text-[1.75rem] md:text-[1.875rem] lg:text-[2rem]`}
+                  className={`${pxGrotesk.className} tracking-[-0.03em] leading-[1.22] whitespace-nowrap text-[1.375rem] md:text-[1.5rem] lg:text-[1.625rem]`}
                 >
                   {selectedHeaderRaw}
                 </motion.div>
@@ -649,7 +492,7 @@ export default function Works({ textColor, sectionOn }) {
                         type="button"
                         onClick={toggleExpanded}
                         aria-label={toggleAriaLabel}
-                        className={`${programme.className} font-semibold text-[1.05rem] leading-none tracking-[0.02em] text-primaryB hover:opacity-70 transition-opacity rounded-full px-5 py-2 bg-white/30 backdrop-blur-sm border border-white/40 shadow-[0_6px_18px_rgba(0,0,0,0.12)]`}
+                        className={`${programme.className} font-semibold text-[1.05rem] leading-none tracking-[0.02em] text-primaryB hover:opacity-70 transition-opacity p-2`}
                       >
                         <svg
                           width="26"
@@ -677,7 +520,7 @@ export default function Works({ textColor, sectionOn }) {
                         type="button"
                         onClick={toggleExpanded}
                         aria-label={toggleAriaLabel}
-                        className={`${programme.className} font-semibold text-[1.05rem] leading-none tracking-[0.02em] text-primaryB hover:opacity-70 transition-opacity rounded-full px-5 py-2 bg-white/30 backdrop-blur-sm border border-white/40 shadow-[0_6px_18px_rgba(0,0,0,0.12)]`}
+                        className={`${programme.className} font-semibold text-[1.05rem] leading-none tracking-[0.02em] text-primaryB hover:opacity-70 transition-opacity p-2`}
                       >
                         <svg
                           width="26"
@@ -710,7 +553,7 @@ export default function Works({ textColor, sectionOn }) {
                   <div
                     className="relative space-y-[1rem] overflow-hidden transition-[max-height] duration-700 ease-out"
                     style={{
-                      maxHeight: isExpanded ? "200rem" : "46.5rem",
+                      maxHeight: "none",
                       // Fade-out 영역을 더 아래로 내려서 컨텐츠가 더 많이 보이도록 조정.
                       ...(isExpanded || !hasMore
                         ? null
@@ -739,7 +582,7 @@ export default function Works({ textColor, sectionOn }) {
                         type="button"
                         onClick={toggleExpanded}
                         aria-label={toggleAriaLabel}
-                        className={`${programme.className} font-semibold text-[1.125rem] leading-none tracking-[0.02em] text-primaryB hover:opacity-70 transition-opacity rounded-full px-6 py-2 bg-white/30 backdrop-blur-sm border border-white/40 shadow-[0_6px_18px_rgba(0,0,0,0.12)]`}
+                        className={`${programme.className} font-semibold text-[1.125rem] leading-none tracking-[0.02em] text-primaryB hover:opacity-70 transition-opacity p-2`}
                       >
                         <svg
                           width="28"
@@ -769,7 +612,7 @@ export default function Works({ textColor, sectionOn }) {
                       type="button"
                       onClick={toggleExpanded}
                       aria-label={toggleAriaLabel}
-                      className={`${programme.className} font-semibold text-[1.125rem] leading-none tracking-[0.02em] text-primaryB hover:opacity-70 transition-opacity rounded-full px-6 py-2 bg-white/30 backdrop-blur-sm border border-white/40 shadow-[0_6px_18px_rgba(0,0,0,0.12)]`}
+                      className={`${programme.className} font-semibold text-[1.125rem] leading-none tracking-[0.02em] text-primaryB hover:opacity-70 transition-opacity p-2`}
                     >
                       <svg
                         width="28"

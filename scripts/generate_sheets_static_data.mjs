@@ -4,8 +4,8 @@ import path from "node:path";
 // Usage:
 //   node scripts/generate_sheets_static_data.mjs <SHEET_ID>
 // If omitted, falls back to the historical default.
-const SHEET_ID = process.argv?.[2] || "1E8UMK080DW05VXntVnUJpfr1X1nPAtvqHhzrwGIg0Ss";
-const SHEET_NAMES = ["main", "about", "desc", "works", "members"];
+const SHEET_ID = process.argv?.[2] || "1ZpzuJgyIkteZuwL942ZlP7RZ-rFK3xzfZIFagthwMBg";
+const SHEET_NAMES = ["main", "about", "desc", "works", "members", "hiring"];
 
 function csvParse(text) {
   // RFC4180-ish CSV parser supporting quotes, commas, CRLF/LF, and multiline quoted fields.
@@ -90,6 +90,16 @@ function csvParse(text) {
   return rows;
 }
 
+// Normalize any Google Drive share link into an embeddable image URL.
+// Handles /open?id=, /file/d/<id>/view, /uc?id=, and /thumbnail?id= forms.
+// NOTE: the target file must still be shared "Anyone with the link" to render.
+function normalizeDriveUrl(value) {
+  if (typeof value !== "string" || !value.includes("drive.google.com")) return value;
+  let m = value.match(/\/file\/d\/([a-zA-Z0-9_-]{12,})/);
+  if (!m) m = value.match(/[?&]id=([a-zA-Z0-9_-]{12,})/);
+  return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1000` : value;
+}
+
 async function fetchSheetCsv(sheetName) {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
   const res = await fetch(url);
@@ -104,7 +114,7 @@ async function main() {
 
   for (const name of SHEET_NAMES) {
     const csv = await fetchSheetCsv(name);
-    data[name] = csvParse(csv);
+    data[name] = csvParse(csv).map((row) => row.map(normalizeDriveUrl));
   }
 
   const outDir = path.join(process.cwd(), "src", "app", "data");

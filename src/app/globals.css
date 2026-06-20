@@ -61,20 +61,20 @@ html {
 }
 
 @keyframes textWave {
-  0% { 
-    color: black;
+  0% {
+    color: #0f0f13;
   }
-  18% { 
-    color: black;
+  18% {
+    color: #0f0f13;
   }
-  38% { 
-    color: white;
+  38% {
+    color: #f0f0ec;
   }
-  80% { 
-    color: white;
+  80% {
+    color: #f0f0ec;
   }
-  100% { 
-    color: black;
+  100% {
+    color: #0f0f13;
   }
 }
 
@@ -99,7 +99,7 @@ html {
 .blinking-cursor::after {
   content: '|';
   animation: blink 1s step-end infinite;
-  color: #fff;
+  color: #0f0f13;
 }
 
 .char-reveal {
@@ -117,7 +117,7 @@ html {
 
 .wave-text {
   display: inline-block;
-  color: black;
+  color: #0f0f13;
   animation: textWave 18s ease-in-out infinite;
   opacity: 1;
   animation-play-state: paused;
@@ -130,7 +130,7 @@ html {
 }
 
 .first-part {
-  color: white;
+  color: #0f0f13;
   opacity: 1;
 }
 

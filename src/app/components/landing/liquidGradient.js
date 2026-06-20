@@ -14,14 +14,14 @@
     uDarkNavy: [0.055, 0.0, 0.16],
   },
   2: {
-    uColor1: [0.2, 0.6, 0.9],
-    uColor2: [0.35, 0.25, 0.75],
-    uColor3: [0.25, 0.65, 0.95],
-    uColor4: [0.4, 0.2, 0.7],
-    uColor5: [0.3, 0.7, 1.0],
-    uColor6: [0.45, 0.35, 0.85],
-    // Intro + Contact 공통 팔레트: 베이스만 더 어둡게 (uColor1–6 그대로)
-    uDarkNavy: [0.028, 0.006, 0.1],
+    uColor1: [0.32, 0.88, 0.42],
+    uColor2: [0.14, 0.40, 0.20],
+    uColor3: [0.42, 1.0, 0.50],
+    uColor4: [0.10, 0.30, 0.16],
+    uColor5: [0.52, 1.0, 0.55],
+    uColor6: [0.22, 0.58, 0.28],
+    // Intro + Contact 공통 팔레트: 채도 거의 없는 매우 어두운 회색 (~#222)
+    uDarkNavy: [0.13, 0.13, 0.13],
   },
    3: {
      uColor1: [0.45, 0.15, 0.85],
@@ -31,6 +31,16 @@
      uColor5: [0.55, 0.2, 0.95],
      uColor6: [0.35, 0.12, 0.7],
      uDarkNavy: [0.08, 0.01, 0.18],
+   },
+   // Light theme: purple blobs over a warm beige base (#BEB6AC).
+   4: {
+     uColor1: [0.42, 0.10, 0.78],
+     uColor2: [0.58, 0.34, 0.90],
+     uColor3: [0.36, 0.04, 0.62],
+     uColor4: [0.64, 0.46, 0.94],
+     uColor5: [0.48, 0.18, 0.84],
+     uColor6: [0.54, 0.28, 0.88],
+     uDarkNavy: [0.745, 0.714, 0.675],
    },
  };
  
@@ -153,10 +163,11 @@
        uGrainIntensity: { value: 0.03 },
        uZoom: { value: 1.0 },
        uDarkNavy: { value: new THREE.Vector3(...palette.uDarkNavy) },
-       uGradientSize: { value: 0.5 },
+       uGradientSize: { value: 0.3 },
        uGradientCount: { value: 8.0 },
        uColor1Weight: { value: 0.5 },
        uColor2Weight: { value: 1.0 },
+       uLightBase: { value: colorPalette === 4 ? 1.0 : 0.0 },
      };
    }
  
@@ -170,6 +181,7 @@
        this.uniforms.uColor5.value.set(...palette.uColor5);
        this.uniforms.uColor6.value.set(...palette.uColor6);
        this.uniforms.uDarkNavy.value.set(...palette.uDarkNavy);
+       this.uniforms.uLightBase.value = colorPalette === 4 ? 1.0 : 0.0;
      }
    }
  
@@ -206,7 +218,8 @@
          uniform float uGradientCount;
          uniform float uColor1Weight;
          uniform float uColor2Weight;
- 
+         uniform float uLightBase;
+
          varying vec2 vUv;
  
          float grain(vec2 uv, float time) {
@@ -216,8 +229,15 @@
          }
  
          vec3 getGradientColor(vec2 uv, float time) {
-           float gradientRadius = uGradientSize;
- 
+           float r1 = 0.28;
+           float r2 = 0.16;
+           float r3 = 0.24;
+           float r4 = 0.12;
+           float r5 = 0.30;
+           float r6 = 0.18;
+           float r7 = 0.22;
+           float r8 = 0.10;
+
            vec2 center1 = vec2(
              0.5 + sin(time * uSpeed * 0.4) * 0.4,
              0.5 + cos(time * uSpeed * 0.5) * 0.4
@@ -242,21 +262,24 @@
              0.5 + cos(time * uSpeed * 0.45) * 0.5,
              0.5 + sin(time * uSpeed * 0.65) * 0.5
            );
- 
-           float dist1 = length(uv - center1);
-           float dist2 = length(uv - center2);
-           float dist3 = length(uv - center3);
-           float dist4 = length(uv - center4);
-           float dist5 = length(uv - center5);
-           float dist6 = length(uv - center6);
- 
-           float influence1 = 1.0 - smoothstep(0.0, gradientRadius, dist1);
-           float influence2 = 1.0 - smoothstep(0.0, gradientRadius, dist2);
-           float influence3 = 1.0 - smoothstep(0.0, gradientRadius, dist3);
-           float influence4 = 1.0 - smoothstep(0.0, gradientRadius, dist4);
-           float influence5 = 1.0 - smoothstep(0.0, gradientRadius, dist5);
-           float influence6 = 1.0 - smoothstep(0.0, gradientRadius, dist6);
- 
+           vec2 center7 = vec2(
+             0.5 + sin(time * uSpeed * 0.55 + 1.7) * 0.5,
+             0.5 + cos(time * uSpeed * 0.4 + 2.1) * 0.5
+           );
+           vec2 center8 = vec2(
+             0.5 + cos(time * uSpeed * 0.65 + 0.9) * 0.45,
+             0.5 + sin(time * uSpeed * 0.5 + 1.3) * 0.45
+           );
+
+           float influence1 = 1.0 - smoothstep(0.0, r1, length(uv - center1));
+           float influence2 = 1.0 - smoothstep(0.0, r2, length(uv - center2));
+           float influence3 = 1.0 - smoothstep(0.0, r3, length(uv - center3));
+           float influence4 = 1.0 - smoothstep(0.0, r4, length(uv - center4));
+           float influence5 = 1.0 - smoothstep(0.0, r5, length(uv - center5));
+           float influence6 = 1.0 - smoothstep(0.0, r6, length(uv - center6));
+           float influence7 = 1.0 - smoothstep(0.0, r7, length(uv - center7));
+           float influence8 = 1.0 - smoothstep(0.0, r8, length(uv - center8));
+
            vec2 rUv1 = uv - 0.5;
            float angle1 = time * uSpeed * 0.06;
            rUv1 = vec2(
@@ -264,10 +287,10 @@
              rUv1.x * sin(angle1) + rUv1.y * cos(angle1)
            );
            rUv1 += 0.5;
- 
+
            float radial1 = length(rUv1 - 0.5);
            float radialInfluence1 = 1.0 - smoothstep(0.0, 1.1, radial1);
- 
+
            vec3 color = vec3(0.0);
            color += uColor1 * influence1 * uColor1Weight;
            color += uColor2 * influence2 * uColor2Weight;
@@ -275,26 +298,44 @@
            color += uColor4 * influence4 * uColor2Weight;
            color += uColor5 * influence5 * uColor1Weight;
            color += uColor6 * influence6 * uColor2Weight;
- 
+           color += uColor1 * influence7 * uColor1Weight;
+           color += uColor3 * influence8 * uColor2Weight;
+
            color += mix(uColor1, uColor3, radialInfluence1) * 0.25 * uColor1Weight;
- 
+
+           // Light theme: soft purple blobs over a vertical base gradient that
+           // runs from ivory (top) to lavender (bottom), so the cover hands off
+           // seamlessly into the next section's lavender top (#E0E0FF).
+           if (uLightBase > 0.5) {
+             vec3 lavender = vec3(0.878, 0.878, 1.0);
+             vec3 base = mix(lavender, uDarkNavy, clamp(uv.y, 0.0, 1.0));
+             float mask = clamp(length(color) / 1.6, 0.0, 1.0);
+             mask = smoothstep(0.12, 0.9, mask);
+             vec3 blob = mix(uColor2, uColor1, mask);
+             return mix(base, blob, mask * 0.85);
+           }
+
            color = clamp(color, vec3(0.0), vec3(1.0)) * uIntensity;
- 
+
            float luminance = dot(color, vec3(0.299, 0.587, 0.114));
            color = mix(vec3(luminance), color, 1.1);
- 
+
            color = pow(color, vec3(0.96));
- 
+
+           // Subtle vignette: corners trend toward black, center toward uDarkNavy gray
+           float vignette = smoothstep(0.0, 0.85, 1.0 - length((uv - 0.5) * vec2(1.0, 1.15)));
+           vec3 baseDark = mix(vec3(0.0), uDarkNavy, vignette);
+
            float brightness1 = length(color);
            float mixFactor1 = max(brightness1 * 1.1, 0.28);
-           color = mix(uDarkNavy, color, mixFactor1);
- 
+           color = mix(baseDark, color, mixFactor1);
+
            float maxBrightness = 1.0;
            float brightness = length(color);
            if (brightness > maxBrightness) {
              color = color * (maxBrightness / brightness);
            }
- 
+
            return color;
          }
  
@@ -323,19 +364,28 @@
            color.r += sin(timeShift) * 0.006;
            color.b += cos(timeShift * 1.1) * 0.006;
  
-           float brightness2 = length(color);
-           float mixFactor2 = max(brightness2 * 1.05, 0.28);
-           color = mix(uDarkNavy, color, mixFactor2);
- 
-           color = clamp(color, vec3(0.0), vec3(1.0));
- 
-           float maxBrightness = 1.0;
-           float b = length(color);
-           if (b > maxBrightness) {
-             color = color * (maxBrightness / b);
+           if (uLightBase < 0.5) {
+             float vignette2 = smoothstep(0.0, 0.85, 1.0 - length((uv - 0.5) * vec2(1.0, 1.15)));
+             vec3 baseDark2 = mix(vec3(0.0), uDarkNavy, vignette2);
+
+             float brightness2 = length(color);
+             float mixFactor2 = max(brightness2 * 1.05, 0.28);
+             color = mix(baseDark2, color, mixFactor2);
            }
- 
-           gl_FragColor = vec4(color, 0.85);
+
+           color = clamp(color, vec3(0.0), vec3(1.0));
+
+           // Length-based clamp keeps the dark theme's neon blobs from blowing
+           // out, but it would darken the light theme's bright ivory base.
+           if (uLightBase < 0.5) {
+             float maxBrightness = 1.0;
+             float b = length(color);
+             if (b > maxBrightness) {
+               color = color * (maxBrightness / b);
+             }
+           }
+
+           gl_FragColor = vec4(color, 1.0);
          }
        `,
      });

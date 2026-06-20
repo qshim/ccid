@@ -134,7 +134,7 @@ export const sheetsStatic = {
       "Who We Are",
       "At the Center for Creative Intelligence Design (CCID), we explore the intersection of interaction design, generative AI, and prototyping to shape the future of human-computer interaction. Our interdisciplinary team of designers, researchers, and developers is grounded in deep design research, using methods from behavioral science, psychology, and critical sociology to understand the present in all its complexity. By examining how emerging technologies mediate perception, cognition, and behavior, we translate insights into actionable, innovative solutions.\n\nWe leverage AI-powered creativity and computational design to create intuitive, adaptive, and speculative user experiences that respond to the evolving needs of users, businesses, and environments. Our iterative design processes allow us to prototype the future, grounded in real, data-driven insights about the current landscape.\n\nThrough our work, we help businesses navigate and lead change by crafting meaningful interactions that redefine how people engage with digital systems, products, services, and spaces.",
       "Who We Are",
-      "Center for Creative Intelligence Design (CCID)에서는 인터랙션 디자인과 생성형 AI를 중심으로 인간-컴퓨터 상호작용의 미래를 탐구합니다. CCID의 다학제적 팀은 디자인 리서치를 기반으로 행동공학, 심리학, 사회학적 방법론을 활용하여 사람, 비즈니스, 제품, 서비스 등 현재의 상황을 사용자 관점에서 정량적 및/또는 정성적으로 조사·관찰·분석하고, 이를 통해 유의미한 인사이트를 도출합니다. 실무에 대한 깊은 이해를 바탕으로 실행 가능하고 실용적인 디자인 솔루션을 제시하며, AI 및 컴퓨테이셔널 디자인 기반의 반복적 프로세스를 통해 현재 데이터를 바탕으로 미래지향적인 컨셉을 프로토타이핑합니다.\n\n우리는 이러한 작업을 통해 기업의 변화를 선도하고, 디지털 시스템, 제품, 서비스, 공간과의 상호작용 방식을 새롭게 정의하는 의미 있는 경험을 만들어갑니다.",
+      "Center for Creative Intelligence Design (cciD)에서는 인터랙션 디자인과 생성형 AI를 중심으로 인간-컴퓨터 상호작용의 미래를 탐구합니다. cciD의 다학제적 팀은 디자인 리서치를 기반으로 공학적, 심리학적, 사회학적 방법론을 활용하여 사람, 비즈니스, 제품, 서비스 등 현재의 상황을 사용자 관점에서 정량적·정성적으로 조사·관찰·분석하고, 이를 통해 유의미한 인사이트를 도출합니다. 디자인, 컴퓨테이션, 시스템적 사고에 대한 이해를 토대로 실행 가능하고 실용적인 디자인 솔루션을 제시하며, AI 디자인 기반의 반복적 프로세스를 통해 현재의 데이터로부터 미래지향적인 콘셉트를 프로토타이핑합니다.\ncciD는 이러한 작업을 통해 기업의 변화를 선도하고, 디지털 시스템, 제품, 서비스, 공간과의 상호작용 방식을 새롭게 정의하는 의미 있는 경험을 만들어갑니다.",
       ""
     ],
     [
@@ -154,13 +154,15 @@ export const sheetsStatic = {
   ],
   "works": [
     [
-      "2000",
+      "",
+      "2026",
+      "",
       "2025",
       "",
       " ",
       "",
+      "2025",
       "2024",
-      "",
       "",
       "",
       "2023",
@@ -177,9 +179,11 @@ export const sheetsStatic = {
     ],
     [
       "Selected Projects ",
+      "Hyundai Motor Group: Design Program Management (2D to 3D generation, Agentic Presentation, AX Workflow) ",
+      "Samsung Electronics: Generative User Interface",
       "LG Electronics: Affectionate Ingelligence CX Design",
       "CJ CGV & Naver Cloud: AI-Driven AR Interaction Platform for Immersive Public Engagement",
-      "Hyundai Motors: Development of AI-Driven Exterior Design Process for Enhancing Efficiency in the Design Workflow",
+      "Hyundai Motor Group: Development of AI-Driven Exterior Design Process for Enhancing Efficiency in the Design Workflow",
       "Ministry of Trade, Industry and Energy: Development of an AI Design Generation Pipeline Reflecting the Design Workflow",
       "Samsung Electronics MX: Usability research and AI concept development for next-generation large-screen editors",
       "Samsung Electronics VD: Emotional quality assessment and research on \"Samsung-ness\" for enhancing screen interaction",
@@ -198,7 +202,33 @@ export const sheetsStatic = {
       ""
     ],
     [
+      "",
+      "Secure in-house AI-assisted design workflow embedding generative exploration, 3D reconstruction, designer review, and decision support into the design process.",
+      "Generative UI framework for AI-native experiences, enabling interfaces to adapt across user context, intent, device ecosystem, and task flow through GenUI principles, logic pipelines, and interactive prototypes.",
+      "Public AI brand experience translating LG’s Affectionate Intelligence vision into Geumseong Electronics, an immersive spatial CX platform combining storytelling, interactive systems, media art, and participatory engagement.",
+      "Design of GangnamEyes, a public AI agent experience that reimagines the COEX K-POP Square media facade as an urban-scale AI interface, combining Naver Cloud’s AI infrastructure, CJ CGV’s media operations, generative content, audience participation, and K-POP-specific interaction grammar.",
+      "AI-augmented exterior design workflow for innovating exterior design review sessions, connecting concept exploration, design evaluation, and production process restructuring.",
+      "Four-year national R&D program developing generative 3D design pipelines and designer-intent inference as AI-assisted creative infrastructure.",
+      "AI UX research and concept development for next-generation large-screen mobile device editor, translating user behavior and editing workflows into future product experience directions.",
+      "Emotional quality assessment and Samsung-ness research for production-facing TV UX decisions, prototype testing, and screen-based brand experience strategy.",
+      "Advanced UX concept research for the 2030 e-MPV interior, exploring AI-mediated passenger context, shared intent, and future mobility interaction.",
+      "National talent-development program for generative and emotion-aware AI XR content production, combining creative AI workflows, education, and production training.",
+      "Emotional UX vocabulary and quantitative evaluation methodology for Smart TV interfaces, making subjective screen interaction qualities measurable and actionable.",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
       "주요 국내 R&D 프로젝트",
+      "",
+      "",
       "엘지전자: Affectionate Intelligence CX 디자인",
       "CJ CGV, 네이버 클라우드: AI 에이전트 기반 몰입형 공공 인터랙션 플랫폼 디자인",
       "현대엔지비, 외장디자인 효율화를 위한 AI Driven Design 프로세스 개발 연구과제",
@@ -218,151 +248,93 @@ export const sheetsStatic = {
       "",
       "",
       ""
-    ],
-    [
-      "",
-      "2022",
-      "2021",
-      "",
-      "",
-      "2020",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
-    ],
-    [
-      "",
-      "Zenda x Meta (formerly Facebook): UX research and concept validation of an internal financial tool ",
-      "Zenda x Johnson & Johnson: UX research and design for Investor Relations",
-      "Zenda x Meta for Business (formerly Facebook for Business): UX research and roadmap for business clients' advertising",
-      "US Census Bureau: Data-driven community innovation project",
-      "National Endowment for the Arts (NEA): Algorithm-based editorial design",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
-    ],
-    [
-      "주요 해외 R&D 프로젝트",
-      "Zenda x Meta (구 Facebook): 사내 금융 툴에 대한 UX 리서치 및 콘셉트 검증",
-      "Zenda x Johnson & Johnson: 투자자 관계(IR) 관련 UX 리서치 및 디자인",
-      "Zenda x Johnson & Johnson: 투자자 관계(IR) 관련 UX 리서치 및 디자인",
-      "미국 인구조사국 US Census Bureau, 데이터 기반 커뮤니티 혁신 프로젝트",
-      "미국 연방예술기금 NEA, 알고리즘 기반 에디토리얼 디자인",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
     ]
   ],
   "members": [
     [
       "Director",
       "Kyuha Shim, FRSA",
-      "https://drive.google.com/thumbnail?id=1czD9OPBqk91vPq_34dl2Hdr6-x3o1dTh",
-      "Head & (tenured) Professor of Design at\nKorea National University of Arts",
+      "https://drive.google.com/thumbnail?id=1czD9OPBqk91vPq_34dl2Hdr6-x3o1dTh&sz=w1000",
+      "Professor of Design at\nKorea National University of Arts",
       "formerly\nCarnegie Mellon University. Associate Professor\nMeta(Facebook). Designer-in-Residence\nJan van Eyck Academie. Researcher\nMIT Senseable City Lab. Research Fellow\n",
       "➜ 프로필 : 구글드라이브에 이미지 업로드 후 링크 만들어 첨부 \n(구글드라이브사진id) 필요\n\n➜ 링크 :\n\nhttps://drive.google.com/thumbnail?id=(구글드라이브사진id)\n"
     ],
     [
-      "Principal Researchers",
+      "Leadership",
       "Taery Kim",
-      "https://drive.google.com/thumbnail?id=1-fcBAtkg4l-fLMW0ufyZYF7zwjLww7tb",
+      "https://drive.google.com/thumbnail?id=1-fcBAtkg4l-fLMW0ufyZYF7zwjLww7tb&sz=w1000",
       "Design Strategy",
       "King's College London PhD\nCarnegie Mellon University MA\nformer Zenda Asia. Managing Director",
       ""
     ],
     [
-      "Principal Researchers",
+      "Leadership",
+      "Boram Lee",
+      "https://drive.google.com/thumbnail?id=1Wfiy1pPqjmuxX0-wLaBJ_mrKthVDv5df&sz=w1000",
+      "Design Thinking",
+      "Goldsmiths PhD \nMobile Experience Design",
+      ""
+    ],
+    [
+      "Leadership",
       "Jiyeon Lee",
-      "https://drive.google.com/thumbnail?id=1XnOm3hJUP6HO3Jc6azQv5O52B65aXj0Z",
+      "https://drive.google.com/thumbnail?id=1XnOm3hJUP6HO3Jc6azQv5O52B65aXj0Z&sz=w1000",
       "Speculative Design",
       "KAIST PhD (ABD)\nDomus Academy MA\nformer Samsung Electronics. UX Designer",
       ""
     ],
     [
-      "Principal Researchers",
-      "Kiryung Nam",
-      "https://drive.google.com/thumbnail?id=1vPALXgTqlGki-T4dnWr4IOjPgPHJhmCs",
-      "Generative AI for Interactive Media",
-      "Royal College of Art MA\nInformation Experience Design",
-      ""
-    ],
-    [
-      "Lead Researchers",
+      "Leadership",
       "Hankak Lee",
-      "https://drive.google.com/thumbnail?id=1zOXTziy0YmCftYQw_zfCAVYNc5F4ZnXn",
+      "https://drive.google.com/thumbnail?id=1zOXTziy0YmCftYQw_zfCAVYNc5F4ZnXn&sz=w1000",
       "Product Design",
-      "Imperial College London MSc\nInnovation Design Engineering",
-      "https://drive.google.com/thumbnail?id=1ZEwTR2QgqRceSrwjYc3oR1S5fyJDqh6A"
+      "Royal College of Art MA\nInnovation Design Engineering",
+      "https://drive.google.com/thumbnail?id=1ZEwTR2QgqRceSrwjYc3oR1S5fyJDqh6A&sz=w1000"
     ],
     [
-      "Lead Researchers",
-      "Boram Lee",
-      "https://drive.google.com/thumbnail?id=1Wfiy1pPqjmuxX0-wLaBJ_mrKthVDv5df",
-      "Design Thinking",
-      "Goldsmiths, UoL PhD \nMobile Experience Design",
+      "Leadership",
+      "Ingee Jeong",
+      "",
+      "Visual Communication",
+      "Royal College of Art MA\nVisual Communication",
       ""
     ],
     [
-      "Lead Researchers",
+      "Leadership",
+      "Yoonha Jeong",
+      "",
+      "User Experience Design",
+      "Korea National University of Arts MFA\nInteraction Design",
+      ""
+    ],
+    [
+      "Leadership",
+      "Kiryung Nam",
+      "https://drive.google.com/thumbnail?id=1vPALXgTqlGki-T4dnWr4IOjPgPHJhmCs&sz=w1000",
+      "Generative AI for Interactive Media",
+      "Royal College of Art MA\nInformation Experience Design\nArt Korea Lab. Gen AI Lab Director",
+      ""
+    ],
+    [
+      "Leadership",
       "Yunhyeong Park",
-      "https://drive.google.com/thumbnail?id=1QCYqrja1JdQxiC-T3VQYBQvyFSlyB-Av",
-      "Generative AI for Digital Storytelling",
+      "https://drive.google.com/thumbnail?id=1QCYqrja1JdQxiC-T3VQYBQvyFSlyB-Av&sz=w1000",
+      "Generative AI for Customer Experience",
       "Royal College of Art MA\nInformation Experience Design",
       ""
     ],
     [
-      "Lead Researchers",
-      "Chanu Lee",
+      "Leadership",
+      "Chanwoo Lee",
       "",
-      "Generative AI for Interactive Media",
-      "Royal College of Art MA\nInnovation Design Engineering",
-      ""
-    ],
-    [
-      "Student Researchers",
-      "Inyoung Kim",
-      "https://drive.google.com/thumbnail?id=1YfKG7-EUwY35mrizrA8DC9TSYLFe1QjP",
-      "",
-      "XR Design\nInteraction Design\nUser Experience Design",
+      "System Interface Architecture",
+      "Imperial College London MSc\nInnovation Design Engineering",
       ""
     ],
     [
       "Student Researchers",
       "Juwan Kim",
-      "https://drive.google.com/thumbnail?id=1qc6KAHzyQBk6Q9Fbv6hI3YnCNs6RywjO",
+      "https://drive.google.com/thumbnail?id=1qc6KAHzyQBk6Q9Fbv6hI3YnCNs6RywjO&sz=w1000",
       "",
       "Generative AI \nService Design\nDesign Strategy ",
       ""
@@ -370,87 +342,159 @@ export const sheetsStatic = {
     [
       "Student Researchers",
       "Juhae Kim",
-      "https://drive.google.com/thumbnail?id=1abzaNf1yVqCLEUuifiMf7HUUMCmVmPpV",
+      "https://drive.google.com/thumbnail?id=1abzaNf1yVqCLEUuifiMf7HUUMCmVmPpV&sz=w1000",
       "",
       "Service Design\nData Visualization",
       ""
     ],
     [
       "Student Researchers",
-      "Hyeji Jeong",
-      "https://drive.google.com/thumbnail?id=1j6UUGvB20je3NApKK7MvS0XGWhx71FLO",
-      "",
-      "Service Design\nUser Experience Design",
-      ""
-    ],
-    [
-      "Student Researchers",
-      "Jiwon Park",
-      "https://drive.google.com/thumbnail?id=1UOr8iGINhXF2RXlcvpodPxzH7LvyHEmg",
-      "",
-      "Interaction Design\nPrototyping",
-      ""
-    ],
-    [
-      "Student Researchers",
       "Hyebin Park",
-      "https://drive.google.com/thumbnail?id=1VEL6mIQCNP_yCtRchoEdteNFVKFpfb5n",
+      "https://drive.google.com/thumbnail?id=1VEL6mIQCNP_yCtRchoEdteNFVKFpfb5n&sz=w1000",
       "",
       "Interaction Design\nUser Experience Design",
       ""
     ],
     [
       "Student Researchers",
-      "Yoonseo Oh",
-      "https://drive.google.com/thumbnail?id=1vy19ZT6pFLyPQn_DmuqANg3RJCFTCyjU",
-      "",
-      "Interface Design\nInteraction Design",
-      ""
-    ],
-    [
-      "Student Researchers",
       "Suhyeon Cho",
-      "https://drive.google.com/thumbnail?id=1rU6bZKvPxSDfu1EXpo7g1KZTLCtWHa8N",
+      "https://drive.google.com/thumbnail?id=1rU6bZKvPxSDfu1EXpo7g1KZTLCtWHa8N&sz=w1000",
       "",
       "Design Strategy\nInteraction Design\nGenerative AI",
       ""
     ],
     [
       "Student Researchers",
-      "Taeeun Kim",
-      "https://drive.google.com/thumbnail?id=16gpanmqFjtOv2FbVJuZ2xDmYMSZ0fbwj",
-      "",
-      "User Experience Design\nInterface Design",
-      ""
-    ],
-    [
-      "Student Researchers",
-      "Hyunji Lee",
-      "https://drive.google.com/thumbnail?id=1geRCTuicomKdZVGay12MRo4VM2eZ2P8I",
-      "",
-      "Design Strategy\nUser Experience Design\nInteraction Design",
-      ""
-    ],
-    [
-      "Student Researchers",
       "Sooyoun Jo",
-      "https://drive.google.com/thumbnail?id=1yBMkw94qC0oO_aww1DeJFJ6C7QLgednJ",
+      "https://drive.google.com/thumbnail?id=1yBMkw94qC0oO_aww1DeJFJ6C7QLgednJ&sz=w1000",
       "",
       "Interaction Design\nUser Experience Design\nPrototyping",
       ""
     ],
     [
       "Student Researchers",
+      "Hyunji Lee",
+      "https://drive.google.com/thumbnail?id=1geRCTuicomKdZVGay12MRo4VM2eZ2P8I&sz=w1000",
+      "",
+      "Design Strategy\nUser Experience Design\nInteraction Design",
+      ""
+    ],
+    [
+      "Student Researchers",
       "Jiyu Shin",
-      "https://drive.google.com/thumbnail?id=1_x59n2MuDomoCMBDoL4bX6E0j5WcAyst",
+      "https://drive.google.com/thumbnail?id=1_x59n2MuDomoCMBDoL4bX6E0j5WcAyst&sz=w1000",
       "",
       "User Experience Design\nInterface Design",
       ""
     ],
     [
+      "Student Researchers",
+      "Jeremy Lee",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "Student Researchers",
+      "Taeeun Kim",
+      "https://drive.google.com/thumbnail?id=16gpanmqFjtOv2FbVJuZ2xDmYMSZ0fbwj&sz=w1000",
+      "",
+      "User Experience Design\nInterface Design",
+      ""
+    ],
+    [
+      "Student Researchers",
+      "Eunseol Kim",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "Student Researchers",
+      "Minseo Kang",
+      "https://drive.google.com/thumbnail?id=1z-A5cfWIqHAybgcqaoo5Y4Wrn8DyMoc1&sz=w1000",
+      "",
+      "UX/UI Design\nInteraction Design\nGenerative AI",
+      ""
+    ],
+    [
+      "Student Researchers",
+      "Seojin Hong",
+      "https://drive.google.com/thumbnail?id=1gftGmFrFaND7VUkezC61YuAHdlCJQYb6&sz=w1000",
+      "",
+      "Interface Design\nData Visualization\nGenerative AI",
+      ""
+    ],
+    [
+      "Student Researchers",
+      "Hyosun Son",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "Student Researchers",
+      "Minjeong Joo",
+      "https://drive.google.com/thumbnail?id=15jN1JLiBdCgpSehtKY8ph2nBRKm4wKM9&sz=w1000",
+      "",
+      "User Experience Design\nInterface Design\nGenerative AI",
+      ""
+    ],
+    [
+      "Student Researchers",
+      "Sara Kang",
+      "https://drive.google.com/thumbnail?id=1TJZHZ0jgmnk_tujM9bMdOaHuR-aiaJ2f&sz=w1000",
+      "",
+      "UX/UI Design \nInteraction Design",
+      ""
+    ],
+    [
+      "Student Researchers",
+      "Hayeon Jeon",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "Student Researchers",
+      "Da in Kim",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "External Researchers",
+      "Yunso Jung",
+      "",
+      "",
+      "Physical Intelligence\nExperimental Interface",
+      ""
+    ],
+    [
+      "External Researchers",
+      "Yeju Jeong",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "External Researchers",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
       "Alumni",
       "Minji Park",
-      "https://drive.google.com/thumbnail?id=1pfpR5aWayiLKWE0xxapp-_zSnvIrLq1R",
+      "https://drive.google.com/thumbnail?id=1pfpR5aWayiLKWE0xxapp-_zSnvIrLq1R&sz=w1000",
       "",
       "BDes '25\nSamsung Electronics. UX Designer.",
       ""
@@ -458,18 +502,51 @@ export const sheetsStatic = {
     [
       "Alumni",
       "Seungju Lee",
-      "https://drive.google.com/thumbnail?id=1sNTwHHH-Yrsdg09jXbP8B7fUtKHLjJA6",
+      "https://drive.google.com/thumbnail?id=1sNTwHHH-Yrsdg09jXbP8B7fUtKHLjJA6&sz=w1000",
       "",
-      "BDes '25\nRCA Design Futures, MDes Candidate",
+      "BDes '25\nRCA Design Futures. MDes Candidate.",
       ""
     ],
     [
       "Alumni",
       "Euna Jang",
-      "https://drive.google.com/thumbnail?id=1uVtsW4D8Dwo44Y4uw4P0GtmD1tUwOdRP",
+      "https://drive.google.com/thumbnail?id=1uVtsW4D8Dwo44Y4uw4P0GtmD1tUwOdRP&sz=w1000",
       "",
-      "BDes '25\nKAIST CT, MSc Candidate",
+      "BDes '25\nKAIST CT. MSc Candidate.",
+      ""
+    ],
+    [
+      "Alumni",
+      "Jiwon Park",
+      "https://drive.google.com/thumbnail?id=1UOr8iGINhXF2RXlcvpodPxzH7LvyHEmg&sz=w1000",
+      "",
+      "BDes '26\nECAL. MDes Candidate.",
+      ""
+    ],
+    [
+      "Alumni",
+      "Inyoung Kim",
+      "https://drive.google.com/thumbnail?id=1YfKG7-EUwY35mrizrA8DC9TSYLFe1QjP&sz=w1000",
+      "",
+      "MDes '25\nExploring opportunities in digital design planning and media art.",
+      ""
+    ],
+    [
+      "Alumni",
+      "Yoonseo Oh",
+      "https://drive.google.com/thumbnail?id=1vy19ZT6pFLyPQn_DmuqANg3RJCFTCyjU&sz=w1000",
+      "",
+      "BDes '26\nExploring opportunities in AI XR experience and digital product design.",
+      ""
+    ],
+    [
+      "Alumni",
+      "Hyeji Jeong",
+      "https://drive.google.com/thumbnail?id=1j6UUGvB20je3NApKK7MvS0XGWhx71FLO&sz=w1000",
+      "",
+      "BDes '26\nExploring opportunities in user experience design.",
       ""
     ]
-  ]
+  ],
+  "hiring": []
 };

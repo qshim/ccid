@@ -4,6 +4,54 @@ import { neuehaas } from "@/fonts/fonts";
 import { useState, useEffect } from "react";
 import { sheetsStatic } from "@/app/data/sheetsStatic";
 
+const GLYPH_VARIANTS = [
+  "normal",
+  '"salt" 1',
+  '"ss01" 1',
+  '"ss02" 1',
+  '"ss03" 1',
+];
+
+function ShuffleChar({ ch }) {
+  const [variant, setVariant] = useState(() =>
+    Math.floor(Math.random() * GLYPH_VARIANTS.length)
+  );
+
+  useEffect(() => {
+    let timeoutId;
+    const schedule = () => {
+      const delay = 3000 + Math.random() * 5000; // 3–8s
+      timeoutId = window.setTimeout(() => {
+        setVariant((prev) => {
+          let next = prev;
+          while (next === prev) {
+            next = Math.floor(Math.random() * GLYPH_VARIANTS.length);
+          }
+          return next;
+        });
+        schedule();
+      }, delay);
+    };
+    schedule();
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
+  return (
+    <span style={{ fontFeatureSettings: GLYPH_VARIANTS[variant] }}>{ch}</span>
+  );
+}
+
+function ShuffleText({ text }) {
+  const chars = Array.from(text || "");
+  return (
+    <>
+      {chars.map((ch, i) => (
+        <ShuffleChar key={i} ch={ch} />
+      ))}
+    </>
+  );
+}
+
 export default function Cover() {
   const [mainText, setMainText] = useState(null);
   const [typedWords, setTypedWords] = useState([]);
@@ -84,72 +132,72 @@ export default function Cover() {
     : { transformOrigin: "left center" };
 
   return (
-    <div className="relative flex flex-col w-full h-full lg:pt-[38dvh] pt-[29vh] px-0 translate-x-0 md:-translate-x-1 lg:-translate-x-6 gap-[clamp(0.5rem,2vw,1rem)] md:gap-[clamp(0.5rem,1.6vw,0.875rem)] lg:gap-[clamp(0.5rem,1.2vw,0.75rem)]">
+    <div className="relative flex flex-col w-full h-full lg:pt-[40dvh] pt-[31vh] px-0 translate-x-0 md:-translate-x-1 lg:-translate-x-6 gap-[clamp(0.05rem,0.3vw,0.2rem)]">
       <div className="text-left relative inline-block w-full h-auto min-h-[1.15em] md:min-h-0 text-[7.5vw] md:text-[3vw] lg:text-[3vw] text-[#0f0f13]">
         <pre
-          className={`${neuehaas.className} tracking-[1px] md:hidden whitespace-pre-wrap overflow-visible relative leading-[1.15] ${
+          className={`${neuehaas.className} tracking-[1px] md:hidden whitespace-pre-wrap overflow-visible relative leading-[1.05] ${
             currentWordIndex === 0 ? "blinking-cursor" : ""
           }`}
           style={{ ...scaleStyle }}
         >
           {startWaveAnim && mainText && mainText[0] ? (
             <span className={`wave-text ${activeLine === 0 ? "active" : ""}`}>
-              {typedWords[0]}
+              <ShuffleText text={typedWords[0]} />
             </span>
           ) : (
             <span className="first-part" style={{ opacity: 1, color: "#0f0f13" }}>
-              {typedWords[0]}
+              <ShuffleText text={typedWords[0]} />
             </span>
           )}
         </pre>
         <p
-          className={`${neuehaas.className} tracking-[-1px] hidden md:block overflow-visible relative leading-[1.15] whitespace-nowrap ${
+          className={`${neuehaas.className} tracking-[-1px] hidden md:block overflow-visible relative leading-[1.05] whitespace-nowrap ${
             currentWordIndex === 0 ? "blinking-cursor" : ""
           }`}
           style={{ ...scaleStyle }}
         >
           {startWaveAnim && mainText && mainText[0] ? (
             <span className={`wave-text ${activeLine === 0 ? "active" : ""}`}>
-              {typedWords[0]}
+              <ShuffleText text={typedWords[0]} />
             </span>
           ) : (
             <span className="first-part" style={{ opacity: 1, color: "#0f0f13" }}>
-              {typedWords[0]}
+              <ShuffleText text={typedWords[0]} />
             </span>
           )}
         </p>
       </div>
 
-      <div className="text-left relative inline-block w-full h-auto min-h-[1.15em] md:min-h-0 text-[7.5vw] md:text-[3vw] lg:text-[3vw] text-white">
+      <div className="text-left relative inline-block w-full h-auto min-h-[1.15em] md:min-h-0 text-[7.5vw] md:text-[3vw] lg:text-[3vw] text-[#0f0f13]">
         <pre
-          className={`${neuehaas.className} tracking-[1px] md:hidden whitespace-pre-wrap overflow-visible relative leading-[1.15] ${
+          className={`${neuehaas.className} tracking-[1px] md:hidden whitespace-pre-wrap overflow-visible relative leading-[1.05] ${
             currentWordIndex === 1 ? "blinking-cursor" : ""
           }`}
           style={{ ...scaleStyle }}
         >
           {startWaveAnim && mainText && mainText[1] ? (
             <span className={`wave-text ${activeLine === 1 ? "active" : ""}`}>
-              {typedWords[1]}
+              <ShuffleText text={typedWords[1]} />
             </span>
           ) : (
             <span className="first-part" style={{ opacity: 1 }}>
-              {typedWords[1]}
+              <ShuffleText text={typedWords[1]} />
             </span>
           )}
         </pre>
         <p
-          className={`${neuehaas.className} tracking-[-1px] hidden md:block overflow-visible relative leading-[1.15] whitespace-nowrap ${
+          className={`${neuehaas.className} tracking-[-1px] hidden md:block overflow-visible relative leading-[1.05] whitespace-nowrap ${
             currentWordIndex === 1 ? "blinking-cursor" : ""
           }`}
           style={{ ...scaleStyle }}
         >
           {startWaveAnim && mainText && mainText[1] ? (
             <span className={`wave-text ${activeLine === 1 ? "active" : ""}`}>
-              {typedWords[1]}
+              <ShuffleText text={typedWords[1]} />
             </span>
           ) : (
             <span className="first-part" style={{ opacity: 1 }}>
-              {typedWords[1]}
+              <ShuffleText text={typedWords[1]} />
             </span>
           )}
         </p>

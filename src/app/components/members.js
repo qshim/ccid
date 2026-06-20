@@ -5,6 +5,57 @@ import { pxGrotesk } from "@/fonts/fonts";
 import { sheetsStatic } from "@/app/data/sheetsStatic";
 import GreyPlaceholder from "@/app/components/common/GreyPlaceholder";
 
+// Manual photo overrides (keyed by name). These take precedence over the
+// sheet image — used when a member has no sheet photo or the sheet URL is broken.
+const LOCAL_PHOTOS = {
+  "Yoonha Jeong": "/img/members/yoonha-jeong.png",
+  "Ingee Jeong": "/img/members/ingee-jeong.png",
+  "Chanwoo Lee": "/img/members/chanwoo-lee.png",
+  "Yoonseo Oh": "/img/members/yoonseo-oh.png",
+  "Hyebin Park": "/img/members/hyebin-park.png",
+  "Sooyoun Jo": "/img/members/sooyoun-jo.png",
+  "Hayeon Jeon": "/img/members/hayeon-jeon.png",
+  "Hyosun Son": "/img/members/hyosun-son.png",
+  "Da in Kim": "/img/members/dain-kim.png",
+  "Eunseol Kim": "/img/members/eunseol-kim.png",
+  "Jeremy Lee": "/img/members/jeremy-lee.png",
+  "Juhae Kim": "/img/members/juhae-kim.png",
+};
+
+// Members hidden from the mobile People view only (still shown on desktop).
+const MOBILE_HIDDEN = new Set(["Jiyeon Lee"]);
+
+function resolvePhoto(name, image) {
+  return LOCAL_PHOTOS[(name || "").trim()] || String(image || "").trim() || "";
+}
+
+function normalizeRole(role) {
+  return (role || "").replace(/Design\s+at\s+/i, "Design at\n");
+}
+
+function normalizeBio(bio) {
+  const raw = (bio || "").trim();
+  if (!raw) return "";
+  const rawLines = raw.split("\n");
+  // Block-header pattern: a line saying just "formerly" (optionally with
+  // trailing punctuation) precedes a list of past affiliations.
+  const headerIdx = rawLines.findIndex((l) => /^\s*formerly[\s:.,]*$/i.test(l));
+  let lines;
+  if (headerIdx !== -1) {
+    const before = rawLines.slice(0, headerIdx);
+    const past = rawLines.slice(headerIdx + 1).map((l) => {
+      const t = l.trim();
+      return t ? `ex-${t}` : l;
+    });
+    lines = [...before, ...past];
+  } else {
+    lines = rawLines;
+  }
+  // Inline pattern: lines starting with "former " — replace with "ex-".
+  lines = lines.map((l) => l.replace(/^(\s*)former\s+/i, "$1ex-"));
+  return lines.join("\n").trim();
+}
+
 export default function Members() {
   const [membersInfo, setMembersInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +76,7 @@ export default function Members() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-lg md:text-xl">Loading members...</p>
+        <p className={`${pxGrotesk.className} text-lg md:text-xl`}>Loading members...</p>
       </div>
     );
   }
@@ -33,24 +84,68 @@ export default function Members() {
   const categories = Object.entries(membersInfo);
   const allMembers = categories.flatMap(([, list]) => (Array.isArray(list) ? list : [])).filter(Boolean);
 
-  const renderMemberCard = (member) => {
+  // Compact vertical card — photo on top, smaller text. Used for the 2-column
+  // Leadership grid on mobile.
+  const renderCompactCard = (member, photoClass = "w-[88px] h-[88px]") => {
     const [, name, image, role, bio] = member;
-    const imageSrc = String(image || "").trim();
-    const normalizedRole = (role || "").replace(/Design\s+at\s+/i, "Design at\n");
-    const normalizedBio = (bio || "")
-      .replace(/\bformerly\b\s*/gi, "")
-      .trim();
+    const imageSrc = resolvePhoto(name, image);
+    const nRole = normalizeRole(role);
+    const nBio = normalizeBio(bio);
+    return (
+      <div className="min-w-0 flex flex-col items-center text-center">
+        <div className={`relative overflow-hidden rounded-full ${photoClass}`}>
+          <GreyPlaceholder className="absolute inset-0 w-full h-full" />
+          {imageSrc && (
+            <img
+              src={imageSrc}
+              alt={name || "member"}
+              className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]${imageSrc.startsWith("/img/members/") ? " scale-[1.04]" : ""}`}
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          )}
+        </div>
+        <p className={`${pxGrotesk.className} pt-2 text-[15px] leading-[1.08] font-semibold text-black w-full`}>
+          {name || ""}
+        </p>
+        {nRole && (
+          <p className={`${pxGrotesk.className} leading-[1.08] font-medium text-[#888] whitespace-pre-wrap w-full text-[13px] mt-[3px]`}>
+            {nRole}
+          </p>
+        )}
+        {nBio && (
+          <div className={`${pxGrotesk.className} text-[10px] leading-[1.3] font-light text-black/70 whitespace-pre-wrap w-full mt-[3px]`}>
+            {nBio}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderMemberCard = (member) => {
+    const [category, name, image, role, bio] = member;
+    const imageSrc = resolvePhoto(name, image);
+    const isFeatured = category === "Director";
+    const normalizedRole = normalizeRole(role);
+    const normalizedBio = normalizeBio(bio);
 
     return (
       <div className="min-w-0 flex items-start gap-6">
         <div className="flex-none">
-          <div className="group relative w-[124px] h-[144px] overflow-hidden rounded-[3px]">
+          <div
+            className={`relative overflow-hidden rounded-full ${
+              isFeatured ? "w-[132px] h-[132px]" : "w-[97px] h-[97px]"
+            }`}
+          >
             <GreyPlaceholder className="absolute inset-0 w-full h-full" />
             {imageSrc && (
               <img
                 src={imageSrc}
                 alt={name || "member"}
-                className="absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05] transition-[filter] duration-200 group-hover:blur-[1.5px]"
+                className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]${imageSrc.startsWith("/img/members/") ? " scale-[1.04]" : ""}`}
                 loading="lazy"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
@@ -82,21 +177,29 @@ export default function Members() {
           </div>
         </div>
 
-        <div className="min-w-0 flex-1 flex flex-col items-start text-left">
-          <p className={`${pxGrotesk.className} text-[16px] leading-[1.45] font-semibold text-black truncate w-full`}>
+        <div
+          className={`min-w-0 flex-1 flex flex-col items-start text-left ${
+            ["Student Researchers", "Alumni"].includes(category) ? "pt-5" : ""
+          }`}
+        >
+          <p className={`${pxGrotesk.className} text-[15px] sm:text-[16px] leading-[1.08] font-semibold text-black truncate w-full`}>
             {name || ""}
           </p>
           {normalizedRole && (
             <p
-              className={`${pxGrotesk.className} leading-[1.45] font-medium text-black/70 whitespace-pre w-full ${
-                normalizedRole.length > 22 ? "text-[14px]" : "text-[16px]"
-              }`}
+              className={`${pxGrotesk.className} leading-[1.08] font-medium text-[#888] whitespace-pre-wrap w-full text-[13px] sm:text-[14px] mt-[3px]`}
             >
               {normalizedRole}
             </p>
           )}
           {normalizedBio && (
-            <div className={`${pxGrotesk.className} text-[12px] leading-[1.45] font-light text-black/70 whitespace-pre w-full mt-[16px]`}>
+            <div
+              className={`${pxGrotesk.className} text-[10px] sm:text-[13px] leading-[1.3] font-light whitespace-pre-wrap w-full ${
+                ["Student Researchers", "Alumni"].includes(category)
+                  ? "text-[#888] mt-[4px]"
+                  : "text-black/70 mt-[3px]"
+              }`}
+            >
               {normalizedBio}
             </div>
           )}
@@ -108,57 +211,118 @@ export default function Members() {
   return (
     <div className="w-full text-black">
       <div className="w-full">
-        <div className="h-[3.875rem] border-b border-black flex items-end pb-4">
-          <p className={`${pxGrotesk.className} text-[32px] leading-[1.45]`}>Members</p>
+        <div className="h-[3.875rem] flex items-end pb-1.5">
+          <p className={`${pxGrotesk.className} tracking-[-0.03em] leading-[1.22] whitespace-nowrap text-[1.375rem] md:text-[1.5rem] lg:text-[1.625rem]`}>People</p>
         </div>
 
-        {/* Mobile: 3-column grid (photo + name only) */}
+        {/* Mobile: grouped by category (photo + name only) */}
         <div className="sm:hidden pt-4">
-          <div className="grid grid-cols-3 gap-x-4 gap-y-6">
-            {allMembers.map((member, idx) => {
-              const [, name, image] = member;
-              const imageSrc = String(image || "").trim();
-              return (
-                <div key={`m-${idx}-${name || "n"}`} className="min-w-0">
-                  <div className="w-full overflow-hidden rounded-[3px] bg-[#F6F0FF] aspect-[124/144]">
-                    {imageSrc ? (
-                      <img
-                        src={imageSrc}
-                        alt={name || "member"}
-                        className="w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]"
-                        loading="lazy"
-                        referrerPolicy="no-referrer"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <GreyPlaceholder className="w-full h-full" />
-                    )}
-                  </div>
-                  <div
-                    className={`${pxGrotesk.className} pt-2 text-[13px] leading-[1.35] font-medium text-black truncate`}
-                  >
-                    {name || ""}
-                  </div>
+          {categories.map(([category, members], catIdx) => {
+            const list = Array.isArray(members)
+              ? members.filter((m) => m && String(m[1] || "").trim())
+              : [];
+            if (list.length === 0) return null;
+            // Leadership (the merged Principal + Lead group from the sheet)
+            // shows role + bio in a 2-column compact grid; Director is
+            // featured; the rest are a photo + name grid.
+            const isLeadership = category === "Leadership";
+            return (
+              <div
+                key={`m-cat-${category}`}
+                className={
+                  catIdx === 0
+                    ? ""
+                    : category === "Student Researchers"
+                    ? "mt-8 pt-8"
+                    : "pt-12"
+                }
+              >
+                <div
+                  className={`${pxGrotesk.className} text-[14px] leading-[1.2] font-medium text-black/60 pb-3`}
+                >
+                  {category}
                 </div>
-              );
-            })}
-          </div>
+                {category === "Director" ? (
+                  // Director: centered card with a larger photo on mobile.
+                  <div className="flex flex-col gap-7">
+                    {list.map((m, idx) => (
+                      <div key={`md-${category}-${idx}-${m?.[1] || "m"}`} className="min-w-0">
+                        {renderCompactCard(m, "w-[128px] h-[128px]")}
+                      </div>
+                    ))}
+                  </div>
+                ) : isLeadership ? (
+                  // Leadership: 2-column compact cards (role + bio).
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-7">
+                    {list.filter((m) => !MOBILE_HIDDEN.has(m?.[1])).map((m, idx) => (
+                      <div key={`mc-${idx}-${m?.[1] || "m"}`} className="min-w-0">
+                        {renderCompactCard(m)}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  // Other categories: photo + name grid, 4 per row (photos
+                  // auto-fit, close to the researcher size).
+                  <div className="grid grid-cols-4 gap-x-2.5 gap-y-5">
+                    {list.map((member, idx) => {
+                      const [, name, image] = member;
+                      const imageSrc = resolvePhoto(name, image);
+                      return (
+                        <div key={`m-${category}-${idx}-${name || "n"}`} className="min-w-0">
+                          <div className="w-3/4 mx-auto overflow-hidden rounded-full bg-[#F6F0FF] aspect-square">
+                            {imageSrc ? (
+                              <img
+                                src={imageSrc}
+                                alt={name || "member"}
+                                className={`w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]${imageSrc.startsWith("/img/members/") ? " scale-[1.04]" : ""}`}
+                                loading="lazy"
+                                referrerPolicy="no-referrer"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = "none";
+                                }}
+                              />
+                            ) : (
+                              <GreyPlaceholder className="w-full h-full" />
+                            )}
+                          </div>
+                          <div
+                            className={`${pxGrotesk.className} pt-2 leading-[1.2] font-medium text-black text-[11px] text-center`}
+                          >
+                            {name || ""}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Desktop */}
         <div className="hidden sm:block pt-[1rem]">
           {categories.map(([category, members], catIdx) => {
-            const list = Array.isArray(members) ? members.filter(Boolean) : [];
+            const list = Array.isArray(members)
+              ? members.filter((m) => m && String(m[1] || "").trim())
+              : [];
             if (list.length === 0) return null;
-            const isLastCategory = catIdx === categories.length - 1;
             return (
-              <div
-                key={category}
-                className={`${isLastCategory ? "" : "border-b border-black"} pb-[32px]`}
-              >
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-[48px] gap-y-[40px] pt-[16px]">
+              <div key={category} className="pb-[48px]">
+                <div
+                  className={`${pxGrotesk.className} text-[15px] leading-[1.2] font-medium text-black/60 mb-4`}
+                >
+                  {category}
+                </div>
+                <div
+                  className={`grid gap-y-[20px] ${
+                    category === "Director"
+                      ? "grid-cols-1 gap-x-[48px]"
+                      : ["Student Researchers", "Alumni"].includes(category)
+                      ? "grid-cols-2 lg:grid-cols-4 gap-x-[32px]"
+                      : "grid-cols-2 lg:grid-cols-3 gap-x-[48px]"
+                  }`}
+                >
                   {list.map((m, idx) => (
                     <div key={`${category}-${idx}-${m?.[1] || "m"}`} className="min-w-0">
                       {renderMemberCard(m)}
