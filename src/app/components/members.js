@@ -19,14 +19,50 @@ const LOCAL_PHOTOS = {
   "Da in Kim": "/img/members/dain-kim.png",
   "Eunseol Kim": "/img/members/eunseol-kim.png",
   "Jeremy Lee": "/img/members/jeremy-lee.png",
+  "Ji min Rhee": "/img/members/jeremy-lee.png",
   "Juhae Kim": "/img/members/juhae-kim.png",
+  "Yunhyeong Park": "/img/members/yunhyeong-park.png",
+  "Seojin Hong": "/img/members/seojin-hong.png",
+  "Minjeong Joo": "/img/members/minjeong-joo.png",
+  "Sara Kang": "/img/members/sara-kang.png",
+  "Minseo Kang": "/img/members/minseo-kang.png",
+};
+
+// Sheet photos mirrored locally (downloaded from the Google Drive thumbnail URLs
+// in the sheet). Used as a fast fallback so cards don't wait on Google Drive,
+// which throttles thumbnail requests and made some photos pop in late.
+// LOCAL_PHOTOS (hand-picked) still wins over these.
+const SHEET_PHOTOS = {
+  "Kyuha Shim, FRSA": "/img/members/sheet/kyuha-shim-frsa.png",
+  "Taery Kim": "/img/members/sheet/taery-kim.png",
+  "Boram Lee": "/img/members/sheet/boram-lee.png",
+  "Jiyeon Lee": "/img/members/sheet/jiyeon-lee.png",
+  "Hankak Lee": "/img/members/sheet/hankak-lee.png",
+  "Kiryung Nam": "/img/members/sheet/kiryung-nam.png",
+  "Yunhyeong Park": "/img/members/sheet/yunhyeong-park.png",
+  "Suhyeon Cho": "/img/members/sheet/suhyeon-cho.png",
+  "Hyunji Lee": "/img/members/sheet/hyunji-lee.png",
+  "Jiyu Shin": "/img/members/sheet/jiyu-shin.png",
+  "Taeeun Kim": "/img/members/sheet/taeeun-kim.png",
+  "Minseo Kang": "/img/members/sheet/minseo-kang.png",
+  "Seojin Hong": "/img/members/sheet/seojin-hong.png",
+  "Minjeong Joo": "/img/members/sheet/minjeong-joo.png",
+  "Sara Kang": "/img/members/sheet/sara-kang.png",
+  "Minji Park": "/img/members/sheet/minji-park.png",
+  "Seungju Lee": "/img/members/sheet/seungju-lee.png",
+  "Euna Jang": "/img/members/sheet/euna-jang.png",
+  "Jiwon Park": "/img/members/sheet/jiwon-park.png",
+  "Inyoung Kim": "/img/members/sheet/inyoung-kim.png",
+  "Juwan Kim": "/img/members/sheet/juwan-kim.png",
+  "Hyeji Jeong": "/img/members/sheet/hyeji-jeong.png",
 };
 
 // Members hidden from the mobile People view only (still shown on desktop).
 const MOBILE_HIDDEN = new Set(["Jiyeon Lee"]);
 
 function resolvePhoto(name, image) {
-  return LOCAL_PHOTOS[(name || "").trim()] || String(image || "").trim() || "";
+  const key = (name || "").trim();
+  return LOCAL_PHOTOS[key] || SHEET_PHOTOS[key] || String(image || "").trim() || "";
 }
 
 function normalizeRole(role) {
@@ -81,7 +117,20 @@ export default function Members() {
     );
   }
 
-  const categories = Object.entries(membersInfo);
+  // Display order. Categories not listed here keep their sheet order, after the listed ones.
+  const CATEGORY_ORDER = [
+    "Director",
+    "Advisory Board",
+    "Former Advisors",
+    "Student Researchers",
+    "External Researchers",
+    "Alumni",
+  ];
+  const categories = Object.entries(membersInfo).sort(([a], [b]) => {
+    const ia = CATEGORY_ORDER.indexOf(a);
+    const ib = CATEGORY_ORDER.indexOf(b);
+    return (ia === -1 ? Infinity : ia) - (ib === -1 ? Infinity : ib);
+  });
   const allMembers = categories.flatMap(([, list]) => (Array.isArray(list) ? list : [])).filter(Boolean);
 
   // Compact vertical card — photo on top, smaller text. Used for the 2-column
@@ -179,7 +228,7 @@ export default function Members() {
 
         <div
           className={`min-w-0 flex-1 flex flex-col items-start text-left ${
-            ["Student Researchers", "Alumni"].includes(category) ? "pt-5" : ""
+            ["Student Researchers", "Alumni", "External Researchers"].includes(category) ? "pt-5" : ""
           }`}
         >
           <p className={`${pxGrotesk.className} text-[15px] sm:text-[16px] leading-[1.08] font-semibold text-black truncate w-full`}>
@@ -195,7 +244,7 @@ export default function Members() {
           {normalizedBio && (
             <div
               className={`${pxGrotesk.className} text-[10px] sm:text-[13px] leading-[1.3] font-light whitespace-pre-wrap w-full ${
-                ["Student Researchers", "Alumni"].includes(category)
+                ["Student Researchers", "Alumni", "External Researchers"].includes(category)
                   ? "text-[#888] mt-[4px]"
                   : "text-black/70 mt-[3px]"
               }`}
@@ -222,10 +271,9 @@ export default function Members() {
               ? members.filter((m) => m && String(m[1] || "").trim())
               : [];
             if (list.length === 0) return null;
-            // Leadership (the merged Principal + Lead group from the sheet)
-            // shows role + bio in a 2-column compact grid; Director is
-            // featured; the rest are a photo + name grid.
-            const isLeadership = category === "Leadership";
+            // Advisory Board shows role + bio in a 2-column compact grid;
+            // Director is featured; the rest are a photo + name grid.
+            const isLeadership = category === "Advisory Board";
             return (
               <div
                 key={`m-cat-${category}`}
@@ -261,15 +309,15 @@ export default function Members() {
                     ))}
                   </div>
                 ) : (
-                  // Other categories: photo + name grid, 4 per row (photos
-                  // auto-fit, close to the researcher size).
-                  <div className="grid grid-cols-4 gap-x-2.5 gap-y-5">
+                  // Other categories: photo + name grid, 3 per row with
+                  // photos sized to match the Leadership cards (88px).
+                  <div className="grid grid-cols-3 gap-x-3 gap-y-6">
                     {list.map((member, idx) => {
                       const [, name, image] = member;
                       const imageSrc = resolvePhoto(name, image);
                       return (
                         <div key={`m-${category}-${idx}-${name || "n"}`} className="min-w-0">
-                          <div className="w-3/4 mx-auto overflow-hidden rounded-full bg-[#F6F0FF] aspect-square">
+                          <div className="w-[88px] h-[88px] mx-auto overflow-hidden rounded-full bg-[#F6F0FF]">
                             {imageSrc ? (
                               <img
                                 src={imageSrc}
@@ -318,7 +366,7 @@ export default function Members() {
                   className={`grid gap-y-[20px] ${
                     category === "Director"
                       ? "grid-cols-1 gap-x-[48px]"
-                      : ["Student Researchers", "Alumni"].includes(category)
+                      : ["Student Researchers", "Alumni", "External Researchers"].includes(category)
                       ? "grid-cols-2 lg:grid-cols-4 gap-x-[32px]"
                       : "grid-cols-2 lg:grid-cols-3 gap-x-[48px]"
                   }`}

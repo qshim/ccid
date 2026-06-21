@@ -56,8 +56,8 @@ export default function AboutIntro() {
           >
             <div className="w-full max-w-[var(--siteMax)] px-[var(--siteGutter)] mx-auto py-[7vh] lg:py-[14vh]">
               <div className="grid grid-cols-1 lg:grid-cols-[296px_1fr] gap-y-6 lg:gap-y-0 lg:gap-x-8 items-start">
-                {/* Left: section title */}
-                <div className="w-full lg:col-start-1 lg:col-span-1 lg:sticky lg:top-[18vh]">
+                {/* Left: section title — tops align with the KR/EN columns */}
+                <div className="w-full lg:sticky lg:top-[18vh]">
                   <h2
                     className={`text-left font-[400] leading-tight text-[1.375rem] md:text-[1.5rem] lg:text-[1.625rem] tracking-[-0.03em] text-[#0f0f13] ${pxGrotesk.className}`}
                   >
@@ -65,17 +65,17 @@ export default function AboutIntro() {
                   </h2>
                 </div>
 
-                {/* Right: EN + KR paragraphs (+ sectors logo) */}
-                <div className="w-full lg:col-start-2 lg:col-span-1">
-                  <div className="w-full grid grid-cols-1 md:grid-cols-[1.11fr_0.89fr] gap-x-12 gap-y-6">
-                    {en ? (
-                      <p className={`${pxGrotesk.className} text-[15px] leading-[1.3] tracking-[-0.01em] font-[380]`}>
-                        {en}
-                      </p>
-                    ) : null}
+                {/* Right: KR (left) + EN (right) paragraphs (+ sectors logo) */}
+                <div className="w-full">
+                  <div className="w-full grid grid-cols-1 md:grid-cols-[0.89fr_1.11fr] gap-x-12 gap-y-6">
                     {kr ? (
                       <p style={{ fontFamily: mixedKrFont }} className="hidden sm:block text-[15px] leading-[1.58] tracking-[-0.01em] font-[450]">
                         {kr}
+                      </p>
+                    ) : null}
+                    {en ? (
+                      <p className={`${pxGrotesk.className} text-[15px] leading-[1.3] tracking-[0] font-[380]`}>
+                        {en}
                       </p>
                     ) : null}
                   </div>

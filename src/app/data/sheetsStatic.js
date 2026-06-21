@@ -132,23 +132,23 @@ export const sheetsStatic = {
   "desc": [
     [
       "Who We Are",
-      "At the Center for Creative Intelligence Design (CCID), we explore the intersection of interaction design, generative AI, and prototyping to shape the future of human-computer interaction. Our interdisciplinary team of designers, researchers, and developers is grounded in deep design research, using methods from behavioral science, psychology, and critical sociology to understand the present in all its complexity. By examining how emerging technologies mediate perception, cognition, and behavior, we translate insights into actionable, innovative solutions.\n\nWe leverage AI-powered creativity and computational design to create intuitive, adaptive, and speculative user experiences that respond to the evolving needs of users, businesses, and environments. Our iterative design processes allow us to prototype the future, grounded in real, data-driven insights about the current landscape.\n\nThrough our work, we help businesses navigate and lead change by crafting meaningful interactions that redefine how people engage with digital systems, products, services, and spaces.",
+      "At the Center for Creative Intelligence Design (CCID), we combine interaction design, generative AI, and prototyping to reshape how people and technology meet. Our interdisciplinary team of designers, researchers, and developers grounds its work in design research drawn from behavioral science, psychology, and sociological analysis. We read user and market context in depth and turn those insights into solutions that actually work. We examine how emerging technologies shape perception, cognition, and behavior, and translate that understanding into customer experiences that are intuitive, adaptive, and forward-looking. Every engagement starts from real, data-driven insight and advances through rapid prototyping and continuous user validation, turning ideas into proven outcomes. In doing so, we help businesses validate and launch new customer experiences across digital products, services, and spaces, faster and with confidence.",
       "Who We Are",
-      "Center for Creative Intelligence Design (cciD)에서는 인터랙션 디자인과 생성형 AI를 중심으로 인간-컴퓨터 상호작용의 미래를 탐구합니다. cciD의 다학제적 팀은 디자인 리서치를 기반으로 공학적, 심리학적, 사회학적 방법론을 활용하여 사람, 비즈니스, 제품, 서비스 등 현재의 상황을 사용자 관점에서 정량적·정성적으로 조사·관찰·분석하고, 이를 통해 유의미한 인사이트를 도출합니다. 디자인, 컴퓨테이션, 시스템적 사고에 대한 이해를 토대로 실행 가능하고 실용적인 디자인 솔루션을 제시하며, AI 디자인 기반의 반복적 프로세스를 통해 현재의 데이터로부터 미래지향적인 콘셉트를 프로토타이핑합니다.\ncciD는 이러한 작업을 통해 기업의 변화를 선도하고, 디지털 시스템, 제품, 서비스, 공간과의 상호작용 방식을 새롭게 정의하는 의미 있는 경험을 만들어갑니다.",
+      "저희는 인터랙션 디자인, 생성형 AI, 프로토타이핑을 결합해 사람과 기술이 만나는 방식을 새롭게 설계합니다. 디자이너·리서처·개발자로 구성된 학제 간 팀이 행동과학·심리학·사회학적 분석에 기반한 디자인 리서치로 사용자와 시장의 맥락을 입체적으로 읽어내고, 그 통찰을 실제로 작동하는 솔루션으로 전환합니다. 새로운 기술이 사람의 지각·인지·행동에 어떻게 작용하는지 규명해, 직관적이고 적응적이며 선제적인 고객 경험으로 구현합니다. 모든 작업은 실제 데이터에 근거한 인사이트에서 출발하며, 빠른 프로토타이핑과 사용자 검증을 반복해 아이디어를 검증된 결과로 만들어갑니다. 이를 통해 기업이 디지털 제품·서비스·공간에서 새로운 고객 경험을 더 빠르게 검증하고 실제로 구현하도록 돕습니다.",
       ""
     ],
     [
       "Sectors We Serve",
-      "We work with clients across a wide range of industries including Financial Services, Healthcare and Medical Fields, Technology and Innovation, Retail and E-Commerce, Education and Training, Manufacturing and Industry, Entertainment and Media, and Government and Public Sector. We help them navigate the complexities of human-computer interaction, emerging technologies, and user experience design. Our deep, research-driven approach empowers businesses to innovate and lead in their respective fields. We bring a profound understanding of user behavior, societal context, and business impact, ensuring that the solutions we design are tailored to the unique challenges and opportunities within each sector.",
+      "We partner with organizations across a wide range of industries, including Financial Services, Healthcare and Medical, Technology and Innovation, Retail and E-Commerce, Education, Manufacturing and Industry, Entertainment and Media, and Government and Public Sector. We define each sector's challenges around emerging technology and user experience through rigorous research, then resolve them with solutions built for real-world use. By weighing user behavior, market context, and business impact together, we design for the distinct challenges and opportunities of each industry, helping organizations innovate and lead change in their field.",
       "Sectors We Serve",
-      "CCID는 다양한 산업 분야의 클라이언트와 협력하여 인간-컴퓨터 상호작용, 신흥 기술, 사용자 경험 디자인의 접점에서 발생하는 복잡한 문제들을 효과적으로 해결할 수 있도록 지원합니다. 우리가 추구하는 리서치 기반의 접근 방식은 조직 내부에서 해결하기 어려운 과제를 해결하고, 기업이 혁신을 주도할 수 있는 역량을 제공합니다.\n\n사용자 행동, 사회적 맥락, 비즈니스 안팎의 영향을 깊이 있게 이해함으로써, 각 산업의 고유한 니즈(needs), 기회(opportunities) 그리고 시즈(seeds)를 고려한 맞춤형 솔루션을 설계하고 지속적인 협업을 통해 이를 실행 및 발전시킵니다. 우리는 단순한 외부 자문이 아닌, 함께 나아가는 파트너로서 기업의 지속 가능한 변화와 성장을 지원합니다.",
+      "저희는 금융, 헬스케어·의료, 기술·혁신, 리테일·이커머스, 교육, 제조·산업, 엔터테인먼트·미디어, 정부·공공 등 폭넓은 산업의 파트너와 협업합니다. 각 산업이 직면한 신기술 도입과 사용자 경험의 난제를 리서치로 정의하고, 실제 적용 가능한 해법으로 풀어냅니다. 사용자 행동·시장 맥락·비즈니스 임팩트를 함께 보는 접근으로, 산업마다 다른 과제와 기회에 맞춘 솔루션을 설계해 기업이 자기 분야에서 변화를 선도하도록 지원합니다.",
       ""
     ],
     [
       "Our Methodology",
-      "Our design methodology integrates human-centered principles with interdisciplinary research and computational design. Drawing from fields such as behavioral science, sociology, technology, and the arts, we approach each project as a system of relationships—between people, tools, environments, and data. Rather than applying fixed formulas, we tailor our process to context: conducting qualitative research, prototyping with AI, and iterating through both analytical and intuitive modes of thinking. This allows us to design not just for usability, but for long-term adaptability, inclusivity, and impact. The diagram above reflects how our practice sits at the intersection of multiple disciplines—visualizing the layered perspectives that shape our work and inform how we design for complexity.",
+      "Our methodology pairs human-centered principles with interdisciplinary research and computational design. Every project runs as a clear cycle: we define the problem through qualitative research, prototype quickly with AI, and validate our hypotheses with real users. Drawing on behavioral science, sociology, technology, and the arts, we treat each project as a system of relationships between people, tools, environments, and data. We tailor the process to context rather than applying fixed formulas. The result is work that goes beyond short-term usability to account for long-term adaptability, inclusivity, and business impact. The diagram above reflects this cross-disciplinary way of working and the layered perspective we bring to complex problems.",
       "Our Methodology",
-      "CCID의 디자인 방법론은 인간 중심 설계를 기반으로 심리학, 사회학, 공학, 예술, 철학 등 다학제적인 관점을 바탕으로 사람, 도구, 환경, 데이터 간의 관계를 시스템적으로 바라보며 프로젝트를 진행합니다. 정해진 형식에 맞추기 보다는 맥락에 맞게 프로세스를 디자인합니다.  위 다이어그램은 우리가 생각하는 디자인이 다른 여러 영역들과 교차하는 부분을 시각화한 것으로, 우리의 디자인 사고 구조를 보여줍니다.",
+      "저희의 방법론은 인간 중심 원칙에 학제 간 리서치와 컴퓨테이셔널 디자인을 결합합니다. 모든 프로젝트는 정성 리서치로 문제를 정의하고, AI로 빠르게 프로토타이핑하며, 사용자 검증으로 가설을 확인하는 사이클로 진행됩니다. 행동과학·사회학·기술·예술의 관점을 사람·도구·환경·데이터의 관계 속에서 통합해, 정형화된 공식 대신 과제의 맥락에 맞춘 프로세스를 설계합니다. 그 결과 단기적 사용성을 넘어 장기적 적응성·포용성·비즈니스 임팩트까지 고려한 해법을 만듭니다. 위 다이어그램은 여러 학문이 교차하는 저희의 작업 방식과, 복잡한 문제를 다루는 다층적 관점을 보여줍니다.",
       ""
     ]
   ],
@@ -156,43 +156,45 @@ export const sheetsStatic = {
     [
       "",
       "2026",
-      "",
+      "2026",
       "2025",
-      "",
-      " ",
-      "",
+      "2025",
+      "2025",
+      "2025",
       "2025",
       "2024",
-      "",
-      "",
+      "2024",
       "2023",
-      " ",
-      " ",
-      " ",
-      " ",
-      " ",
-      " ",
-      " ",
-      " ",
-      " ",
-      " "
+      "2023",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
     ],
     [
-      "Selected Projects ",
-      "Hyundai Motor Group: Design Program Management (2D to 3D generation, Agentic Presentation, AX Workflow) ",
+      "Selected Projects",
+      "Hyundai Motor Group: Design Program Management (2D to 3D generation, Agentic Presentation, AX Workflow)",
       "Samsung Electronics: Generative User Interface",
       "LG Electronics: Affectionate Ingelligence CX Design",
       "CJ CGV & Naver Cloud: AI-Driven AR Interaction Platform for Immersive Public Engagement",
       "Hyundai Motor Group: Development of AI-Driven Exterior Design Process for Enhancing Efficiency in the Design Workflow",
       "Ministry of Trade, Industry and Energy: Development of an AI Design Generation Pipeline Reflecting the Design Workflow",
-      "Samsung Electronics MX: Usability research and AI concept development for next-generation large-screen editors",
+      "Samsung Electronics MX: Usability research, MZ-generation user research, and AI concept development for next-generation large-screen editors",
       "Samsung Electronics VD: Emotional quality assessment and research on \"Samsung-ness\" for enhancing screen interaction",
       "KIA: Advanced AI UX concept research for 2030 e-MPV Interior Design",
-      "Korea Creative Content Agency: Training program for professionals in generative, emotion-recognition AI-based XR content technology",
       "Samsung Electronics VD: Research on establishing emotional vocabulary and quantitative emotional evaluation for Smart TV UX",
-      "Seoul Design Foundation: Planning and design for the DDP 45133 Digital Twin Project",
-      "CJ CGV: COEX Underworld Panorama Content Design Project",
-      "SK Telecom: G-LIGHT Media Pole Digital Media Content Design Project at Gangnam Station",
+      "Seoul Design Foundation: DDP 45133 branding and digital twin-based membership service design",
+      "",
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -209,11 +211,12 @@ export const sheetsStatic = {
       "Design of GangnamEyes, a public AI agent experience that reimagines the COEX K-POP Square media facade as an urban-scale AI interface, combining Naver Cloud’s AI infrastructure, CJ CGV’s media operations, generative content, audience participation, and K-POP-specific interaction grammar.",
       "AI-augmented exterior design workflow for innovating exterior design review sessions, connecting concept exploration, design evaluation, and production process restructuring.",
       "Four-year national R&D program developing generative 3D design pipelines and designer-intent inference as AI-assisted creative infrastructure.",
-      "AI UX research and concept development for next-generation large-screen mobile device editor, translating user behavior and editing workflows into future product experience directions.",
+      "AI UX research and concept development for next-generation large-screen mobile device editor, spanning usability research and MZ-generation user research, translating user behavior and editing workflows into future product experience directions.",
       "Emotional quality assessment and Samsung-ness research for production-facing TV UX decisions, prototype testing, and screen-based brand experience strategy.",
-      "Advanced UX concept research for the 2030 e-MPV interior, exploring AI-mediated passenger context, shared intent, and future mobility interaction.",
-      "National talent-development program for generative and emotion-aware AI XR content production, combining creative AI workflows, education, and production training.",
+      "Advanced AI UX concept research for the 2030 e-MPV interior, centered on conceiving concepts from the interrelation between smart, care, and trust to shape future mobility experiences.",
       "Emotional UX vocabulary and quantitative evaluation methodology for Smart TV interfaces, making subjective screen interaction qualities measurable and actionable.",
+      "DDP 45133 branding, curation of the Zaha Hadid exhibition commemorating the 45133 launch, and a digital twin-based membership service roadmap design for the Seoul Design Foundation.",
+      "",
       "",
       "",
       "",
@@ -233,14 +236,15 @@ export const sheetsStatic = {
       "CJ CGV, 네이버 클라우드: AI 에이전트 기반 몰입형 공공 인터랙션 플랫폼 디자인",
       "현대엔지비, 외장디자인 효율화를 위한 AI Driven Design 프로세스 개발 연구과제",
       "산업통상자원부: 디자인 워크플로우를 고려한 AI 디자인 생성 파이프라인 개발",
-      "삼성전자 MX, 차세대 대화면 에디터 디자인을 위한 사용성 조사 및 AI 컨셉 발굴 연구과제",
+      "삼성전자 MX, 차세대 대화면 에디터 디자인을 위한 사용성 조사, MZ 세대 대상 리서치 및 AI 컨셉 발굴 연구과제",
       "삼성전자 VD, 스크린 인터랙션 감성 고도화를 위한 감성품질평가 및 삼성다움 조사 연구과제",
-      "현대엔지비, 2030 e-MPV를 위한 선행 내장디자인 AI UX 컨셉 연구과제",
-      "한국콘텐츠진흥원, 생성형 감정인식형 AI기반 증가상현실(XR) 콘텐츠 기술 전문 인력양성 사업",
+      "현대엔지비, 2030 e-MPV 선행 내장디자인을 위한 AI UX 컨셉 연구과제로, 스마트·케어·트러스트의 상호관계를 토대로 컨셉을 발굴",
       "삼성전자 VD, 스마트TV UX 감성어휘 정립 및 감성정량화평가 연구과제",
-      "서울디자인재단, DDP 45133 디지털트윈 사업 기획 및 디자인",
-      "CJ CGV: 코엑스 언더월드 파노라마 콘텐츠 디자인 프로젝트",
-      "SK텔레콤: 강남역 G-LIGHT 미디어폴 디지털 콘텐츠 디자인 프로젝트",
+      "서울디자인재단, DDP 45133 브랜딩, 45133 출범 기념 자하 하디드 전시 큐레이션, 디지털 트윈 기반 멤버십 서비스 로드맵 디자인",
+      "",
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -260,7 +264,7 @@ export const sheetsStatic = {
       "➜ 프로필 : 구글드라이브에 이미지 업로드 후 링크 만들어 첨부 \n(구글드라이브사진id) 필요\n\n➜ 링크 :\n\nhttps://drive.google.com/thumbnail?id=(구글드라이브사진id)\n"
     ],
     [
-      "Leadership",
+      "Advisory Board",
       "Taery Kim",
       "https://drive.google.com/thumbnail?id=1-fcBAtkg4l-fLMW0ufyZYF7zwjLww7tb&sz=w1000",
       "Design Strategy",
@@ -268,7 +272,7 @@ export const sheetsStatic = {
       ""
     ],
     [
-      "Leadership",
+      "Advisory Board",
       "Boram Lee",
       "https://drive.google.com/thumbnail?id=1Wfiy1pPqjmuxX0-wLaBJ_mrKthVDv5df&sz=w1000",
       "Design Thinking",
@@ -276,7 +280,7 @@ export const sheetsStatic = {
       ""
     ],
     [
-      "Leadership",
+      "Advisory Board",
       "Jiyeon Lee",
       "https://drive.google.com/thumbnail?id=1XnOm3hJUP6HO3Jc6azQv5O52B65aXj0Z&sz=w1000",
       "Speculative Design",
@@ -284,15 +288,7 @@ export const sheetsStatic = {
       ""
     ],
     [
-      "Leadership",
-      "Hankak Lee",
-      "https://drive.google.com/thumbnail?id=1zOXTziy0YmCftYQw_zfCAVYNc5F4ZnXn&sz=w1000",
-      "Product Design",
-      "Royal College of Art MA\nInnovation Design Engineering",
-      "https://drive.google.com/thumbnail?id=1ZEwTR2QgqRceSrwjYc3oR1S5fyJDqh6A&sz=w1000"
-    ],
-    [
-      "Leadership",
+      "Advisory Board",
       "Ingee Jeong",
       "",
       "Visual Communication",
@@ -300,7 +296,7 @@ export const sheetsStatic = {
       ""
     ],
     [
-      "Leadership",
+      "Advisory Board",
       "Yoonha Jeong",
       "",
       "User Experience Design",
@@ -308,7 +304,7 @@ export const sheetsStatic = {
       ""
     ],
     [
-      "Leadership",
+      "Advisory Board",
       "Kiryung Nam",
       "https://drive.google.com/thumbnail?id=1vPALXgTqlGki-T4dnWr4IOjPgPHJhmCs&sz=w1000",
       "Generative AI for Interactive Media",
@@ -316,7 +312,7 @@ export const sheetsStatic = {
       ""
     ],
     [
-      "Leadership",
+      "Advisory Board",
       "Yunhyeong Park",
       "https://drive.google.com/thumbnail?id=1QCYqrja1JdQxiC-T3VQYBQvyFSlyB-Av&sz=w1000",
       "Generative AI for Customer Experience",
@@ -324,7 +320,7 @@ export const sheetsStatic = {
       ""
     ],
     [
-      "Leadership",
+      "Advisory Board",
       "Chanwoo Lee",
       "",
       "System Interface Architecture",
@@ -332,11 +328,27 @@ export const sheetsStatic = {
       ""
     ],
     [
-      "Student Researchers",
-      "Juwan Kim",
-      "https://drive.google.com/thumbnail?id=1qc6KAHzyQBk6Q9Fbv6hI3YnCNs6RywjO&sz=w1000",
+      "Former Advisors",
+      "Changmin Kim",
       "",
-      "Generative AI \nService Design\nDesign Strategy ",
+      "",
+      "professor of Design, Sungkyunkwan University ",
+      ""
+    ],
+    [
+      "Former Advisors",
+      "Taeho Kim",
+      "",
+      "",
+      "professor of Visual Communication Design, Cheongju University",
+      ""
+    ],
+    [
+      "Former Advisors",
+      "Hankak Lee",
+      "",
+      "",
+      "professor of Industrial Design, Keimyung University",
       ""
     ],
     [
@@ -389,7 +401,7 @@ export const sheetsStatic = {
     ],
     [
       "Student Researchers",
-      "Jeremy Lee",
+      "Ji min Rhee",
       "",
       "",
       "",
@@ -456,7 +468,7 @@ export const sheetsStatic = {
       "Hayeon Jeon",
       "",
       "",
-      "",
+      "Service Design \nInterface Design",
       ""
     ],
     [
@@ -529,6 +541,14 @@ export const sheetsStatic = {
       "https://drive.google.com/thumbnail?id=1YfKG7-EUwY35mrizrA8DC9TSYLFe1QjP&sz=w1000",
       "",
       "MDes '25\nExploring opportunities in digital design planning and media art.",
+      ""
+    ],
+    [
+      "Alumni",
+      "Juwan Kim",
+      "https://drive.google.com/thumbnail?id=1qc6KAHzyQBk6Q9Fbv6hI3YnCNs6RywjO&sz=w1000",
+      "",
+      "MDes '25\nExploring opportunities in digital design and generative AI.",
       ""
     ],
     [

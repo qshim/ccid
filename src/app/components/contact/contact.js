@@ -157,7 +157,7 @@ function ContactBody({ emailText }) {
               정의하고, 빠르게 프로토타입을 만들고, 현장 적용 가능성을 검증하는
               Holistic Process에 초점을 둡니다.
             </p>
-            <p className={`${pxGrotesk.className} text-[#0f0f13] text-[15px] font-[380] leading-[1.3] tracking-[-0.01em] mb-2`}>
+            <p className={`${pxGrotesk.className} text-[#0f0f13] text-[15px] font-[380] leading-[1.3] tracking-[0] mb-2`}>
               Join us in shaping the future of design, intelligence, and human
               experience. We read every application, so show us your curiosity
               and your craft. Polished portfolios and works-in-progress are

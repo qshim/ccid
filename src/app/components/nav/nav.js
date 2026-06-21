@@ -166,6 +166,8 @@ export default function Nav({ sectionOn, onNavigate }) {
                 href={id}
                 ref={(el) => (linkRefs.current[index] = el)}
                 className={`transition-all mx-3 duration-300 ${
+                  index === 0 ? "pl-[3px] " : ""
+                }${
                   isCover
                     ? "text-primaryW opacity-90 hover:opacity-100"
                     : "text-primaryB opacity-70 hover:opacity-100"

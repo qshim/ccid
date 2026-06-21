@@ -7,6 +7,71 @@ import { pxGrotesk, neuehaas, programme} from "@/fonts/fonts";
 import { sheetsStatic } from "@/app/data/sheetsStatic";
 import GreyPlaceholder from "@/app/components/common/GreyPlaceholder";
 
+// Temporarily hide the student/participant names under each project.
+// Set back to true to restore them.
+const SHOW_TEAM_NAMES = false;
+
+// Project media: a single image/video, or a cross-fading slideshow that cycles
+// through its images. Each instance gets a random start offset, per-tick jitter,
+// and its own pace (some run noticeably slower) so the slideshows across the page
+// never advance in unison.
+function ProjectSlideshow({ images, alt }) {
+  const list = Array.isArray(images) ? images.filter(Boolean) : [];
+  const n = list.length;
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    if (n <= 1) return;
+    let timer;
+    const base = 4200;
+    // ~35% of slideshows run slow (1.5-2.1x); the rest near base (0.9-1.25x).
+    const paceMul =
+      Math.random() < 0.35 ? 1.5 + Math.random() * 0.6 : 0.9 + Math.random() * 0.35;
+    // Each gap = paced base with ±20% jitter so they keep drifting apart.
+    const nextDelay = () => base * paceMul * (0.8 + Math.random() * 0.4);
+    const tick = () => {
+      setIdx((i) => (i + 1) % n);
+      timer = setTimeout(tick, nextDelay());
+    };
+    // Random initial offset so they don't all start their first flip together.
+    timer = setTimeout(tick, nextDelay() * (0.3 + Math.random() * 0.9));
+    return () => clearTimeout(timer);
+  }, [n]);
+
+  if (list.length === 0) return null;
+
+  const renderOne = (src) =>
+    String(src).toLowerCase().endsWith(".mp4") ? (
+      <video
+        src={src}
+        className="w-full h-full object-cover"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+      />
+    ) : (
+      <img src={src} alt={alt} className="w-full h-full object-cover" />
+    );
+
+  if (list.length === 1) return renderOne(list[0]);
+
+  return (
+    <div className="relative w-full h-full">
+      {list.map((src, i) => (
+        <img
+          key={src}
+          src={src}
+          alt={alt}
+          loading={i === 0 ? "eager" : "lazy"}
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+          style={{ opacity: i === idx ? 1 : 0 }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function Works({ textColor, sectionOn }) {
   const [worksInfo, setWorksInfo] = useState(sheetsStatic?.works || []);
   const { lang } = useLanguageStore();
@@ -157,15 +222,48 @@ export default function Works({ textColor, sectionOn }) {
       }
 
       const imagesByClient2025 = {
-        "LG Electronics": ["/img/2025/lg/1.png", "/img/2025/lg/2.png", "/img/2025/lg/3.png"],
-        // CJ: only 2 images (3rd slot intentionally omitted)
-        "CJ CGV & Naver Cloud": ["/img/2025/cj/co1.png", "/img/2025/cj/co2.png"],
-        "Hyundai Motors": ["/img/2025/hy/hy1.png", "/img/2025/hy/hy3.png", "/img/2025/hy/hy2.png"],
-        "Ministry of Trade, Industry and Energy": ["/img/2025/mini/mi1.png", "/img/2025/mini/mi2.png", "/img/2025/mini/mi3.png"],
+        "LG Electronics": [
+          "/img/2025/lg_affectionate_intelligence_0.webp",
+          "/img/2025/lg_affectionate_intelligence_1.webp",
+          "/img/2025/lg_affectionate_intelligence_2.webp",
+          "/img/2025/lg_affectionate_intelligence_3.webp",
+          "/img/2025/lg_affectionate_intelligence_4.webp",
+          "/img/2025/lg_affectionate_intelligence_5.webp",
+        ],
+        "CJ CGV & Naver Cloud": ["/img/2025/coex_0.webp"],
+        "Hyundai Motor Group": ["/img/2025/hd_ai_driven_design.webp"],
+        "Ministry of Trade, Industry and Energy": ["/img/2025/motie.webp"],
+        "Samsung Electronics MX": ["/img/2025/mx_galaxy_ai_0.webp", "/img/2025/mx_galaxy_ai_1.webp"],
+      };
+      const imagesByClient2026 = {
+        "Samsung Electronics": ["/img/2026/samsung-gen-ui.webp"],
+        "Hyundai Motor Group": ["/img/2025/hd_ongoing.webp"],
+      };
+      const imagesByClient2024 = {
+        "Samsung Electronics VD": ["/img/2025/vd_0.webp", "/img/2025/vd_1.webp"],
+        "KIA": ["/img/2025/kia_0.webp", "/img/2025/kia_1.webp"],
+      };
+      const imagesByClient2023 = {
+        "Samsung Electronics VD": ["/img/2025/vd_23_0.webp"],
+        "Seoul Design Foundation": [
+          "/img/2025/ddp_0.webp",
+          "/img/2025/ddp_1.webp",
+          "/img/2025/ddp_2.webp",
+          "/img/2025/ddp_3.webp",
+          "/img/2025/ddp_4.webp",
+          "/img/2025/ddp_5.webp",
+          "/img/2025/ddp_6.webp",
+        ],
       };
       const images =
         currentYear === "2025" && imagesByClient2025[client]
           ? imagesByClient2025[client]
+          : currentYear === "2026" && imagesByClient2026[client]
+          ? imagesByClient2026[client]
+          : currentYear === "2024" && imagesByClient2024[client]
+          ? imagesByClient2024[client]
+          : currentYear === "2023" && imagesByClient2023[client]
+          ? imagesByClient2023[client]
           : [];
 
       // Sheet row below the title = the project description/explanation.
@@ -257,7 +355,7 @@ export default function Works({ textColor, sectionOn }) {
     // On hover, always collapse to a single "hero" image (matches the intended interaction).
     const useHeroOnHover = true;
     const rowKey = `${keyPrefix}-${p.year}-${idx}-${p.title}`;
-    const isRowExpanded = expandedRowKey === rowKey;
+    const isRowExpanded = false;
     const mediaCandidates = Array.isArray(p?.images)
       ? p.images
           .slice(0, 3)
@@ -274,56 +372,24 @@ export default function Works({ textColor, sectionOn }) {
     return (
       <div
         key={rowKey}
-        role="button"
-        tabIndex={0}
-        onClick={() => {
-          setExpandedRowKey((prev) => {
-            const next = prev === rowKey ? null : rowKey;
-            if (next) {
-              setExpandedRowMedia(mediaList);
-              setExpandedMediaIndex(0);
-            } else {
-              setExpandedRowMedia([]);
-              setExpandedMediaIndex(0);
-            }
-            return next;
-          });
-        }}
-        onKeyDown={(e) => {
-          if (e.key !== "Enter" && e.key !== " ") return;
-          e.preventDefault();
-          setExpandedRowKey((prev) => {
-            const next = prev === rowKey ? null : rowKey;
-            if (next) {
-              setExpandedRowMedia(mediaList);
-              setExpandedMediaIndex(0);
-            } else {
-              setExpandedRowMedia([]);
-              setExpandedMediaIndex(0);
-            }
-            return next;
-          });
-        }}
-        className={`group pt-0 pb-[32px] overflow-hidden transition-[max-height] duration-300 ease-out outline-none ${
-          ""
-        } cursor-pointer hover:opacity-[0.96] focus-visible:ring-1 focus-visible:ring-primaryB/50`}
-        style={{
-          maxHeight: isRowExpanded ? `${rowHHover}px` : `${rowH}px`,
-        }}
+        className="group pt-0 pb-[32px] overflow-hidden"
+        style={{ maxHeight: `${rowH}px` }}
       >
         <div
           className="flex flex-col lg:flex-row gap-y-4 lg:gap-y-0 lg:gap-x-8 items-stretch transition-[height] duration-300 ease-out"
           style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
         >
-          {/* Left: Project name > Client > Year (all same size as project name) */}
+          {/* Left: Project name, then "Year Client" on one grey line */}
           <div className="lg:basis-[296px] lg:flex-none min-w-0">
-            <div className={`${pxGrotesk.className} tracking-[-0.03em] flex flex-col gap-[3px] text-[0.95rem] leading-[1.3] text-primaryB`}>
+            <div className={`${pxGrotesk.className} tracking-[-0.01em] flex flex-col gap-[3px] text-[0.95rem] leading-[1.3] text-primaryB`}>
               {/* Project name */}
               <div className="font-medium">{p.description || p.project || ""}</div>
-              {/* Client (발주처) */}
-              <div className="font-medium">{p.client || ""}</div>
-              {/* Year (연도) */}
-              <div className="font-light">{p.year || ""}</div>
+              {/* Year + Client (발주처) — grey, 12px, all caps */}
+              {(p.year || p.client) && (
+                <div className="font-light uppercase text-[12px] tracking-[0.01em] text-[#888]">
+                  {[p.year, p.client].filter((s) => s && String(s).trim()).join(" ")}
+                </div>
+              )}
             </div>
           </div>
 
@@ -337,7 +403,7 @@ export default function Works({ textColor, sectionOn }) {
             <div className="min-w-0 shrink-0 pr-2 lg:pr-6 flex flex-col gap-[17px] w-full max-w-[34rem]">
               {/* Project description (sheet row under the title), before names */}
               {p.detail && p.detail.trim() !== "" && (
-                <div className="text-[15px] leading-[1.3] tracking-[-0.01em] text-primaryB">
+                <div className="text-[15px] leading-[1.3] tracking-[0] text-primaryB">
                   {p.detail}
                 </div>
               )}
@@ -359,10 +425,11 @@ export default function Works({ textColor, sectionOn }) {
                   {EXPANDED_BODY}
                 </div>
               ) : (
+                SHOW_TEAM_NAMES &&
                 p.tf &&
                 String(p.tf).trim() !== "" && (
                   <div
-                    className="opacity-70 text-[0.8rem] leading-[1.45] min-w-0 max-w-full"
+                    className="text-[#888] text-[0.8rem] leading-[1.45] min-w-0 max-w-full"
                     style={
                       contentFont === "hel"
                         ? { fontFamily: "Helvetica, Arial, sans-serif" }
@@ -404,23 +471,10 @@ export default function Works({ textColor, sectionOn }) {
               className="w-full lg:w-[394.66px] bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none"
               style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
             >
-              {String(p.images[0]).toLowerCase().endsWith(".mp4") ? (
-                <video
-                  src={p.images[0]}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                />
-              ) : (
-                <img
-                  src={p.images[0]}
-                  alt={`${p.client || "project"} image`}
-                  className="w-full h-full object-cover"
-                />
-              )}
+              <ProjectSlideshow
+                images={p.images}
+                alt={`${p.client || "project"} image`}
+              />
             </div>
           ) : (
             <GreyPlaceholder
@@ -445,8 +499,8 @@ export default function Works({ textColor, sectionOn }) {
         className="pb-6"
       >
         <div className="w-full overflow-hidden rounded-[3px] bg-[#F6F0FF] aspect-[16/9]">
-          {img ? (
-            <img src={img} alt={title || "project"} className="w-full h-full object-cover" />
+          {Array.isArray(p?.images) && p.images.length > 0 ? (
+            <ProjectSlideshow images={p.images} alt={title || "project"} />
           ) : (
             <GreyPlaceholder className="w-full h-full" />
           )}

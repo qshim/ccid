@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Apps Script write bridge — contains the shared secret, keep local
+google-apps-script/doPost-write-bridge.gs
