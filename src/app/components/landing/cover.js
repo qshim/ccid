@@ -123,13 +123,22 @@ export default function Cover() {
     return () => clearTimeout(timeout);
   }, []);
 
+  // Use a GPU-composited transform (not the `scale` property) + will-change so the
+  // text is rasterized once and scaled as a texture — otherwise the slow 18s scale
+  // re-rasterizes each frame and the glyphs/letter-spacing visibly jitter.
   const scaleStyle = startAnim
     ? {
-        scale: 0.97,
+        transform: "scale(0.97)",
         transformOrigin: "left center",
-        transition: "scale 18s ease-out",
+        transition: "transform 18s ease-out",
+        willChange: "transform",
+        backfaceVisibility: "hidden",
       }
-    : { transformOrigin: "left center" };
+    : {
+        transformOrigin: "left center",
+        willChange: "transform",
+        backfaceVisibility: "hidden",
+      };
 
   return (
     <div className="relative flex flex-col w-full h-full lg:pt-[40dvh] pt-[31vh] px-0 translate-x-0 md:-translate-x-1 lg:-translate-x-6 gap-[clamp(0.05rem,0.3vw,0.2rem)]">

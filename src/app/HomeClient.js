@@ -543,9 +543,11 @@ export default function HomeClient() {
           data-section="about"
           className="relative z-10 w-[100%]"
         >
-          {/* Continuous vertical gradient across all three about blocks */}
+          {/* Continuous vertical gradient across all three about blocks.
+              Extends a few px above the section top (about paints after brand) so
+              the brand↔about boundary is covered by ivory — no 1px white seam. */}
           <div
-            className="absolute left-0 top-0 bottom-0 right-0 z-0"
+            className="absolute left-0 -top-[6px] bottom-0 right-0 z-0"
             style={{
               background: "linear-gradient(180deg, #F0F0ED 0%, #F0F0ED 40%, #E6E6FB 78%, #E0E0FF 100%)",
             }}
@@ -558,6 +560,8 @@ export default function HomeClient() {
           id="works"
           style={{
             backgroundColor: "#E0E0FF",
+            // Bridge the about↔works boundary with the same lavender (no white seam).
+            boxShadow: "0 -6px 0 0 #E0E0FF",
           }}
           className="transition-all duration-1000 lg:content-center w-full relative z-10 min-h-[100dvh] [@media(max-height:760px)]:min-h-0 snap-start flex justify-center items-start pt-8 pb-4 sm:pt-12 sm:pb-6 lg:pb-8 overflow-visible"
         >
