@@ -520,7 +520,9 @@ export default function HomeClient() {
               height: brandRiser ? "90%" : "0%",
               transition: "height 3800ms cubic-bezier(0.22, 1, 0.36, 1)",
               background:
-                "linear-gradient(to top, #F0F0ED 0%, #ECECF3 38%, rgba(230,230,251,0.72) 68%, rgba(224,224,255,0.28) 86%, rgba(224,224,255,0) 100%)",
+                // Long, eased alpha tail at the top so the rising leading edge has
+                // no defined line — it reads as light softly bleeding upward.
+                "linear-gradient(to top, #F0F0ED 0%, #F0F0ED 12%, rgba(237,237,243,0.97) 20%, rgba(233,233,246,0.9) 28%, rgba(230,230,248,0.8) 36%, rgba(228,228,250,0.68) 44%, rgba(226,226,251,0.55) 52%, rgba(225,225,252,0.42) 60%, rgba(224,224,253,0.29) 68%, rgba(224,224,254,0.18) 76%, rgba(224,224,255,0.09) 84%, rgba(224,224,255,0.03) 92%, rgba(224,224,255,0) 100%)",
             }}
           />
           <ScrollFloat
