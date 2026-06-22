@@ -60,6 +60,9 @@ const SHEET_PHOTOS = {
 // Members hidden from the mobile People view only (still shown on desktop).
 const MOBILE_HIDDEN = new Set(["Jiyeon Lee"]);
 
+// Members hidden everywhere (both mobile and desktop). Filtered out at build time.
+const HIDDEN_MEMBERS = new Set(["Ji min Rhee", "Eunseol Kim", "Yeju Jeong"]);
+
 function resolvePhoto(name, image) {
   const key = (name || "").trim();
   return LOCAL_PHOTOS[key] || SHEET_PHOTOS[key] || String(image || "").trim() || "";
@@ -100,6 +103,7 @@ export default function Members() {
     const data = sheetsStatic;
     const categorizedMembers = (data?.members || []).reduce((acc, member) => {
       const category = member[0];
+      if (HIDDEN_MEMBERS.has(String(member[1] || "").trim())) return acc;
       if (!acc[category]) acc[category] = [];
       acc[category].push(member);
       return acc;
@@ -138,7 +142,9 @@ export default function Members() {
   const renderCompactCard = (member, photoClass = "w-[88px] h-[88px]") => {
     const [, name, image, role, bio] = member;
     const imageSrc = resolvePhoto(name, image);
-    const nRole = normalizeRole(role);
+    // Mobile-only: break "Generative AI for <rest>" onto two lines so the long
+    // role reads cleanly in the narrow compact card (e.g. Kiryung Nam, Yunhyeong Park).
+    const nRole = normalizeRole(role).replace(/Generative AI for\s+/i, "Generative AI for\n");
     const nBio = normalizeBio(bio);
     return (
       <div className="min-w-0 flex flex-col items-center text-center">

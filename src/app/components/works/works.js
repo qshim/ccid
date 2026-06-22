@@ -204,22 +204,9 @@ export default function Works({ textColor, sectionOn }) {
         tfFromSheet ||
         (currentYear === "2025" && tfByClient2025[client] ? tfByClient2025[client] : "");
 
-      // Shortened / overridden description per Figma design
-      const titleOverrides2025 = {
-        "LG Electronics": "Affectionate Intelligence CX design",
-        "CJ CGV & Naver Cloud": "AI-Driven AR Interaction Platform",
-        "Hyundai Motors": "Development of AI-Driven Design Process",
-      };
-
-      let description = project;
-      if (currentYear === "2025") {
-        if (titleOverrides2025[client]) {
-          description = titleOverrides2025[client];
-        } else if (client === "Ministry of Trade, Industry and Energy") {
-          // Fallback: keep original project title for this client
-          description = project;
-        }
-      }
+      // Title comes straight from the sheet (the project part of the title row),
+      // so the spreadsheet is the single source of truth for project titles.
+      const description = project;
 
       const imagesByClient2025 = {
         "LG Electronics": [
@@ -490,8 +477,10 @@ export default function Works({ textColor, sectionOn }) {
 
   const renderMobileCard = (p, idx) => {
     const img = Array.isArray(p?.images) && p.images.length > 0 ? String(p.images[0] || "").trim() : "";
-    const title = String(p?.client || p?.description || p?.title || "").trim();
+    // Show the project/work name (matches desktop), not the client/company name.
+    const title = String(p?.description || p?.project || p?.title || "").trim();
     const year = String(p?.year || "").trim();
+    const client = String(p?.client || "").trim();
 
     return (
       <div
@@ -505,13 +494,17 @@ export default function Works({ textColor, sectionOn }) {
             <GreyPlaceholder className="w-full h-full" />
           )}
         </div>
-        <div className={`${pxGrotesk.className} pt-4 flex items-baseline justify-between gap-4`}>
-          <div className="min-w-0 text-[18px] leading-[1.35] font-medium text-primaryB truncate">
+        <div className={`${pxGrotesk.className} pt-4`}>
+          {/* Full title (wraps, never truncated) */}
+          <div className="text-[16px] leading-[1.3] font-medium text-primaryB">
             {title}
           </div>
-          <div className="flex-none text-[14px] leading-[1.35] font-light text-primaryB/80">
-            {year}
-          </div>
+          {/* Year + company, grey all caps */}
+          {(year || client) && (
+            <div className="font-light uppercase text-[12px] tracking-[0.01em] text-[#888] pt-[3px]">
+              {[year, client].filter((s) => s && String(s).trim()).join(" ")}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -535,6 +528,18 @@ export default function Works({ textColor, sectionOn }) {
                   {selectedHeaderRaw}
                 </motion.div>
               </div>
+
+              {/* Disclaimer — sits under the title, above the project list.
+                  Grey + smaller than the project titles, width-constrained so the
+                  long copy wraps comfortably and never reads like a project name. */}
+              <p
+                className={`${pxGrotesk.className} max-w-[40rem] text-[12px] leading-[1.5] tracking-[0] text-[#7A6BB0] pb-4 lg:pb-6`}
+              >
+                Where project materials are confidential, the visuals shown are
+                conceptual representations created by cciD and do not depict actual
+                client deliverables, proprietary data, or unreleased product
+                information.
+              </p>
 
               <div className="flex-1 flex flex-col">
                 {/* Mobile/tablet: one card per row (image + title + year only) */}

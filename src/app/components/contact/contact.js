@@ -148,7 +148,7 @@ function ContactBody({ emailText }) {
                 Hiring
               </h2>
             </div>
-            <p style={{ fontFamily: mixedKrFont }} className={`${pretendardR.className} text-[#0f0f13] text-[0.9rem] leading-[1.58] tracking-[-0.01em] font-[450] mb-1.5`}>
+            <p style={{ fontFamily: mixedKrFont }} className={`${pretendardR.className} text-[#0f0f13] text-[15px] leading-[1.58] tracking-[-0.01em] font-[450] mb-1.5`}>
               cciD는 Tech, UX, Visual 트랙으로 대학생 및 기졸업자 대상 체험형 인턴을
               모집합니다. cciD가 축적해 온 공간 기반 고객 경험 설계, 디지털 프로덕트
               구현, 브랜드 및 인터랙션 디자인 역량을 바탕으로 Physical AI 시대의 새로운
@@ -188,7 +188,7 @@ function ContactBody({ emailText }) {
                 Get in touch
               </h2>
             </div>
-            <div className={`${pretendardR.className} flex flex-col gap-2.5 text-[0.9rem] font-[450] leading-[1.58] tracking-[-0.01em]`}>
+            <div className={`${pretendardR.className} flex flex-col gap-2.5 text-[15px] font-[450] leading-[1.58] tracking-[-0.01em]`}>
               <div>
                 <div style={{ fontFamily: mixedKrFont }} className="text-[#0f0f13]">{addressKr}</div>
                 <div className={`${pxGrotesk.className} text-[#0f0f13]`}>{addressEn}</div>
