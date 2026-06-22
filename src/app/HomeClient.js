@@ -45,6 +45,8 @@ export default function HomeClient() {
   const [coverBottomFade, setCoverBottomFade] = useState(0); // 0..1
   const [contactReveal, setContactReveal] = useState(0); // 0..1 (used to fade members->contact overlay)
   const [contactTopFade, setContactTopFade] = useState(1); // contact 상단 그라데이션 투명도
+  const [brandRiser, setBrandRiser] = useState(false); // brand 상단 퍼플을 줄이는 밝은 웨이브
+  const brandRiserTimerRef = useRef(null);
   const ABOUT_ORDER = ["who", "sectors", "methodology"];
   const ABOUT_INITIAL_LOCK_MS = 900; // 최소 이 시간 동안은 항상 "Who We Are"를 먼저 보여줌
   const ABOUT_STEP_COOLDOWN_MS = 420;
@@ -302,6 +304,44 @@ export default function HomeClient() {
     return () => observer.unobserve(contactSection);
   }, []);
 
+  // Brand section: 1.8s after it comes into view, a lighter wave rises from the
+  // bottom over ~3.8s, receding the purple top. Resets when it leaves view so it
+  // replays on every entry.
+  useEffect(() => {
+    const mainEl = mainRef.current;
+    const brandSection = (mainEl || document).querySelector("#brand");
+    if (!brandSection) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const inView = (entry?.intersectionRatio ?? 0) > 0.6;
+        if (inView) {
+          if (brandRiserTimerRef.current == null) {
+            brandRiserTimerRef.current = window.setTimeout(() => {
+              setBrandRiser(true);
+            }, 1800);
+          }
+        } else {
+          if (brandRiserTimerRef.current != null) {
+            clearTimeout(brandRiserTimerRef.current);
+            brandRiserTimerRef.current = null;
+          }
+          setBrandRiser(false);
+        }
+      },
+      { threshold: [0, 0.6, 1], root: mainEl || null }
+    );
+
+    observer.observe(brandSection);
+    return () => {
+      observer.disconnect();
+      if (brandRiserTimerRef.current != null) {
+        clearTimeout(brandRiserTimerRef.current);
+        brandRiserTimerRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <div className="w-[100%] absolute scrollbar-hide bg-white z-[-2] overflow-x-hidden">
       <CustomCursor />
@@ -426,7 +466,7 @@ export default function HomeClient() {
         />
         <section
           id="cover"
-          className="relative z-10 w-[100%] h-[100%] snap-start flex items-start justify-start"
+          className="relative z-[11] w-[100%] h-[100%] snap-start flex items-start justify-start"
         >
           {/* Mask stays off text wrapper — same-node mask can clip descenders (g, j, p, y) in WebKit. */}
           <div className="relative z-10 w-full max-w-[var(--siteMax)] mx-auto pr-[var(--siteGutter)] pl-[var(--siteGutter)] md:pl-[calc(var(--siteGutter)*0.6)] lg:pl-0">
@@ -436,10 +476,11 @@ export default function HomeClient() {
               so the cover blends into the next section's purple top. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute bottom-0 left-0 w-full h-[22vh] md:h-[26vh] z-[5]"
+            className="pointer-events-none absolute -bottom-[3px] left-0 w-full h-[22vh] md:h-[26vh] z-[5]"
             style={{
               background:
-                "linear-gradient(to bottom, rgba(78,34,214,0) 0%, rgba(78,34,214,1) 100%)",
+                // easing-gradient (ease-in-out) — smooth transparent->solid, no banding
+                "linear-gradient(to bottom, rgba(78,34,214,0) 0%, rgba(78,34,214,0.013) 8.1%, rgba(78,34,214,0.049) 15.5%, rgba(78,34,214,0.104) 22.5%, rgba(78,34,214,0.175) 29%, rgba(78,34,214,0.259) 35.3%, rgba(78,34,214,0.352) 41.2%, rgba(78,34,214,0.45) 47.1%, rgba(78,34,214,0.55) 52.9%, rgba(78,34,214,0.648) 58.8%, rgba(78,34,214,0.741) 64.7%, rgba(78,34,214,0.825) 71%, rgba(78,34,214,0.896) 77.5%, rgba(78,34,214,0.951) 84.5%, rgba(78,34,214,0.987) 91.9%, rgba(78,34,214,1) 100%)",
             }}
           />
         </section>
@@ -461,10 +502,25 @@ export default function HomeClient() {
               fading down into the lavender base. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -top-px inset-x-0 z-[1] h-[52%]"
+            className="pointer-events-none absolute -top-px inset-x-0 z-[1] h-[60%]"
             style={{
               background:
-                "linear-gradient(to bottom, #4E22D6 0%, #4E22D6 16%, rgba(78,34,214,0.55) 40%, rgba(78,34,214,0) 80%)",
+                // easing-gradient (ease-in-out), no flat plateau -> no slope-change
+                // band: solid at top, smoothly easing all the way to transparent.
+                "linear-gradient(to bottom, #4E22D6 0%, rgba(78,34,214,0.987) 5.6%, rgba(78,34,214,0.951) 11.4%, rgba(78,34,214,0.896) 17.2%, rgba(78,34,214,0.825) 22.6%, rgba(78,34,214,0.741) 27.7%, rgba(78,34,214,0.648) 32.6%, rgba(78,34,214,0.55) 37.4%, rgba(78,34,214,0.45) 42.6%, rgba(78,34,214,0.352) 47.4%, rgba(78,34,214,0.259) 52.3%, rgba(78,34,214,0.175) 57.4%, rgba(78,34,214,0.104) 62.8%, rgba(78,34,214,0.049) 68.6%, rgba(78,34,214,0.013) 74.4%, rgba(78,34,214,0) 80%)",
+            }}
+          />
+          {/* Lighter wave: rises from the bottom 1.8s after entering, over ~3.8s,
+              receding the purple top. Soft transparent leading edge so it reads as
+              light rising rather than a hard line. Below the cciD text (z-10). */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]"
+            style={{
+              height: brandRiser ? "90%" : "0%",
+              transition: "height 3800ms cubic-bezier(0.22, 1, 0.36, 1)",
+              background:
+                "linear-gradient(to top, #F0F0ED 0%, #ECECF3 38%, rgba(230,230,251,0.72) 68%, rgba(224,224,255,0.28) 86%, rgba(224,224,255,0) 100%)",
             }}
           />
           <ScrollFloat

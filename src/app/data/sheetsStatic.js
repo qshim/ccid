@@ -401,26 +401,10 @@ export const sheetsStatic = {
     ],
     [
       "Student Researchers",
-      "Ji min Rhee",
-      "",
-      "",
-      "",
-      ""
-    ],
-    [
-      "Student Researchers",
       "Taeeun Kim",
       "https://drive.google.com/thumbnail?id=16gpanmqFjtOv2FbVJuZ2xDmYMSZ0fbwj&sz=w1000",
       "",
       "User Experience Design\nInterface Design",
-      ""
-    ],
-    [
-      "Student Researchers",
-      "Eunseol Kim",
-      "",
-      "",
-      "",
       ""
     ],
     [
@@ -476,7 +460,7 @@ export const sheetsStatic = {
       "Da in Kim",
       "",
       "",
-      "",
+      "Conversational Design\nInterface Design",
       ""
     ],
     [
@@ -489,7 +473,7 @@ export const sheetsStatic = {
     ],
     [
       "External Researchers",
-      "Yeju Jeong",
+      "",
       "",
       "",
       "",
