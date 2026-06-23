@@ -217,7 +217,7 @@ export default function Works({ textColor, sectionOn }) {
           "/img/2025/lg_affectionate_intelligence_4.webp",
           "/img/2025/lg_affectionate_intelligence_5.webp",
         ],
-        "CJ CGV & Naver Cloud": ["/img/2025/coex_1.webp", "/img/2025/coex_2.webp", "/img/2025/coex_0.webp"],
+        "CJ CGV & Naver Cloud": ["/img/2025/coex_1.webp", "/img/2025/coex_0.webp"],
         "Hyundai Motor Group": ["/img/2025/hd_ai_driven_design.webp"],
         "Ministry of Trade, Industry and Energy": ["/img/2025/motie.webp"],
         "Samsung Electronics MX": ["/img/2025/mx_galaxy_ai_0.webp"],
