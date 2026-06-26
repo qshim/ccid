@@ -88,23 +88,30 @@ function normalizeRole(role) {
 function normalizeBio(bio) {
   const raw = (bio || "").trim();
   if (!raw) return "";
+  // "Company. Role" -> "Company, Role" (a comma reads cleaner than a mid-line period).
+  const commafy = (s) => s.replace(/\.\s+/g, ", ");
   const rawLines = raw.split("\n");
   // Block-header pattern: a line saying just "formerly" (optionally with
-  // trailing punctuation) precedes a list of past affiliations.
+  // trailing punctuation) precedes a list of past affiliations — normalize each
+  // of those to the inline "former X" form so the single pass below handles them.
   const headerIdx = rawLines.findIndex((l) => /^\s*formerly[\s:.,]*$/i.test(l));
   let lines;
   if (headerIdx !== -1) {
     const before = rawLines.slice(0, headerIdx);
     const past = rawLines.slice(headerIdx + 1).map((l) => {
       const t = l.trim();
-      return t ? `ex-${t}` : l;
+      return t ? `former ${t}` : l;
     });
     lines = [...before, ...past];
   } else {
     lines = rawLines;
   }
-  // Inline pattern: lines starting with "former " — replace with "ex-".
-  lines = lines.map((l) => l.replace(/^(\s*)former\s+/i, "$1ex-"));
+  // Inline "former X" -> "Prev. X"; convert "Company. Role" -> "Company, Role".
+  lines = lines.map((l) => {
+    const m = l.match(/^(\s*)former\s+(.*)$/i);
+    if (m) return `${m[1]}Prev. ${commafy(m[2])}`;
+    return commafy(l);
+  });
   return lines.join("\n").trim();
 }
 

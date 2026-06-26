@@ -300,7 +300,7 @@ export const sheetsStatic = {
       "Yoonha Jeong",
       "",
       "User Experience Design",
-      "Korea National University of Arts MFA\nInteraction Design",
+      "Korea National University of Arts MFA\nInteraction Design\nformer d'strict, SK Telecom UX",
       ""
     ],
     [
@@ -308,7 +308,7 @@ export const sheetsStatic = {
       "Kiryung Nam",
       "https://drive.google.com/thumbnail?id=1vPALXgTqlGki-T4dnWr4IOjPgPHJhmCs&sz=w1000",
       "Generative AI for Interactive Media",
-      "Royal College of Art MA\nInformation Experience Design\nArt Korea Lab. Gen AI Lab Director",
+      "Royal College of Art MA\nInformation Experience Design\nformer Art Korea Lab. Gen AI Lab Director",
       ""
     ],
     [
@@ -316,7 +316,7 @@ export const sheetsStatic = {
       "Yunhyeong Park",
       "https://drive.google.com/thumbnail?id=1QCYqrja1JdQxiC-T3VQYBQvyFSlyB-Av&sz=w1000",
       "Generative AI for Customer Experience",
-      "Royal College of Art MA\nInformation Experience Design",
+      "Royal College of Art MA\nInformation Experience Design\nHSAD AI Art Director",
       ""
     ],
     [
@@ -325,14 +325,6 @@ export const sheetsStatic = {
       "",
       "System Interface Architecture",
       "Imperial College London MSc\nInnovation Design Engineering",
-      ""
-    ],
-    [
-      "Former Advisors",
-      "Changmin Kim",
-      "",
-      "",
-      "professor of Design, Sungkyunkwan University ",
       ""
     ],
     [
@@ -349,6 +341,14 @@ export const sheetsStatic = {
       "",
       "",
       "professor of Industrial Design, Keimyung University",
+      ""
+    ],
+    [
+      "Former Advisors",
+      "Changmin Kim",
+      "",
+      "",
+      "professor of Design, Sungkyunkwan University ",
       ""
     ],
     [
