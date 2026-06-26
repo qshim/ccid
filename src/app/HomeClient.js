@@ -345,7 +345,8 @@ export default function HomeClient() {
   return (
     <div className="w-[100%] absolute scrollbar-hide bg-white z-[-2] overflow-x-hidden">
       <CustomCursor />
-      <CoverAudio sectionOn={sectionOn} src="/audio/design-intelligence-loops.mp3" />
+      {/* Background audio disabled (no sound on the site). */}
+      {/* <CoverAudio sectionOn={sectionOn} src="/audio/design-intelligence-loops.mp3" /> */}
       <Header sectionOn={sectionOn} />
       <Nav
         sectionOn={sectionOn}
