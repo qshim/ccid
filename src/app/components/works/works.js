@@ -39,8 +39,35 @@ function ProjectSlideshow({ images, alt }) {
 
   if (list.length === 0) return null;
 
-  const renderOne = (src) =>
-    String(src).toLowerCase().endsWith(".mp4") ? (
+  // Build a background-style Vimeo embed URL from any vimeo.com / player.vimeo.com
+  // link, including the privacy hash for unlisted videos (vimeo.com/ID/HASH or ?h=).
+  const vimeoEmbed = (src) => {
+    const s = String(src);
+    const m = s.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([0-9a-z]+))?/i);
+    if (!m) return null;
+    const id = m[1];
+    const hashQuery = s.match(/[?&]h=([0-9a-z]+)/i);
+    const hash = m[2] || (hashQuery ? hashQuery[1] : null);
+    const params = ["background=1", "autoplay=1", "loop=1", "muted=1", "autopause=0"];
+    if (hash) params.push(`h=${hash}`);
+    return `https://player.vimeo.com/video/${id}?${params.join("&")}`;
+  };
+
+  const renderOne = (src) => {
+    const embed = vimeoEmbed(src);
+    if (embed) {
+      return (
+        <iframe
+          src={embed}
+          title={alt || "project video"}
+          className="block w-full h-full"
+          style={{ border: 0 }}
+          allow="autoplay; fullscreen; picture-in-picture"
+          loading="lazy"
+        />
+      );
+    }
+    return String(src).toLowerCase().endsWith(".mp4") ? (
       <video
         src={src}
         className="w-full h-full object-cover"
@@ -53,6 +80,7 @@ function ProjectSlideshow({ images, alt }) {
     ) : (
       <img src={src} alt={alt} className="w-full h-full object-cover" />
     );
+  };
 
   if (list.length === 1) return renderOne(list[0]);
 
@@ -230,17 +258,14 @@ export default function Works({ textColor, sectionOn }) {
         "Samsung Electronics VD": ["/img/2025/vd_0.webp", "/img/2025/vd_1.webp"],
         "KIA": ["/img/2025/kia_0.webp", "/img/2025/kia_1.webp"],
       };
+      const imagesByClient2022 = {
+        // Vimeo video as the project media (rendered as a background-style embed).
+        "Lotte & Häagen-Dazs": ["https://vimeo.com/1204729556"],
+      };
       const imagesByClient2023 = {
         "Samsung Electronics VD": ["/img/2025/vd_23_0.webp"],
-        "Seoul Design Foundation": [
-          "/img/2025/ddp_0.webp",
-          "/img/2025/ddp_1.webp",
-          "/img/2025/ddp_2.webp",
-          "/img/2025/ddp_3.webp",
-          "/img/2025/ddp_4.webp",
-          "/img/2025/ddp_5.webp",
-          "/img/2025/ddp_6.webp",
-        ],
+        // Vimeo video (unlisted) as the DDP project media — hash included.
+        "Seoul Design Foundation": ["https://vimeo.com/1140283143/1e0e2c0160"],
       };
       const images =
         currentYear === "2025" && imagesByClient2025[client]
@@ -251,6 +276,8 @@ export default function Works({ textColor, sectionOn }) {
           ? imagesByClient2024[client]
           : currentYear === "2023" && imagesByClient2023[client]
           ? imagesByClient2023[client]
+          : currentYear === "2022" && imagesByClient2022[client]
+          ? imagesByClient2022[client]
           : [];
 
       // Sheet row below the title = the project description/explanation.
