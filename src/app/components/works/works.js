@@ -61,7 +61,9 @@ function ProjectSlideshow({ images, alt }) {
           src={embed}
           title={alt || "project video"}
           className="block w-full h-full"
-          style={{ border: 0 }}
+          // Scale up slightly so the iframe always over-covers the container
+          // (clipped by overflow-hidden) — kills the 1px edge gap / white line.
+          style={{ border: 0, transform: "scale(1.03)", transformOrigin: "center" }}
           allow="autoplay; fullscreen; picture-in-picture"
           loading="lazy"
         />
