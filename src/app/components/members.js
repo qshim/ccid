@@ -66,6 +66,16 @@ const MOBILE_HIDDEN = new Set(["Jiyeon Lee"]);
 // Members hidden everywhere (both mobile and desktop). Filtered out at build time.
 const HIDDEN_MEMBERS = new Set(["Ji min Rhee", "Eunseol Kim", "Yeju Jeong"]);
 
+// Per-member object-position override for the circular avatar crop, so heads/faces
+// aren't cut off. Tall portraits default to center; these shift the crop window up.
+const PHOTO_POSITION = {
+  "Changmin Kim": "center 18%",
+  "Taeho Kim": "center 18%",
+};
+function photoPosition(name) {
+  return PHOTO_POSITION[(name || "").trim()];
+}
+
 function resolvePhoto(name, image) {
   const key = (name || "").trim();
   return LOCAL_PHOTOS[key] || SHEET_PHOTOS[key] || String(image || "").trim() || "";
@@ -158,6 +168,7 @@ export default function Members() {
               src={imageSrc}
               alt={name || "member"}
               className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]${imageSrc.startsWith("/img/members/") ? " scale-[1.04]" : ""}`}
+              style={{ objectPosition: photoPosition(name) }}
               loading="lazy"
               referrerPolicy="no-referrer"
               onError={(e) => {
@@ -204,6 +215,7 @@ export default function Members() {
                 src={imageSrc}
                 alt={name || "member"}
                 className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]${imageSrc.startsWith("/img/members/") ? " scale-[1.04]" : ""}`}
+                style={{ objectPosition: photoPosition(name) }}
                 loading="lazy"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
@@ -332,6 +344,7 @@ export default function Members() {
                                 src={imageSrc}
                                 alt={name || "member"}
                                 className={`w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]${imageSrc.startsWith("/img/members/") ? " scale-[1.04]" : ""}`}
+                                style={{ objectPosition: photoPosition(name) }}
                                 loading="lazy"
                                 referrerPolicy="no-referrer"
                                 onError={(e) => {
