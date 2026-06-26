@@ -26,6 +26,9 @@ const LOCAL_PHOTOS = {
   "Minjeong Joo": "/img/members/minjeong-joo.png",
   "Sara Kang": "/img/members/sara-kang.png",
   "Minseo Kang": "/img/members/minseo-kang.png",
+  "Taeho Kim": "/img/members/taeho-kim.png",
+  "Changmin Kim": "/img/members/changmin-kim.png",
+  "Yunso Jung": "/img/members/yunso-jung.png",
 };
 
 // Sheet photos mirrored locally (downloaded from the Google Drive thumbnail URLs
