@@ -11,6 +11,45 @@ import GreyPlaceholder from "@/app/components/common/GreyPlaceholder";
 // Set back to true to restore them.
 const SHOW_TEAM_NAMES = false;
 
+// Vimeo poster (first-frame thumbnail) per video id — shown as a placeholder
+// until the player iframe finishes loading, then cross-faded out.
+const VIMEO_POSTERS = {
+  "1204734233": "/img/2025/ddp_poster.jpg", // DDP
+  "1204729556": "/img/2025/lotte_poster.jpg", // Lotte & Häagen-Dazs
+};
+
+// A Vimeo background embed with a first-frame poster shown until the player loads.
+function VimeoEmbed({ embed, vid, alt }) {
+  const [loaded, setLoaded] = useState(false);
+  const poster = VIMEO_POSTERS[vid];
+  return (
+    <div className="relative w-full h-full overflow-hidden">
+      <iframe
+        src={embed}
+        title={alt || "project video"}
+        className="block w-full h-full"
+        // Scale up slightly so the iframe over-covers the container (clipped by
+        // overflow-hidden) — kills the 1px edge gap / white line.
+        style={{ border: 0, transform: "scale(1.03)", transformOrigin: "center" }}
+        allow="autoplay; fullscreen; picture-in-picture"
+        loading="lazy"
+        // Hold the poster a beat after load so the player has painted its first
+        // frame, then fade it out.
+        onLoad={() => setTimeout(() => setLoaded(true), 600)}
+      />
+      {poster && (
+        <img
+          src={poster}
+          alt={alt || "project"}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-out"
+          style={{ opacity: loaded ? 0 : 1 }}
+        />
+      )}
+    </div>
+  );
+}
+
 // Project media: a single image/video, or a cross-fading slideshow that cycles
 // through its images. Each instance gets a random start offset, per-tick jitter,
 // and its own pace (some run noticeably slower) so the slideshows across the page
@@ -56,18 +95,8 @@ function ProjectSlideshow({ images, alt }) {
   const renderOne = (src) => {
     const embed = vimeoEmbed(src);
     if (embed) {
-      return (
-        <iframe
-          src={embed}
-          title={alt || "project video"}
-          className="block w-full h-full"
-          // Scale up slightly so the iframe always over-covers the container
-          // (clipped by overflow-hidden) — kills the 1px edge gap / white line.
-          style={{ border: 0, transform: "scale(1.03)", transformOrigin: "center" }}
-          allow="autoplay; fullscreen; picture-in-picture"
-          loading="lazy"
-        />
-      );
+      const idMatch = embed.match(/video\/(\d+)/);
+      return <VimeoEmbed embed={embed} vid={idMatch ? idMatch[1] : ""} alt={alt} />;
     }
     return String(src).toLowerCase().endsWith(".mp4") ? (
       <video
