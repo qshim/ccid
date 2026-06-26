@@ -264,8 +264,8 @@ export default function Works({ textColor, sectionOn }) {
       };
       const imagesByClient2023 = {
         "Samsung Electronics VD": ["/img/2025/vd_23_0.webp"],
-        // Vimeo video (unlisted) as the DDP project media — hash included.
-        "Seoul Design Foundation": ["https://vimeo.com/1140283143/1e0e2c0160"],
+        // Vimeo video as the DDP project media.
+        "Seoul Design Foundation": ["https://vimeo.com/1204734233"],
       };
       const images =
         currentYear === "2025" && imagesByClient2025[client]
