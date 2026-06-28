@@ -352,9 +352,18 @@ export default function Works({ textColor, sectionOn }) {
     return /^\d{4}$/.test(yStr);
   };
 
+  // Projects hidden from the works table (kept in the sheet). Matched by client.
+  const HIDDEN_PROJECTS = ["Meta Wave"];
+  const isHiddenProject = (p) =>
+    HIDDEN_PROJECTS.some(
+      (h) => String(p?.client || "").trim().toLowerCase() === h.toLowerCase()
+    );
+
   // Include every valid-year project (incl. 2026) in the spreadsheet's own
-  // column order — no year sorting.
-  const projectsAll = selectedProjects.filter(isValidYearProject);
+  // column order — no year sorting. Hidden projects are filtered out.
+  const projectsAll = selectedProjects
+    .filter(isValidYearProject)
+    .filter((p) => !isHiddenProject(p));
   const initialYearProjects = projectsAll.filter((p) => p.year === INITIAL_YEAR);
   // Collapsed: show 3 full rows + 1 partially visible row (faded/blurred at bottom).
   const collapsedProjects = (initialYearProjects.length > 0 ? initialYearProjects : projectsAll).slice(0, 4);
