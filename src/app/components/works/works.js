@@ -16,6 +16,7 @@ const SHOW_TEAM_NAMES = false;
 const VIMEO_POSTERS = {
   "1204734233": "/img/2025/ddp_poster.jpg", // DDP
   "1204729556": "/img/2025/lotte_poster.jpg", // Lotte & Häagen-Dazs
+  "1205744906": "/img/2025/motie_poster.jpg", // MOTIE
 };
 
 // A Vimeo background embed with a first-frame poster shown until the player loads.
@@ -278,7 +279,7 @@ export default function Works({ textColor, sectionOn }) {
         ],
         "CJ CGV & Naver Cloud": ["/img/2025/coex_1.webp", "/img/2025/coex_0.webp"],
         "Hyundai Motor Group": ["/img/2025/hd_ai_driven_design.webp"],
-        "Ministry of Trade, Industry and Energy": ["/img/2025/motie_1.webp", "/img/2025/motie_2.webp"],
+        "Ministry of Trade, Industry and Energy": ["https://vimeo.com/1205744906/17769195d4"],
         "Samsung Electronics MX": ["/img/2025/mx_galaxy_ai_0.webp"],
       };
       const imagesByClient2026 = {
