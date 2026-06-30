@@ -64,7 +64,7 @@ const SHEET_PHOTOS = {
 const MOBILE_HIDDEN = new Set(["Jiyeon Lee"]);
 
 // Members hidden everywhere (both mobile and desktop). Filtered out at build time.
-const HIDDEN_MEMBERS = new Set(["Ji min Rhee", "Eunseol Kim", "Yeju Jeong"]);
+const HIDDEN_MEMBERS = new Set(["Ji min Rhee", "Eunseol Kim", "Yeju Jeong", "Taeho Kim"]);
 
 // Per-member object-position override for the circular avatar crop, so heads/faces
 // aren't cut off. Tall portraits default to center; these shift the crop window up.
