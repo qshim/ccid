@@ -58,6 +58,7 @@ const SHEET_PHOTOS = {
   "Inyoung Kim": "/img/members/sheet/inyoung-kim.png",
   "Juwan Kim": "/img/members/sheet/juwan-kim.png",
   "Hyeji Jeong": "/img/members/sheet/hyeji-jeong.png",
+  "Heeyun Sul": "/img/members/heeyun-sul.png",
 };
 
 // Members hidden from the mobile People view only (still shown on desktop).

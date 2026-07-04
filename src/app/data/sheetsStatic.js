@@ -477,10 +477,10 @@ export const sheetsStatic = {
     ],
     [
       "External Researchers",
+      "Heeyun Sul",
+      "https://drive.google.com/thumbnail?id=1siPNJzRUaZK-RNh1ZrGzZbvWj13p2qpd&sz=w1000",
       "",
-      "",
-      "",
-      "",
+      "Interaction Design\nPrototyping",
       ""
     ],
     [
