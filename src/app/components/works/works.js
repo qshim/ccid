@@ -523,7 +523,7 @@ export default function Works({ textColor, sectionOn }) {
         <div className="flex-none pt-0 overflow-hidden">
           {p.images && p.images[0] ? (
             <div
-              className="w-full lg:w-[394.66px] bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none"
+              className="w-full lg:w-[394.66px] bg-[#F6F0FF] overflow-hidden rounded-[3px] flex-none [&_img]:transition-transform [&_img]:duration-[700ms] [&_img]:ease-out group-hover:[&_img]:scale-[1.05] [&_video]:transition-transform [&_video]:duration-[700ms] [&_video]:ease-out group-hover:[&_video]:scale-[1.05]"
               style={{ height: isRowExpanded ? `${contentHHover}px` : `${contentH}px` }}
             >
               <ProjectSlideshow

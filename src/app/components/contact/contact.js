@@ -136,7 +136,7 @@ function ContactBody({ emailText }) {
   const tel = "+82-2-746-9620";
 
   return (
-    <div className="text-[#0f0f13] absolute inset-0 z-[2] overflow-y-auto">
+    <div className="select-text text-[#0f0f13] absolute inset-0 z-[2] overflow-y-auto">
       <div className="w-full max-w-[var(--siteMaxWide)] mx-auto px-[var(--siteGutter)] pt-[10vh] pb-[14vh]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-[3.5vw] gap-y-[6vh]">
           {/* Hiring */}

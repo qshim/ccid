@@ -13,6 +13,30 @@ html {
   --siteGutter: 1rem; /* matches px-4 */
   --siteMax: 80rem;
   --siteMaxWide: calc(80rem + 60px); /* works/people baseline */
+
+  /* Motion easing tokens (Emil Kowalski / animate skill). Reuse these instead of
+     re-typing cubic-beziers per component so motion stays consistent site-wide. */
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Accessibility: honor the OS "reduce motion" preference. Neutralizes the cover
+   wave/typewriter scale, brand riser, blink cursor, hover transforms, and any
+   scroll-snap smoothing for users who are motion-sensitive. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  html {
+    scroll-behavior: auto !important;
+  }
 }
 
 /* About Pretendard tuning (Windows rendering) */

@@ -27,8 +27,9 @@ export const viewport = {
   width: "device-width",
   initialScale: 1.0,
   minimumScale: 1.0,
-  maximumScale: 1.0,
-  userScalable: "no",
+  // Allow pinch-zoom (WCAG 1.4.4). Locking zoom to 1.0 blocks low-vision users.
+  maximumScale: 5.0,
+  userScalable: "yes",
 };
 
 export default function RootLayout({ children }) {

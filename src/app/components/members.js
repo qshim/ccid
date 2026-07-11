@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { pxGrotesk } from "@/fonts/fonts";
 import { sheetsStatic } from "@/app/data/sheetsStatic";
 import GreyPlaceholder from "@/app/components/common/GreyPlaceholder";
+import Reveal from "@/app/components/common/Reveal";
 
 // Manual photo overrides (keyed by name). These take precedence over the
 // sheet image — used when a member has no sheet photo or the sheet URL is broken.
@@ -65,7 +66,7 @@ const SHEET_PHOTOS = {
 const MOBILE_HIDDEN = new Set(["Jiyeon Lee"]);
 
 // Members hidden everywhere (both mobile and desktop). Filtered out at build time.
-const HIDDEN_MEMBERS = new Set(["Ji min Rhee", "Eunseol Kim", "Yeju Jeong", "Taeho Kim"]);
+const HIDDEN_MEMBERS = new Set(["Ji min Rhee", "Eunseol Kim", "Taeho Kim"]);
 
 // Per-member object-position override for the circular avatar crop, so heads/faces
 // aren't cut off. Tall portraits default to center; these shift the crop window up.
@@ -148,7 +149,7 @@ export default function Members() {
     "Advisory Board",
     "Former Advisors",
     "Student Researchers",
-    "External Researchers",
+    "Research Interns",
     "Alumni",
   ];
   const categories = Object.entries(membersInfo).sort(([a], [b]) => {
@@ -210,10 +211,10 @@ export default function Members() {
     const normalizedBio = normalizeBio(bio);
 
     return (
-      <div className="min-w-0 flex items-start gap-6">
+      <div className="group min-w-0 flex items-start gap-6">
         <div className="flex-none">
           <div
-            className={`relative overflow-hidden rounded-full ${
+            className={`relative overflow-hidden rounded-full transition-transform duration-500 ease-out group-hover:scale-[1.03] ${
               isFeatured ? "w-[132px] h-[132px]" : "w-[97px] h-[97px]"
             }`}
           >
@@ -257,7 +258,7 @@ export default function Members() {
 
         <div
           className={`min-w-0 flex-1 flex flex-col items-start text-left ${
-            ["Student Researchers", "Alumni", "External Researchers"].includes(category) ? "pt-5" : ""
+            ["Student Researchers", "Alumni", "Research Interns"].includes(category) ? "pt-5" : ""
           }`}
         >
           <p className={`${pxGrotesk.className} text-[15px] sm:text-[16px] leading-[1.08] font-semibold text-black truncate w-full`}>
@@ -273,7 +274,7 @@ export default function Members() {
           {normalizedBio && (
             <div
               className={`${pxGrotesk.className} text-[10px] sm:text-[13px] leading-[1.3] font-light whitespace-pre-wrap w-full ${
-                ["Student Researchers", "Alumni", "External Researchers"].includes(category)
+                ["Student Researchers", "Alumni", "Research Interns"].includes(category)
                   ? "text-[#888] mt-[4px]"
                   : "text-black/70 mt-[3px]"
               }`}
@@ -396,15 +397,19 @@ export default function Members() {
                   className={`grid gap-y-[20px] ${
                     category === "Director"
                       ? "grid-cols-1 gap-x-[48px]"
-                      : ["Student Researchers", "Alumni", "External Researchers"].includes(category)
+                      : ["Student Researchers", "Alumni", "Research Interns"].includes(category)
                       ? "grid-cols-2 lg:grid-cols-4 gap-x-[32px]"
                       : "grid-cols-2 lg:grid-cols-3 gap-x-[48px]"
                   }`}
                 >
                   {list.map((m, idx) => (
-                    <div key={`${category}-${idx}-${m?.[1] || "m"}`} className="min-w-0">
+                    <Reveal
+                      key={`${category}-${idx}-${m?.[1] || "m"}`}
+                      className="min-w-0"
+                      delay={Math.min(idx, 7) * 55}
+                    >
                       {renderMemberCard(m)}
-                    </div>
+                    </Reveal>
                   ))}
                 </div>
               </div>

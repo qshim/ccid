@@ -356,6 +356,30 @@ export const sheetsStatic = {
       ""
     ],
     [
+      "Research Interns",
+      "Yunso Jung",
+      "",
+      "",
+      "Physical Intelligence\nExperimental Interface",
+      ""
+    ],
+    [
+      "Research Interns",
+      "Heeyun Sul",
+      "https://drive.google.com/thumbnail?id=1siPNJzRUaZK-RNh1ZrGzZbvWj13p2qpd&sz=w1000",
+      "",
+      "Interaction Design\nPrototyping",
+      ""
+    ],
+    [
+      "Research Interns",
+      "Yeju Chung",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
       "Student Researchers",
       "Juhae Kim",
       "https://drive.google.com/thumbnail?id=1abzaNf1yVqCLEUuifiMf7HUUMCmVmPpV&sz=w1000",
@@ -432,7 +456,7 @@ export const sheetsStatic = {
       "Hyosun Son",
       "",
       "",
-      "",
+      "Design Strategy\nUser Experience Design\nConversational Design",
       ""
     ],
     [
@@ -465,30 +489,6 @@ export const sheetsStatic = {
       "",
       "",
       "Conversational Design\nInterface Design",
-      ""
-    ],
-    [
-      "External Researchers",
-      "Yunso Jung",
-      "",
-      "",
-      "Physical Intelligence\nExperimental Interface",
-      ""
-    ],
-    [
-      "External Researchers",
-      "Heeyun Sul",
-      "https://drive.google.com/thumbnail?id=1siPNJzRUaZK-RNh1ZrGzZbvWj13p2qpd&sz=w1000",
-      "",
-      "Interaction Design\nPrototyping",
-      ""
-    ],
-    [
-      "External Researchers",
-      "",
-      "",
-      "",
-      "",
       ""
     ],
     [

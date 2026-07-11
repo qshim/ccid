@@ -47,6 +47,15 @@ export default function HomeClient() {
   const [contactTopFade, setContactTopFade] = useState(1); // contact 상단 그라데이션 투명도
   const [brandRiser, setBrandRiser] = useState(false); // brand 상단 퍼플을 줄이는 밝은 웨이브
   const brandRiserTimerRef = useRef(null);
+  // Heavy background = the 2nd/3rd stacked WebGL shader layers. Dropped on mobile
+  // and for reduced-motion users to save GPU (one flowing layer still renders).
+  const [heavyBg, setHeavyBg] = useState(true);
+  // Cover parallax scrub: the cover is a tall (>100vh) section with a pinned
+  // (sticky) stage. As you scroll its runway, the title leads (moves up faster)
+  // and the gradient lags, so the intro stretches longer than one screen.
+  const [parallaxOn, setParallaxOn] = useState(true);
+  const coverTextRef = useRef(null);
+  const COVER_RUNWAY_VH = 0.7; // extra scroll height above 100vh (= section is 170vh)
   const ABOUT_ORDER = ["who", "sectors", "methodology"];
   const ABOUT_INITIAL_LOCK_MS = 900; // 최소 이 시간 동안은 항상 "Who We Are"를 먼저 보여줌
   const ABOUT_STEP_COOLDOWN_MS = 420;
@@ -92,6 +101,24 @@ export default function HomeClient() {
     setAboutInfo(sheetsStatic?.about || []);
   }, []);
 
+  // Decide how many flowing shader layers to render (perf + reduced-motion).
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mobileQ = window.matchMedia("(max-width: 639px)");
+    const reduceQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => {
+      setHeavyBg(!mobileQ.matches && !reduceQ.matches);
+      setParallaxOn(!reduceQ.matches);
+    };
+    apply();
+    mobileQ.addEventListener("change", apply);
+    reduceQ.addEventListener("change", apply);
+    return () => {
+      mobileQ.removeEventListener("change", apply);
+      reduceQ.removeEventListener("change", apply);
+    };
+  }, []);
+
   // Cover: bottom white gradient should appear only after the first scroll.
   useEffect(() => {
     const mainEl = mainRef.current;
@@ -103,9 +130,28 @@ export default function HomeClient() {
       const x = clamp01(t);
       return x * x * (3 - 2 * x);
     };
+    const prefersReduce =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const update = () => {
       raf = 0;
       const st = mainEl.scrollTop || 0;
+
+      // Cover parallax scrub: within the pinned runway (0 → 70vh of scroll), the
+      // title leads up (~28vh) against the (fixed) flowing background, so the intro
+      // stretches longer than one screen. Written straight to the DOM (no React
+      // state) so it stays smooth. Disabled for reduced-motion. The cover→brand
+      // blend gradient is intentionally NOT parallaxed — it lives at the section
+      // bottom so the handoff to brand stays seamless (no floating mid-scroll band).
+      if (!prefersReduce && coverTextRef.current) {
+        const vh = mainEl.clientHeight || 1;
+        const runway = vh * COVER_RUNWAY_VH;
+        const p = clamp01(runway > 0 ? st / runway : 0);
+        const eased = smoothstep01(p);
+        coverTextRef.current.style.transform = `translate3d(0, ${(-eased * vh * 0.28).toFixed(1)}px, 0)`;
+      }
+
       // Dissolve should:
       // - be invisible at the very top
       // - kick in quickly on first scroll
@@ -393,48 +439,52 @@ export default function HomeClient() {
           stops={["#2E1585", "#4E22D6", "#6E3DEE", "#B5ABA0", "#CCC4B8"]}
         />
       </div>
-      <div
-        style={{
-          transition: "opacity 1.5s ease-in-out",
-          opacity: sectionOn === "cover" || sectionOn === "brand" ? 0.6 : 0,
-          top: 0,
-          visibility: sectionOn === "cover" || sectionOn === "brand" ? "visible" : "hidden",
-          mixBlendMode: "multiply",
-        }}
-        className="left-0 fixed z-[-3] w-full h-[118dvh] pointer-events-none"
-      >
-        <GradFlowBackground
-          className="w-full h-full"
-          amp={0.45}
-          contrast={1.15}
-          noiseScale={0.4}
-          wave1Y={0.32}
-          wave2Y={0.62}
-          phase={8421.0}
-          stops={["#2a1466", "#3d1f9e", "#5a2fd6", "#7c3aed", "#A99C8E", "#CCC4B8"]}
-        />
-      </div>
-      <div
-        style={{
-          transition: "opacity 1.5s ease-in-out",
-          opacity: sectionOn === "cover" || sectionOn === "brand" ? 0.45 : 0,
-          top: 0,
-          visibility: sectionOn === "cover" || sectionOn === "brand" ? "visible" : "hidden",
-          mixBlendMode: "multiply",
-        }}
-        className="left-0 fixed z-[-2] w-full h-[118dvh] pointer-events-none"
-      >
-        <GradFlowBackground
-          className="w-full h-full"
-          amp={0.5}
-          contrast={1.2}
-          noiseScale={0.5}
-          wave1Y={0.5}
-          wave2Y={0.85}
-          phase={24310.0}
-          stops={["#2a1466", "#3d1f9e", "#5a2fd6", "#7c3aed", "#A99C8E", "#CCC4B8"]}
-        />
-      </div>
+      {heavyBg && (
+        <div
+          style={{
+            transition: "opacity 1.5s ease-in-out",
+            opacity: sectionOn === "cover" || sectionOn === "brand" ? 0.6 : 0,
+            top: 0,
+            visibility: sectionOn === "cover" || sectionOn === "brand" ? "visible" : "hidden",
+            mixBlendMode: "multiply",
+          }}
+          className="left-0 fixed z-[-3] w-full h-[118dvh] pointer-events-none"
+        >
+          <GradFlowBackground
+            className="w-full h-full"
+            amp={0.45}
+            contrast={1.15}
+            noiseScale={0.4}
+            wave1Y={0.32}
+            wave2Y={0.62}
+            phase={8421.0}
+            stops={["#2a1466", "#3d1f9e", "#5a2fd6", "#7c3aed", "#A99C8E", "#CCC4B8"]}
+          />
+        </div>
+      )}
+      {heavyBg && (
+        <div
+          style={{
+            transition: "opacity 1.5s ease-in-out",
+            opacity: sectionOn === "cover" || sectionOn === "brand" ? 0.45 : 0,
+            top: 0,
+            visibility: sectionOn === "cover" || sectionOn === "brand" ? "visible" : "hidden",
+            mixBlendMode: "multiply",
+          }}
+          className="left-0 fixed z-[-2] w-full h-[118dvh] pointer-events-none"
+        >
+          <GradFlowBackground
+            className="w-full h-full"
+            amp={0.5}
+            contrast={1.2}
+            noiseScale={0.5}
+            wave1Y={0.5}
+            wave2Y={0.85}
+            phase={24310.0}
+            stops={["#2a1466", "#3d1f9e", "#5a2fd6", "#7c3aed", "#A99C8E", "#CCC4B8"]}
+          />
+        </div>
+      )}
       {/* Base background layer */}
       <div
         aria-hidden="true"
@@ -448,7 +498,7 @@ export default function HomeClient() {
           color: BASE_TEXT,
           borderColor: BASE_TEXT,
         }}
-        className="relative scrollbar-hide z-10 h-[100dvh] w-[100%] overflow-y-scroll snap-y snap-mandatory"
+        className="relative scrollbar-hide z-10 h-[100dvh] w-[100%] overflow-y-scroll snap-y snap-proximity"
       >
         {/* Members -> Contact dissolve overlay (visible only while in Members) */}
         <div
@@ -467,14 +517,27 @@ export default function HomeClient() {
         />
         <section
           id="cover"
-          className="relative z-[11] w-[100%] h-[100%] snap-start flex items-start justify-start"
+          className="relative z-[11] w-full"
+          style={{
+            height: parallaxOn ? `calc(100dvh + ${Math.round(COVER_RUNWAY_VH * 100)}dvh)` : "100dvh",
+          }}
         >
-          {/* Mask stays off text wrapper — same-node mask can clip descenders (g, j, p, y) in WebKit. */}
-          <div className="relative z-10 w-full max-w-[var(--siteMax)] mx-auto pr-[var(--siteGutter)] pl-[var(--siteGutter)] md:pl-[calc(var(--siteGutter)*0.6)] lg:pl-0">
-            <Cover textColor={BASE_TEXT} />
+          {/* Pinned stage: stays put across the runway so the scroll can scrub the
+              parallax instead of just translating the whole section 1:1. */}
+          <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex items-start justify-start">
+            {/* Mask stays off text wrapper — same-node mask can clip descenders (g, j, p, y) in WebKit. */}
+            <div
+              ref={coverTextRef}
+              className="relative z-10 w-full max-w-[var(--siteMax)] mx-auto pr-[var(--siteGutter)] pl-[var(--siteGutter)] md:pl-[calc(var(--siteGutter)*0.6)] lg:pl-0 [will-change:transform]"
+            >
+              <Cover textColor={BASE_TEXT} />
+            </div>
           </div>
-          {/* Bottom gradient: the brand section's purple, 0% -> 100% opacity,
-              so the cover blends into the next section's purple top. */}
+          {/* Bottom gradient: the brand section's purple, 0% -> 100% opacity, pinned
+              to the SECTION bottom (right above brand) — not inside the pinned stage
+              and never parallaxed — so the cover→brand handoff stays seamless. During
+              the scrub it sits off-screen below the fold (the flowing background is
+              continuous), and only appears as the clean blend at the handoff. */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -bottom-[3px] left-0 w-full h-[22vh] md:h-[26vh] z-[5]"
