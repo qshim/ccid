@@ -82,7 +82,7 @@ function photoPosition(name) {
 // when a source photo is framed wider/further back than its neighbours. Falls
 // back to the small 1.04 nudge used for locally-hosted member photos.
 const PHOTO_SCALE = {
-  "Yeju Chung": 1.1,
+  "Yeju Chung": 1.32, // 110% of the previous 1.2
 };
 // Transform-origin per scaled member, so zooming the crop anchors near the top
 // of the head instead of the center (center-origin scaling crops the forehead).
