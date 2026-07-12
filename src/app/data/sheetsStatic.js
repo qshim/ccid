@@ -374,9 +374,9 @@ export const sheetsStatic = {
     [
       "Research Interns",
       "Yeju Chung",
+      "https://drive.google.com/thumbnail?id=1qSuq30xQdBHnyD4OGfgYx5UT6sCpMRZP&sz=w1000",
       "",
-      "",
-      "",
+      "Service Design\nUX/UI Design\nUser Experience Design",
       ""
     ],
     [
