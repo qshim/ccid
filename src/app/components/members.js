@@ -82,13 +82,21 @@ function photoPosition(name) {
 // when a source photo is framed wider/further back than its neighbours. Falls
 // back to the small 1.04 nudge used for locally-hosted member photos.
 const PHOTO_SCALE = {
-  "Yeju Chung": 1.32,
+  "Yeju Chung": 1.2,
+};
+// Transform-origin per scaled member, so zooming the crop anchors near the top
+// of the head instead of the center (center-origin scaling crops the forehead).
+const PHOTO_ORIGIN = {
+  "Yeju Chung": "center 20%",
 };
 function photoTransform(name, imageSrc) {
   const s = PHOTO_SCALE[(name || "").trim()];
   if (s) return `scale(${s})`;
   if (imageSrc && String(imageSrc).startsWith("/img/members/")) return "scale(1.04)";
   return undefined;
+}
+function photoOrigin(name) {
+  return PHOTO_ORIGIN[(name || "").trim()];
 }
 
 function resolvePhoto(name, image) {
@@ -190,7 +198,7 @@ export default function Members() {
               src={imageSrc}
               alt={name || "member"}
               className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]`}
-              style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc) }}
+              style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc), transformOrigin: photoOrigin(name) }}
               loading="lazy"
               referrerPolicy="no-referrer"
               onError={(e) => {
@@ -237,7 +245,7 @@ export default function Members() {
                 src={imageSrc}
                 alt={name || "member"}
                 className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]`}
-                style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc) }}
+                style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc), transformOrigin: photoOrigin(name) }}
                 loading="lazy"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
@@ -366,7 +374,7 @@ export default function Members() {
                                 src={imageSrc}
                                 alt={name || "member"}
                                 className={`w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]`}
-                                style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc) }}
+                                style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc), transformOrigin: photoOrigin(name) }}
                                 loading="lazy"
                                 referrerPolicy="no-referrer"
                                 onError={(e) => {
