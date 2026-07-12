@@ -78,6 +78,19 @@ function photoPosition(name) {
   return PHOTO_POSITION[(name || "").trim()];
 }
 
+// Per-member crop zoom (transform scale). Used to match head sizes across a row
+// when a source photo is framed wider/further back than its neighbours. Falls
+// back to the small 1.04 nudge used for locally-hosted member photos.
+const PHOTO_SCALE = {
+  "Yeju Chung": 1.32,
+};
+function photoTransform(name, imageSrc) {
+  const s = PHOTO_SCALE[(name || "").trim()];
+  if (s) return `scale(${s})`;
+  if (imageSrc && String(imageSrc).startsWith("/img/members/")) return "scale(1.04)";
+  return undefined;
+}
+
 function resolvePhoto(name, image) {
   const key = (name || "").trim();
   return LOCAL_PHOTOS[key] || SHEET_PHOTOS[key] || String(image || "").trim() || "";
@@ -176,8 +189,8 @@ export default function Members() {
             <img
               src={imageSrc}
               alt={name || "member"}
-              className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]${imageSrc.startsWith("/img/members/") ? " scale-[1.04]" : ""}`}
-              style={{ objectPosition: photoPosition(name) }}
+              className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]`}
+              style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc) }}
               loading="lazy"
               referrerPolicy="no-referrer"
               onError={(e) => {
@@ -223,8 +236,8 @@ export default function Members() {
               <img
                 src={imageSrc}
                 alt={name || "member"}
-                className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]${imageSrc.startsWith("/img/members/") ? " scale-[1.04]" : ""}`}
-                style={{ objectPosition: photoPosition(name) }}
+                className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]`}
+                style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc) }}
                 loading="lazy"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
@@ -352,8 +365,8 @@ export default function Members() {
                               <img
                                 src={imageSrc}
                                 alt={name || "member"}
-                                className={`w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]${imageSrc.startsWith("/img/members/") ? " scale-[1.04]" : ""}`}
-                                style={{ objectPosition: photoPosition(name) }}
+                                className={`w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]`}
+                                style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc) }}
                                 loading="lazy"
                                 referrerPolicy="no-referrer"
                                 onError={(e) => {
