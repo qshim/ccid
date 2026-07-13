@@ -1,0 +1,527 @@
+"use client";
+
+// cciD Lab — custom zoomable project timeline.
+// Vertical axis: projects (sticky left column). Horizontal axis: time.
+// Month/Week/Day zooms change real px-per-day. Sticky date header, today line,
+// weekend shading, month boundaries, lane-stacked overlapping events.
+// v1 editing is click-based (empty area → new event; block → drawer);
+// drag interactions can layer on later without changing the data flow.
+
+import { useMemo, useRef, useEffect, useCallback } from "react";
+import {
+  toDayStr,
+  todayStr,
+  addDays,
+  diffDays,
+  dayOfWeek,
+  computeRange,
+  monthSegments,
+  assignLanes,
+  EVENT_TYPE_META,
+  PROJECT_STATUS_META,
+} from "../lib/timelineMath";
+import { formatSeoul, utcIsoToSeoulLocal } from "../lib/tz";
+import { resolvePhoto } from "@/app/components/members";
+
+const LEFT_W = 232; // sticky project column width
+const ROW_BASE = 34; // px per event lane
+const ROW_PAD = 26; // project bar area height
+
+// Day view: split each day cell into 3 horizontal zones by time of day, so
+// same-day events land in different columns instead of only stacking
+// vertically. Week/month views stay single-slot (1 slot = 1 day), unaffected.
+const DAY_BUCKETS = [
+  { key: "am", label: "오전", hour: 9 }, // 00:00–11:59
+  { key: "pm", label: "오후", hour: 14 }, // 12:00–17:59
+  { key: "eve", label: "저녁/밤", hour: 19 }, // 18:00–23:59
+];
+function kstHour(iso) {
+  const local = utcIsoToSeoulLocal(iso);
+  return local ? Number(local.slice(11, 13)) : 9;
+}
+function timeBucketIndex(hour) {
+  if (hour < 12) return 0;
+  if (hour < 18) return 1;
+  return 2;
+}
+
+export default function Timeline({
+  projects,
+  events,
+  researchers,
+  pxPerDay,
+  zoomKey,
+  onOpenProject,
+  onOpenEvent,
+  onCreateEventAt,
+  scrollRef,
+}) {
+  const range = useMemo(() => computeRange(projects, events), [projects, events]);
+  const months = useMemo(() => monthSegments(range.start, range.totalDays), [range]);
+  const today = todayStr();
+  const todayIdx = diffDays(today, range.start);
+  const gridW = range.totalDays * pxPerDay;
+  const researcherById = useMemo(
+    () => Object.fromEntries(researchers.map((r) => [r.id, r])),
+    [researchers]
+  );
+
+  // 썸네일 아바타 정렬: 디렉터 → 어드바이저 → 리서치 인턴 → 리서처 → 기타.
+  // 애드혹 "…선생님"은 어드바이저로 취급. 같은 카테고리 안에서는 멤버 등록 순서 유지.
+  const AVATAR_CATEGORY_RANK = {
+    Director: 0,
+    "Advisory Board": 1,
+    "Research Interns": 2,
+    "Student Researchers": 3,
+  };
+  const avatarRank = (m) => {
+    const r = researcherById[m.researcherId];
+    const cat = r?.category || (/선생님\s*$/.test(m.researcherId) ? "Advisory Board" : "");
+    return AVATAR_CATEGORY_RANK[cat] ?? 4;
+  };
+  const sortMembersForAvatars = (members) =>
+    [...members].sort((a, b) => avatarRank(a) - avatarRank(b));
+
+  const containerRef = useRef(null);
+  useEffect(() => {
+    if (scrollRef) scrollRef.current = { scrollToToday };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [range.start, pxPerDay]);
+
+  const scrollToToday = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.scrollTo({
+      left: Math.max(0, todayIdx * pxPerDay - (el.clientWidth - LEFT_W) / 2),
+      behavior: "smooth",
+    });
+  }, [todayIdx, pxPerDay]);
+
+  useEffect(() => {
+    scrollToToday();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pxPerDay]);
+
+  // Day view only: faint 1px dividers at the 1/3 and 2/3 marks of each day
+  // cell, so the 오전/오후/저녁 zones read as distinct columns even before an
+  // event lands in them.
+  const dayBucketBg = useMemo(() => {
+    if (zoomKey !== "day") return null;
+    const u = pxPerDay / 3;
+    return {
+      backgroundImage: `repeating-linear-gradient(to right, transparent 0, transparent ${u - 1}px, rgba(15,15,19,0.06) ${u - 1}px, rgba(15,15,19,0.06) ${u}px, transparent ${u}px, transparent ${2 * u - 1}px, rgba(15,15,19,0.06) ${2 * u - 1}px, rgba(15,15,19,0.06) ${2 * u}px, transparent ${2 * u}px, transparent ${pxPerDay}px)`,
+    };
+  }, [zoomKey, pxPerDay]);
+
+  // Weekend shading aligned to the range's first day (only useful when zoomed in).
+  const weekendBg = useMemo(() => {
+    if (pxPerDay < 12) return null;
+    const dow = dayOfWeek(range.start); // 0=Sun
+    const satOffset = ((6 - dow + 7) % 7) * pxPerDay;
+    const week = 7 * pxPerDay;
+    return {
+      backgroundImage: `repeating-linear-gradient(to right, rgba(15,15,19,0.035) 0, rgba(15,15,19,0.035) ${2 * pxPerDay}px, transparent ${2 * pxPerDay}px, transparent ${week}px)`,
+      backgroundPosition: `${satOffset}px 0`,
+    };
+  }, [range.start, pxPerDay]);
+
+  // Day view: 3 slots/day (오전·오후·저녁). Other views: 1 slot/day (unchanged
+  // behavior) — this makes multi-day bars fall out naturally too, since their
+  // slot span is just slotsPerDay × day-span either way.
+  const slotsPerDay = zoomKey === "day" ? 3 : 1;
+  const unitPx = pxPerDay / slotsPerDay;
+
+  const rows = useMemo(() => {
+    return projects.map((p) => {
+      const pStart = p.startDate ? toDayStr(p.startDate) : "";
+      const pEnd = p.endDate ? toDayStr(p.endDate) : "";
+      const evItems = events
+        .filter((e) => e.projectId === p.id && e.start)
+        .map((e) => {
+          const s = toDayStr(e.start);
+          const eEnd = e.end ? toDayStr(e.end) : s;
+          const dayIndex = Math.max(0, diffDays(s, range.start));
+          const daySpan = Math.max(1, diffDays(eEnd, s) + 1);
+          const singleDay = daySpan === 1;
+          const bucket = slotsPerDay > 1 && singleDay ? timeBucketIndex(kstHour(e.start)) : 0;
+          const startIndex = dayIndex * slotsPerDay + bucket;
+          const span = singleDay ? 1 : daySpan * slotsPerDay;
+          return { event: e, startIndex, span };
+        });
+      const { items, laneCount } = assignLanes(evItems);
+      return {
+        project: p,
+        barStart: pStart ? diffDays(pStart, range.start) : null,
+        barSpan: pStart ? Math.max(1, diffDays(pEnd || pStart, pStart) + 1) : null,
+        items,
+        height: ROW_PAD + Math.max(1, laneCount) * ROW_BASE + 10,
+      };
+    });
+  }, [projects, events, range.start, slotsPerDay]);
+
+  const handleRowClick = (e, project) => {
+    // Clicks on empty timeline area → create an event prefilled at that date
+    // (and, in day view, at the clicked 오전/오후/저녁 zone's default hour).
+    if (e.target !== e.currentTarget) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const dayIndex = Math.floor(x / pxPerDay);
+    const day = addDays(range.start, dayIndex);
+    const bucketInDay = slotsPerDay > 1 ? Math.floor((x - dayIndex * pxPerDay) / unitPx) : 0;
+    const hour = DAY_BUCKETS[Math.min(bucketInDay, 2)]?.hour ?? 10;
+    onCreateEventAt(project.id, day, hour);
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-full overflow-x-auto overflow-y-auto max-h-[calc(100dvh-190px)] border border-primaryB/10 bg-[#FBFBF8] scrollbar-hide"
+      role="region"
+      aria-label="Project timeline"
+    >
+      <div style={{ width: LEFT_W + gridW, minWidth: "100%" }}>
+        {/* ---- date header (sticky top) ---- */}
+        <div className="sticky top-0 z-30 flex bg-[#F0F0EC] border-b border-primaryB/15">
+          <div
+            className="sticky left-0 z-40 shrink-0 bg-[#F0F0EC] border-r border-primaryB/15 flex items-end px-3 pb-1.5"
+            style={{ width: LEFT_W }}
+          >
+            <span className="font-light uppercase text-[11px] tracking-[0.01em] text-[#888]">
+              Projects · {projects.length}
+            </span>
+          </div>
+          <div className="relative" style={{ width: gridW }}>
+            <div className="flex h-[26px]">
+              {months.map((m) => (
+                <div
+                  key={m.key}
+                  className="border-r border-primaryB/15 px-2 flex items-center overflow-hidden"
+                  style={{ width: m.days * pxPerDay }}
+                >
+                  <span className="font-light uppercase text-[11px] tracking-[0.01em] text-primaryB/70 whitespace-nowrap">
+                    {m.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+            {zoomKey !== "month" && (
+              <div className="flex h-[20px] border-t border-primaryB/10">
+                {Array.from({ length: range.totalDays }, (_, i) => {
+                  const day = addDays(range.start, i);
+                  const dow = dayOfWeek(day);
+                  if (zoomKey === "week" && dow !== 1) return null;
+                  const w = zoomKey === "week" ? pxPerDay * 7 : pxPerDay;
+                  return (
+                    <div
+                      key={day}
+                      className="shrink-0 border-r border-primaryB/[0.07] px-[3px] flex items-center"
+                      style={{ width: w }}
+                    >
+                      <span
+                        className={`text-[10px] leading-none whitespace-nowrap ${
+                          day === today ? "text-[#4E22D6] font-medium" : "text-primaryB/45"
+                        }`}
+                      >
+                        {Number(day.slice(8, 10))}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ---- rows ---- */}
+        {rows.length === 0 && (
+          <div className="px-4 py-10 text-[14px] text-primaryB/50">
+            표시할 프로젝트가 없습니다. 우측 상단의 New project로 첫 프로젝트를 추가하세요.
+          </div>
+        )}
+        {rows.map(({ project: p, barStart, barSpan, items, height }) => {
+          const status = PROJECT_STATUS_META[p.status] || PROJECT_STATUS_META.planning;
+          // 강조 프로젝트: 진한 프로젝트 색 배경 + 밝은 텍스트 (색만으로 구분하지
+          // 않도록 텍스트/구성은 동일하게 유지).
+          const em = Boolean(p.emphasis);
+          const emColor = p.color || "#4E22D6";
+          return (
+            <div key={p.id} className="flex border-b border-primaryB/[0.08]">
+              {/* sticky left: project info */}
+              <div
+                className={`sticky left-0 z-20 shrink-0 border-r border-primaryB/15 px-3 py-2.5 flex flex-col gap-1 min-w-0 ${
+                  em ? "" : "bg-[#F0F0EC]"
+                }`}
+                style={{ width: LEFT_W, minHeight: height, ...(em ? { backgroundColor: emColor } : {}) }}
+              >
+                <button
+                  type="button"
+                  onClick={() => onOpenProject(p.id)}
+                  className="text-left min-w-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] group"
+                >
+                  <span
+                    className={`block text-[14px] font-medium leading-[1.25] transition-colors truncate ${
+                      em
+                        ? "text-white group-hover:text-white/80"
+                        : "text-primaryB group-hover:text-[#5D009C]"
+                    }`}
+                  >
+                    {p.shortName || p.title}
+                  </span>
+                  <span className="mt-0.5 flex items-center gap-1.5">
+                    <span
+                      aria-hidden="true"
+                      className="inline-block w-[7px] h-[7px] rounded-full"
+                      style={{ backgroundColor: em ? "#FFFFFF" : status.color }}
+                    />
+                    <span
+                      className={`font-light uppercase text-[10px] tracking-[0.05em] ${
+                        em ? "text-white/75" : "text-[#888]"
+                      }`}
+                    >
+                      {status.label}
+                      {p.clientOrPartner ? ` · ${p.clientOrPartner}` : ""}
+                    </span>
+                  </span>
+                </button>
+                {p.projectLead && (
+                  <span
+                    className={`text-[12px] leading-[1.25] font-medium ${
+                      em ? "text-white/90" : "text-primaryB/85"
+                    }`}
+                  >
+                    <span
+                      className={`font-light uppercase text-[10px] tracking-[0.05em] mr-1.5 ${
+                        em ? "text-white/70" : "text-[#888]"
+                      }`}
+                    >
+                      Lead
+                    </span>
+                    {String(p.projectLead)
+                      .split(/[,;]/)
+                      .map((s) => s.trim())
+                      .filter(Boolean)
+                      .map((id) => researcherById[id]?.name || id)
+                      .join(", ")}
+                  </span>
+                )}
+                {(p.siteUrl || p.figmaLinks?.length > 0) && (
+                  <div className="flex items-center flex-wrap gap-1.5 mt-1.5">
+                    {p.siteUrl && (
+                      <a
+                        href={p.siteUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className={`text-[10px] uppercase tracking-[0.05em] px-1.5 py-[2px] rounded-full border ${
+                          em ? "border-white/40 text-white/85 hover:bg-white/10" : "border-primaryB/25 text-primaryB/70 hover:border-primaryB/60"
+                        }`}
+                      >
+                        Site ↗
+                      </a>
+                    )}
+                    {(p.figmaLinks || []).map((l, i) => (
+                      <a
+                        key={i}
+                        href={l.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        title={l.url}
+                        className={`text-[10px] uppercase tracking-[0.05em] px-1.5 py-[2px] rounded-full border ${
+                          em ? "border-white/40 text-white/85 hover:bg-white/10" : "border-primaryB/25 text-primaryB/70 hover:border-primaryB/60"
+                        }`}
+                      >
+                        {l.label || `Figma${(p.figmaLinks.length > 1 ? " " + (i + 1) : "")}`} ↗
+                      </a>
+                    ))}
+                  </div>
+                )}
+                {p.members?.length > 0 && (
+                  <div className="flex items-center flex-wrap gap-[3px] mt-auto" aria-label={`참여 연구원 ${p.members.length}명`}>
+                    {sortMembersForAvatars(p.members).slice(0, 8).map((m) => {
+                      const r = researcherById[m.researcherId];
+                      // Ad hoc (not-yet-in-roster) names can still resolve to a
+                      // local photo override by exact name match (see members.js
+                      // LOCAL_PHOTOS/SHEET_PHOTOS) — useful for people hidden from
+                      // the public site or not yet added as a sheet row.
+                      const photo = r ? resolvePhoto(r.name, r.image) : resolvePhoto(m.researcherId, "");
+                      const name = r?.name || m.researcherId;
+                      const label = `${name}${m.role ? ` — ${m.role}` : ""}`;
+                      return (
+                        <span
+                          key={m.researcherId}
+                          className="group/av relative w-[20px] h-[20px] rounded-full overflow-visible shrink-0"
+                        >
+                          <span className="block w-full h-full rounded-full overflow-hidden bg-[#F6F0FF] ring-1 ring-[#F0F0EC]">
+                            {photo ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={photo}
+                                alt={label}
+                                className="w-full h-full object-cover filter grayscale"
+                                referrerPolicy="no-referrer"
+                              />
+                            ) : (
+                              // 사진이 없거나 명단에 없는 이름 → 빈 컬러 원
+                              <span aria-hidden="true" className="block w-full h-full bg-[#E0E0FF]" />
+                            )}
+                          </span>
+                          {/* hover 플로팅 이름표 */}
+                          <span
+                            role="tooltip"
+                            className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+4px)] z-50 hidden group-hover/av:block whitespace-nowrap rounded bg-primaryB px-1.5 py-0.5 text-[10px] leading-none text-white shadow-md"
+                          >
+                            {label}
+                          </span>
+                        </span>
+                      );
+                    })}
+                    {p.members.length > 8 && (
+                      <span className="text-[10px] text-primaryB/40 leading-none">
+                        +{p.members.length - 8}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* timeline lane area */}
+              <div
+                className="relative cursor-crosshair"
+                style={{ width: gridW, minHeight: height, ...(weekendBg || {}) }}
+                onClick={(e) => handleRowClick(e, p)}
+                aria-label={`${p.title} — 빈 영역을 클릭하면 해당 날짜에 새 일정을 추가합니다`}
+              >
+                {dayBucketBg && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 pointer-events-none"
+                    style={dayBucketBg}
+                  />
+                )}
+                {/* month boundary lines */}
+                {months.slice(1).map((m) => (
+                  <span
+                    key={m.key}
+                    aria-hidden="true"
+                    className="absolute top-0 bottom-0 w-px bg-primaryB/[0.08] pointer-events-none"
+                    style={{ left: m.startIndex * pxPerDay }}
+                  />
+                ))}
+                {/* today line */}
+                {todayIdx >= 0 && todayIdx < range.totalDays && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-0 bottom-0 w-px bg-[#4E22D6] pointer-events-none"
+                    style={{ left: todayIdx * pxPerDay + Math.floor(pxPerDay / 2) }}
+                  />
+                )}
+                {/* project span bar */}
+                {barStart !== null && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenProject(p.id)}
+                    aria-label={`${p.title} 기간, 진행률 ${p.progress || 0}%`}
+                    className="absolute h-[10px] rounded-[2px] overflow-hidden focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] hover:opacity-90 transition-opacity"
+                    style={{
+                      top: 8,
+                      left: Math.max(0, barStart) * pxPerDay,
+                      width: Math.max(pxPerDay, barSpan * pxPerDay),
+                      backgroundColor: em ? emColor : `${emColor}26`,
+                      border: `1px solid ${em ? emColor : `${emColor}55`}`,
+                    }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-y-0 left-0"
+                      style={{
+                        width: `${Math.max(0, Math.min(100, p.progress || 0))}%`,
+                        backgroundColor: em ? "rgba(255,255,255,0.35)" : `${emColor}59`,
+                      }}
+                    />
+                  </button>
+                )}
+                {/* event blocks */}
+                {items.map(({ event: ev, startIndex, span, lane }) => {
+                  const meta = EVENT_TYPE_META[ev.eventType] || EVENT_TYPE_META.other;
+                  const top = ROW_PAD + lane * ROW_BASE;
+                  const isMilestone = ev.eventType === "milestone";
+                  const bucketLabel =
+                    slotsPerDay > 1 && span === 1 ? ` (${DAY_BUCKETS[startIndex % 3].label})` : "";
+                  const label = `${ev.title} — ${meta.tag} ${formatSeoul(ev.start, { hour: undefined, minute: undefined })}${bucketLabel}${ev.syncStatus === "error" ? " (동기화 오류)" : ""}`;
+                  if (isMilestone) {
+                    return (
+                      <button
+                        key={ev.id}
+                        type="button"
+                        onClick={() => onOpenEvent(ev.id)}
+                        title={label}
+                        aria-label={label}
+                        className="absolute flex items-center gap-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] group"
+                        style={{ top: top + 4, left: startIndex * unitPx + unitPx / 2 - 5 }}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className="block w-[9px] h-[9px] rotate-45 group-hover:scale-110 transition-transform"
+                          style={{ backgroundColor: meta.color }}
+                        />
+                        {unitPx >= 12 && (
+                          <span className="text-[10px] leading-none whitespace-nowrap text-primaryB/70">
+                            {ev.title}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  }
+                  return (
+                    <button
+                      key={ev.id}
+                      type="button"
+                      onClick={() => onOpenEvent(ev.id)}
+                      title={label}
+                      aria-label={label}
+                      className="absolute h-[22px] rounded-[2px] flex items-center gap-1 px-1.5 overflow-hidden text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] hover:brightness-95 transition-[filter]"
+                      style={{
+                        top,
+                        left: startIndex * unitPx,
+                        width: Math.max(unitPx * span - (slotsPerDay > 1 ? 3 : 0), 46),
+                        backgroundColor: `${meta.color}1c`,
+                        borderLeft: `3px solid ${meta.color}`,
+                        // Deadlines get a stripe pattern — never color alone.
+                        ...(ev.eventType === "deadline"
+                          ? {
+                              backgroundImage: `repeating-linear-gradient(135deg, ${meta.color}30 0 3px, transparent 3px 7px)`,
+                            }
+                          : {}),
+                      }}
+                    >
+                      <span
+                        className="text-[9px] font-medium tracking-[0.08em] leading-none shrink-0"
+                        style={{ color: meta.color }}
+                      >
+                        {meta.tag}
+                      </span>
+                      <span className="text-[11px] leading-none text-primaryB/80 truncate">
+                        {ev.title}
+                      </span>
+                      {ev.googleMeetUrl && (
+                        <span aria-hidden="true" className="text-[9px] shrink-0" style={{ color: meta.color }}>
+                          ⌁
+                        </span>
+                      )}
+                      {ev.syncStatus === "error" && (
+                        <span className="text-[10px] shrink-0 text-[#9F2F2D]" aria-hidden="true">
+                          !
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

@@ -56,6 +56,17 @@ export default function HomeClient() {
   const [parallaxOn, setParallaxOn] = useState(true);
   const coverTextRef = useRef(null);
   const COVER_RUNWAY_VH = 0.7; // extra scroll height above 100vh (= section is 170vh)
+  // Scroll-driven brightening of the background shader's warm-grey tones. One
+  // lift value per stacked layer; the back (base) layer leads and each layer
+  // above it brightens a beat later, so the warmth rises through the stack as
+  // you scroll (a scrubbing cascade). Read live by GradFlowBackground.
+  const bgLiftBack = useRef(0); // z-[-4] base layer (brightens first)
+  const bgLiftMid = useRef(0); // z-[-3]
+  const bgLiftFront = useRef(0); // z-[-2] (brightens last)
+  const BG_LIFT_MAX = 0.55;
+  // Play the cascade across the cover's pinned scrub (~0.7vh) where the shader is
+  // fully visible; past that the purple blend covers the warm-grey bands anyway.
+  const BG_LIFT_SPAN_VH = 0.7;
   const ABOUT_ORDER = ["who", "sectors", "methodology"];
   const ABOUT_INITIAL_LOCK_MS = 900; // 최소 이 시간 동안은 항상 "Who We Are"를 먼저 보여줌
   const ABOUT_STEP_COOLDOWN_MS = 420;
@@ -150,6 +161,18 @@ export default function HomeClient() {
         const p = clamp01(runway > 0 ? st / runway : 0);
         const eased = smoothstep01(p);
         coverTextRef.current.style.transform = `translate3d(0, ${(-eased * vh * 0.28).toFixed(1)}px, 0)`;
+      }
+
+      // Background warm-grey brightening cascade (bottom/back layer first, then
+      // up through the stack) driven by scroll over BG_LIFT_SPAN_VH viewports.
+      if (!prefersReduce) {
+        const vh = mainEl.clientHeight || 1;
+        const pAll = clamp01(st / (vh * BG_LIFT_SPAN_VH));
+        // Each layer ramps over its own staggered window so they brighten in turn.
+        const seg = (a, b) => smoothstep01(clamp01((pAll - a) / (b - a)));
+        bgLiftBack.current = seg(0.0, 0.55) * BG_LIFT_MAX;
+        bgLiftMid.current = seg(0.2, 0.75) * BG_LIFT_MAX;
+        bgLiftFront.current = seg(0.4, 0.95) * BG_LIFT_MAX;
       }
 
       // Dissolve should:
@@ -436,6 +459,7 @@ export default function HomeClient() {
           wave1Y={0.42}
           wave2Y={0.72}
           phase={16192.0}
+          liftRef={bgLiftBack}
           stops={["#2E1585", "#4E22D6", "#6E3DEE", "#B5ABA0", "#CCC4B8"]}
         />
       </div>
@@ -458,6 +482,7 @@ export default function HomeClient() {
             wave1Y={0.32}
             wave2Y={0.62}
             phase={8421.0}
+            liftRef={bgLiftMid}
             stops={["#2a1466", "#3d1f9e", "#5a2fd6", "#7c3aed", "#A99C8E", "#CCC4B8"]}
           />
         </div>
@@ -481,6 +506,7 @@ export default function HomeClient() {
             wave1Y={0.5}
             wave2Y={0.85}
             phase={24310.0}
+            liftRef={bgLiftFront}
             stops={["#2a1466", "#3d1f9e", "#5a2fd6", "#7c3aed", "#A99C8E", "#CCC4B8"]}
           />
         </div>

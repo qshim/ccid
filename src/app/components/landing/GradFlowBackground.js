@@ -45,6 +45,7 @@ uniform float u_reliefK;
 uniform float u_noiseScale;
 uniform float u_wave1Y;
 uniform float u_wave2Y;
+uniform float u_lift;
 
 const float PI = 3.14159;
 
@@ -236,6 +237,12 @@ void main() {
   col += vec3(0.05, 0.03, 0.09) * slope * u_relief;
 #endif
 
+  // Scroll-driven brightening: lift only the warm/light end of the gradient
+  // (the grey-beige tones live at high lightness) toward a warm near-white, so
+  // the purples stay put while the warm greys glow up as u_lift rises.
+  float warmMask = smoothstep(0.5, 1.0, lightness);
+  col = mix(col, vec3(0.98, 0.965, 0.925), clamp(u_lift, 0.0, 1.0) * warmMask);
+
   gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }`;
 
@@ -297,6 +304,16 @@ void main() {
   gl.uniform1f(gl.getUniformLocation(prog, "u_noiseScale"), opts.noiseScale != null ? opts.noiseScale : 1.0);
   gl.uniform1f(gl.getUniformLocation(prog, "u_wave1Y"), opts.wave1Y != null ? opts.wave1Y : 0.45);
   gl.uniform1f(gl.getUniformLocation(prog, "u_wave2Y"), opts.wave2Y != null ? opts.wave2Y : 0.9);
+  const uLift = gl.getUniformLocation(prog, "u_lift");
+  // Scroll-driven brightening amount. Either a static number (opts.lift) or a
+  // live ref (opts.liftRef) whose .current the paint loop reads every frame.
+  const liftRef = opts.liftRef || null;
+  const liftStatic = opts.lift != null ? opts.lift : 0.0;
+  const readLift = () => {
+    const v = liftRef && typeof liftRef.current === "number" ? liftRef.current : liftStatic;
+    return Math.max(0, Math.min(1, v));
+  };
+  gl.uniform1f(uLift, readLift());
 
   let W = 1, H = 1;
   function resize() {
@@ -328,6 +345,7 @@ void main() {
     gl.uniform1f(uTime, tv);
     gl.uniform1f(uW, W);
     gl.uniform1f(uH, H);
+    gl.uniform1f(uLift, readLift());
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }

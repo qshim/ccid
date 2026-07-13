@@ -99,7 +99,8 @@ function photoOrigin(name) {
   return PHOTO_ORIGIN[(name || "").trim()];
 }
 
-function resolvePhoto(name, image) {
+// Exported for reuse (Lab Ops researcher UI) — keeps photo overrides single-source.
+export function resolvePhoto(name, image) {
   const key = (name || "").trim();
   return LOCAL_PHOTOS[key] || SHEET_PHOTOS[key] || String(image || "").trim() || "";
 }
