@@ -27,6 +27,26 @@ const EVENT_TYPES = Object.keys(EVENT_TYPE_META);
 const STATUSES = Object.keys(PROJECT_STATUS_META);
 const VISIBILITIES = ["internal", "private", "public_candidate"];
 
+// 반복 일정: 드롭다운 선택 ↔ Google RRULE 문자열. 요일/일자는 일정 시작(start)이
+// 결정하므로(예: 월요일 22:30 시작 + 매주 → 매주 월요일), FREQ만 다룬다.
+// untilDay(프로젝트 종료일)가 있으면 그때까지만 반복.
+const RECUR_RULE = { weekly: "FREQ=WEEKLY", biweekly: "FREQ=WEEKLY;INTERVAL=2", monthly: "FREQ=MONTHLY" };
+function buildRRule(freq, untilDay) {
+  const base = RECUR_RULE[freq];
+  if (!base) return "";
+  if (untilDay && /^\d{4}-\d{2}-\d{2}$/.test(untilDay)) {
+    return `RRULE:${base};UNTIL=${untilDay.replace(/-/g, "")}T145959Z`; // 23:59:59 KST
+  }
+  return `RRULE:${base}`;
+}
+function parseFreq(rrule) {
+  const r = String(rrule || "").toUpperCase();
+  if (r.includes("MONTHLY")) return "monthly";
+  if (r.includes("INTERVAL=2")) return "biweekly";
+  if (r.includes("WEEKLY")) return "weekly";
+  return "none";
+}
+
 const ACTIVITY_LABELS = {
   project_created: "프로젝트 생성",
   project_updated: "프로젝트 수정",
@@ -824,7 +844,35 @@ function EventPanel({
               onChange={set("endLocal")}
             />
           </div>
-          <CheckField label="종일 일정" checked={f.allDay} onChange={set("allDay")} />
+          <div className="grid grid-cols-2 gap-4 items-end">
+            <div>
+              <SelectField
+                label="반복"
+                value={parseFreq(f.recurrence)}
+                onChange={(e) => {
+                  const proj = projects.find((p) => p.id === f.projectId);
+                  const untilDay = proj?.endDate ? String(proj.endDate).slice(0, 10) : "";
+                  setF((s) => ({ ...s, recurrence: buildRRule(e.target.value, untilDay) }));
+                }}
+              >
+                <option value="none">반복 없음</option>
+                <option value="weekly">매주</option>
+                <option value="biweekly">격주</option>
+                <option value="monthly">매월</option>
+              </SelectField>
+              {f.recurrence && (
+                <p className="text-[11px] text-primaryB/45 mt-1">
+                  {(() => {
+                    const proj = projects.find((p) => p.id === f.projectId);
+                    return proj?.endDate
+                      ? `프로젝트 종료일(${String(proj.endDate).slice(0, 10)})까지 반복`
+                      : "종료일 없이 반복";
+                  })()}
+                </p>
+              )}
+            </div>
+            <CheckField label="종일 일정" checked={f.allDay} onChange={set("allDay")} />
+          </div>
           <TextField label="장소" value={f.location} onChange={set("location")} />
           <TextArea label="설명" value={f.description} onChange={set("description")} />
         </div>
@@ -1024,6 +1072,26 @@ function EventPanel({
               <BoxButton onClick={() => onRetrySync(event.id)} disabled={busy}>
                 재시도
               </BoxButton>
+            </div>
+          )}
+          {/* 참석자 알림(초대/변경 메일) 발송 상태 + 수동 발송. 저장/동기화 시
+              sendUpdates=all로 자동 발송되며, 그 시점을 notifiedAt에 기록해 표시한다. */}
+          {f.wantCalendar && String(f.attendees || "").includes("@") && (
+            <div className="flex items-center justify-between gap-2 pt-1.5 mt-1 border-t border-primaryB/10">
+              <span className="text-[12px] min-w-0">
+                {event?.notifiedAt ? (
+                  <span className="text-[#346538]">✉ 참석자에게 알림 발송됨 · {formatSeoul(event.notifiedAt)}</span>
+                ) : (
+                  <span className="text-primaryB/50">
+                    {isNew ? "저장하면 참석자에게 알림 메일이 발송됩니다" : "아직 알림 미발송"}
+                  </span>
+                )}
+              </span>
+              {!isNew && event?.googleCalendarEventId && (
+                <BoxButton onClick={() => onRetrySync(event.id)} disabled={busy}>
+                  {busy ? "발송 중…" : event?.notifiedAt ? "알림 다시 보내기" : "알림 메일 발송"}
+                </BoxButton>
+              )}
             </div>
           )}
         </div>

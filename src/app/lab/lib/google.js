@@ -183,6 +183,17 @@ function eventToGoogleBody(event) {
     .filter((s) => s.includes("@"))
     .map((email) => ({ email }));
   if (attendees.length) body.attendees = attendees;
+  // 반복 일정: RRULE 저장값을 Google recurrence 배열로 전달. 반복 이벤트는
+  // 모든 회차가 하나의 Meet 링크를 공유한다(매주 같은 방).
+  if (event.recurrence) {
+    const r = String(event.recurrence).trim();
+    body.recurrence = [r.toUpperCase().startsWith("RRULE") ? r : `RRULE:${r}`];
+  }
+  // 초대된 게스트는 host 없이도 참여/시작할 수 있게 — 게스트 권한 개방.
+  // (consumer Meet에서 초대 게스트는 host 대기 없이 입장/시작 가능)
+  body.guestsCanInviteOthers = true;
+  body.guestsCanModify = false;
+  body.guestsCanSeeOtherGuests = true;
   // reminder: 분 단위 문자열 ("30") → 이메일+팝업 알림. 비우면 캘린더 기본값.
   const reminderMin = Number(event.reminder);
   if (reminderMin > 0) {
@@ -248,6 +259,12 @@ export async function attemptEventSync(eventId, { force = false } = {}) {
     }
   } catch (err) {
     patch = { syncStatus: "error", syncError: String(err?.message || err) };
+  }
+
+  // 동기화 성공 + 참석자(이메일)가 있으면 sendUpdates=all로 초대/변경 메일이 실제
+  // 발송된 것 → 발송 시각 기록. UI에서 "알림 발송됨"으로 표시된다.
+  if (patch.syncStatus === "synced" && String(event.attendees || "").includes("@")) {
+    patch.notifiedAt = new Date().toISOString();
   }
 
   let updated = null;

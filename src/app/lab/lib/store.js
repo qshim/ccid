@@ -98,6 +98,7 @@ export const EVENT_COLS = [
   "externalCalendarId", "googleCalendarEventId", "googleMeetUrl",
   "syncStatus", "syncError", "lastSyncAt", "recurrence", "reminder",
   "createdAt", "updatedAt",
+  "notifiedAt", // append at end (스키마 시프트 방지)
 ];
 export const ACTIVITY_COLS = [
   "id", "at", "by", "type", "projectId", "eventId", "title", "from", "to", "email",

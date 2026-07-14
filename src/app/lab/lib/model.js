@@ -204,6 +204,7 @@ export function buildEvent(input) {
     syncStatus: "none", // none | pending | synced | error
     syncError: "",
     lastSyncAt: "",
+    notifiedAt: "", // 참석자에게 초대/변경 알림 메일이 실제 발송된 시점 (서버 설정)
     createdAt: now,
     updatedAt: now,
   };

@@ -156,12 +156,20 @@ export default function LabClient() {
   };
 
   const retrySync = async (id) => {
-    const res = await api(`/api/lab/events/${id}/sync`, { method: "POST" });
-    setNotice(
-      res.ok && res.event?.syncStatus === "synced"
-        ? "Google Calendar와 동기화되었습니다."
-        : `동기화 실패 — ${res.event?.syncError || res.error || "알 수 없는 오류"}`
-    );
+    setBusy(true);
+    try {
+      const res = await api(`/api/lab/events/${id}/sync`, { method: "POST" });
+      setNotice(
+        res.ok && res.event?.syncStatus === "synced"
+          ? res.event?.notifiedAt
+            ? "참석자에게 알림 메일을 발송했습니다."
+            : "Google Calendar와 동기화되었습니다."
+          : `동기화 실패 — ${res.event?.syncError || res.error || "알 수 없는 오류"}`
+      );
+      await load(); // notifiedAt/syncStatus 갱신을 드로어에 반영
+    } finally {
+      setBusy(false);
+    }
   };
 
   // 미팅 목적·안건 초안을 서버(AI/템플릿)에서 받아 새 일정 폼으로 전환.

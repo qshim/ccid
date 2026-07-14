@@ -253,36 +253,87 @@ export default function Timeline({
                 }`}
                 style={{ width: LEFT_W, minHeight: height, ...(em ? { backgroundColor: emColor } : {}) }}
               >
-                <button
-                  type="button"
-                  onClick={() => onOpenProject(p.id)}
-                  className="text-left min-w-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] group"
-                >
-                  <span
-                    className={`block text-[14px] font-medium leading-[1.25] transition-colors truncate ${
-                      em
-                        ? "text-white group-hover:text-white/80"
-                        : "text-primaryB group-hover:text-[#5D009C]"
-                    }`}
+                <div className="flex items-start justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onOpenProject(p.id)}
+                    className="text-left min-w-0 flex-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] group"
                   >
-                    {p.shortName || p.title}
-                  </span>
-                  <span className="mt-0.5 flex items-center gap-1.5">
                     <span
-                      aria-hidden="true"
-                      className="inline-block w-[7px] h-[7px] rounded-full"
-                      style={{ backgroundColor: em ? "#FFFFFF" : status.color }}
-                    />
-                    <span
-                      className={`font-light uppercase text-[10px] tracking-[0.05em] ${
-                        em ? "text-white/75" : "text-[#888]"
+                      className={`block text-[14px] font-medium leading-[1.25] transition-colors truncate ${
+                        em
+                          ? "text-white group-hover:text-white/80"
+                          : "text-primaryB group-hover:text-[#5D009C]"
                       }`}
                     >
-                      {status.label}
-                      {p.clientOrPartner ? ` · ${p.clientOrPartner}` : ""}
+                      {p.shortName || p.title}
                     </span>
-                  </span>
-                </button>
+                    <span className="mt-0.5 flex items-center gap-1.5">
+                      <span
+                        aria-hidden="true"
+                        className="inline-block w-[7px] h-[7px] rounded-full"
+                        style={{ backgroundColor: em ? "#FFFFFF" : status.color }}
+                      />
+                      <span
+                        className={`font-light uppercase text-[10px] tracking-[0.05em] ${
+                          em ? "text-white/75" : "text-[#888]"
+                        }`}
+                      >
+                        {status.label}
+                        {p.clientOrPartner ? ` · ${p.clientOrPartner}` : ""}
+                      </span>
+                    </span>
+                  </button>
+                  {/* 우측 상단: 프로젝트 링크 — 피그마는 피그마 아이콘, 사이트는 글로브 아이콘.
+                      22px 버튼 안 아이콘이 중앙 정렬이라 타이틀 텍스트 상단(cap)과 맞도록 위로 당김. */}
+                  {(p.siteUrl || p.figmaLinks?.length > 0) && (
+                    <div className="flex items-center gap-0.5 shrink-0 -mt-[2px]">
+                      {p.siteUrl && (
+                        <a
+                          href={p.siteUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label="프로젝트 사이트 열기"
+                          className={`group/lnk relative inline-flex items-center justify-center w-[22px] h-[22px] rounded transition-colors ${
+                            em ? "text-white/80 hover:text-white hover:bg-white/10" : "text-primaryB/55 hover:text-primaryB hover:bg-primaryB/5"
+                          }`}
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-[14px] h-[14px]">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M3 12h18" />
+                            <path d="M12 3c2.6 2.7 2.6 15.3 0 18M12 3c-2.6 2.7-2.6 15.3 0 18" />
+                          </svg>
+                          <span role="tooltip" className="pointer-events-none absolute right-0 top-[calc(100%+4px)] z-50 hidden group-hover/lnk:block whitespace-nowrap rounded bg-primaryB px-1.5 py-0.5 text-[10px] leading-none text-white shadow-md">
+                            Site
+                          </span>
+                        </a>
+                      )}
+                      {(p.figmaLinks || []).map((l, i) => (
+                        <a
+                          key={i}
+                          href={l.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label={`Figma${l.label ? ` — ${l.label}` : ""} 열기`}
+                          className={`group/fig relative inline-flex items-center justify-center w-[22px] h-[22px] rounded transition-colors ${
+                            em ? "text-white/80 hover:text-white hover:bg-white/10" : "text-primaryB/55 hover:text-primaryB hover:bg-primaryB/5"
+                          }`}
+                        >
+                          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="w-[13px] h-[13px]">
+                            <path d="M8.148 24c-2.476 0-4.49-2.014-4.49-4.49v-.05c0-2.476 2.014-4.49 4.49-4.49h4.588v4.54c0 2.476-2.014 4.49-4.49 4.49h-.098zm-.05-7.53c-1.664 0-3.018 1.355-3.018 3.02s1.354 3.019 3.019 3.019h.098c1.665 0 3.019-1.354 3.019-3.019v-3.02H8.098zM15.852 16.49c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49 4.49 2.014 4.49 4.49-2.014 4.49-4.49 4.49zm0-7.51c-1.665 0-3.019 1.355-3.019 3.02s1.354 3.019 3.019 3.019 3.019-1.354 3.019-3.019-1.354-3.02-3.019-3.02zM8.148 16.49c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98H8.148zm0-7.51c-1.665 0-3.019 1.355-3.019 3.02s1.354 3.019 3.019 3.019h3.117V8.98H8.148zM8.148 8.98c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.98H8.148zm0-7.509c-1.665 0-3.019 1.355-3.019 3.02s1.354 3.019 3.019 3.019h3.117V1.471H8.148zM15.803 8.98h-4.539V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49h-.049zm-3.068-1.47h3.117c1.639-.027 2.97-1.371 2.97-3.02s-1.354-3.019-3.019-3.019h-3.068V7.51z" />
+                          </svg>
+                          {l.label && (
+                            <span role="tooltip" className="pointer-events-none absolute right-0 top-[calc(100%+4px)] z-50 hidden group-hover/fig:block whitespace-nowrap rounded bg-primaryB px-1.5 py-0.5 text-[10px] leading-none text-white shadow-md">
+                              {l.label}
+                            </span>
+                          )}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 {p.projectLead && (
                   <span
                     className={`text-[12px] leading-[1.25] font-medium ${
@@ -303,38 +354,6 @@ export default function Timeline({
                       .map((id) => researcherById[id]?.name || id)
                       .join(", ")}
                   </span>
-                )}
-                {(p.siteUrl || p.figmaLinks?.length > 0) && (
-                  <div className="flex items-center flex-wrap gap-1.5 mt-1.5">
-                    {p.siteUrl && (
-                      <a
-                        href={p.siteUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className={`text-[10px] uppercase tracking-[0.05em] px-1.5 py-[2px] rounded-full border ${
-                          em ? "border-white/40 text-white/85 hover:bg-white/10" : "border-primaryB/25 text-primaryB/70 hover:border-primaryB/60"
-                        }`}
-                      >
-                        Site ↗
-                      </a>
-                    )}
-                    {(p.figmaLinks || []).map((l, i) => (
-                      <a
-                        key={i}
-                        href={l.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        title={l.url}
-                        className={`text-[10px] uppercase tracking-[0.05em] px-1.5 py-[2px] rounded-full border ${
-                          em ? "border-white/40 text-white/85 hover:bg-white/10" : "border-primaryB/25 text-primaryB/70 hover:border-primaryB/60"
-                        }`}
-                      >
-                        {l.label || `Figma${(p.figmaLinks.length > 1 ? " " + (i + 1) : "")}`} ↗
-                      </a>
-                    ))}
-                  </div>
                 )}
                 {p.members?.length > 0 && (
                   <div className="flex items-center flex-wrap gap-[3px] mt-auto" aria-label={`참여 연구원 ${p.members.length}명`}>
