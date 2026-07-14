@@ -66,21 +66,20 @@ export default function Timeline({
     [researchers]
   );
 
-  // 썸네일 아바타 정렬: 디렉터 → 어드바이저 → 리서치 인턴 → 리서처 → 기타.
-  // 애드혹 "…선생님"은 어드바이저로 취급. 같은 카테고리 안에서는 멤버 등록 순서 유지.
-  const AVATAR_CATEGORY_RANK = {
-    Director: 0,
-    "Advisory Board": 1,
-    "Research Interns": 2,
-    "Student Researchers": 3,
-  };
-  const avatarRank = (m) => {
+  // 참여 아바타: 디렉터·어드바이저는 제외(실무 참여인원만), PM을 맨 앞에.
+  // 애드혹 "…선생님"도 어드바이저로 취급해 제외. PM 외에는 등록 순서 유지.
+  const memberCategory = (m) => {
     const r = researcherById[m.researcherId];
-    const cat = r?.category || (/선생님\s*$/.test(m.researcherId) ? "Advisory Board" : "");
-    return AVATAR_CATEGORY_RANK[cat] ?? 4;
+    return r?.category || (/선생님\s*$/.test(m.researcherId) ? "Advisory Board" : "");
   };
-  const sortMembersForAvatars = (members) =>
-    [...members].sort((a, b) => avatarRank(a) - avatarRank(b));
+  const isDirectorOrAdvisor = (m) =>
+    memberCategory(m) === "Director" || memberCategory(m) === "Advisory Board";
+  const isPM = (m) => String(m.role || "").toUpperCase().includes("PM");
+  // 필터(디렉터·어드바이저 제외) → 정렬(PM 우선, 나머지 안정 유지).
+  const avatarMembers = (members) =>
+    (members || [])
+      .filter((m) => !isDirectorOrAdvisor(m))
+      .sort((a, b) => (isPM(b) ? 1 : 0) - (isPM(a) ? 1 : 0));
 
   const containerRef = useRef(null);
   useEffect(() => {
@@ -248,7 +247,7 @@ export default function Timeline({
             <div key={p.id} className="flex border-b border-primaryB/[0.08]">
               {/* sticky left: project info */}
               <div
-                className={`sticky left-0 z-20 shrink-0 border-r border-primaryB/15 px-3 py-2.5 flex flex-col gap-1 min-w-0 ${
+                className={`sticky left-0 z-20 shrink-0 border-r border-primaryB/15 px-3 py-2.5 flex flex-col gap-0.5 min-w-0 ${
                   em ? "" : "bg-[#F0F0EC]"
                 }`}
                 style={{ width: LEFT_W, minHeight: height, ...(em ? { backgroundColor: emColor } : {}) }}
@@ -268,21 +267,17 @@ export default function Timeline({
                     >
                       {p.shortName || p.title}
                     </span>
-                    <span className="mt-0.5 flex items-center gap-1.5">
+                    {/* 도트·클라이언트·기본 상태(active/planning)는 숨김.
+                        주목이 필요한 상태(on hold/reviewing/completed/archived)만 라벨 노출. */}
+                    {p.status !== "active" && p.status !== "planning" && (
                       <span
-                        aria-hidden="true"
-                        className="inline-block w-[7px] h-[7px] rounded-full"
-                        style={{ backgroundColor: em ? "#FFFFFF" : status.color }}
-                      />
-                      <span
-                        className={`font-light uppercase text-[10px] tracking-[0.05em] ${
+                        className={`mt-0.5 block font-light uppercase text-[10px] tracking-[0.05em] ${
                           em ? "text-white/75" : "text-[#888]"
                         }`}
                       >
                         {status.label}
-                        {p.clientOrPartner ? ` · ${p.clientOrPartner}` : ""}
                       </span>
-                    </span>
+                    )}
                   </button>
                   {/* 우측 상단: 프로젝트 링크 — 피그마는 피그마 아이콘, 사이트는 글로브 아이콘.
                       22px 버튼 안 아이콘이 중앙 정렬이라 타이틀 텍스트 상단(cap)과 맞도록 위로 당김. */}
@@ -355,9 +350,12 @@ export default function Timeline({
                       .join(", ")}
                   </span>
                 )}
-                {p.members?.length > 0 && (
-                  <div className="flex items-center flex-wrap gap-[3px] mt-auto" aria-label={`참여 연구원 ${p.members.length}명`}>
-                    {sortMembersForAvatars(p.members).slice(0, 8).map((m) => {
+                {(() => {
+                  const avatars = avatarMembers(p.members);
+                  if (avatars.length === 0) return null;
+                  return (
+                  <div className="flex items-center flex-wrap gap-[3px] mt-auto" aria-label={`참여 연구원 ${avatars.length}명`}>
+                    {avatars.slice(0, 8).map((m) => {
                       const r = researcherById[m.researcherId];
                       // Ad hoc (not-yet-in-roster) names can still resolve to a
                       // local photo override by exact name match (see members.js
@@ -365,13 +363,16 @@ export default function Timeline({
                       // the public site or not yet added as a sheet row.
                       const photo = r ? resolvePhoto(r.name, r.image) : resolvePhoto(m.researcherId, "");
                       const name = r?.name || m.researcherId;
+                      const pm = isPM(m);
                       const label = `${name}${m.role ? ` — ${m.role}` : ""}`;
                       return (
                         <span
                           key={m.researcherId}
-                          className="group/av relative w-[20px] h-[20px] rounded-full overflow-visible shrink-0"
+                          className={`group/av relative rounded-full overflow-visible shrink-0 ${
+                            pm ? "w-[24px] h-[24px]" : "w-[20px] h-[20px]"
+                          }`}
                         >
-                          <span className="block w-full h-full rounded-full overflow-hidden bg-[#F6F0FF] ring-1 ring-[#F0F0EC]">
+                          <span className={`block w-full h-full rounded-full overflow-hidden bg-[#F6F0FF] ${pm ? "ring-2 ring-[#5D009C]" : "ring-1 ring-[#F0F0EC]"}`}>
                             {photo ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
@@ -395,13 +396,14 @@ export default function Timeline({
                         </span>
                       );
                     })}
-                    {p.members.length > 8 && (
+                    {avatars.length > 8 && (
                       <span className="text-[10px] text-primaryB/40 leading-none">
-                        +{p.members.length - 8}
+                        +{avatars.length - 8}
                       </span>
                     )}
                   </div>
-                )}
+                  );
+                })()}
               </div>
 
               {/* timeline lane area */}
