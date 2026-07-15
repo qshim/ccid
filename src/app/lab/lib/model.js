@@ -91,6 +91,7 @@ const PROJECT_FIELDS = [
   "commLog", // [{ id, at, channel, note }] — manual external-communication log (KakaoTalk, email, calls...)
   "siteUrl", // 프로젝트 사이트/데모 URL (단일)
   "figmaLinks", // [{ id, label, url }] — 여러 개의 피그마 링크
+  "digestNote", // 주간 다이제스트 이메일에 포함할 액션 아이템/메모 (여러 줄)
 ];
 
 export function buildProject(input) {
@@ -116,6 +117,7 @@ export function buildProject(input) {
     commLog: [],
     siteUrl: "",
     figmaLinks: [],
+    digestNote: "",
     archivedAt: null,
     createdAt: now,
     updatedAt: now,

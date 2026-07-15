@@ -16,6 +16,7 @@ const CAL_API = "https://www.googleapis.com/calendar/v3";
 const SCOPES = [
   "https://www.googleapis.com/auth/calendar.events",
   "https://www.googleapis.com/auth/calendar.readonly",
+  "https://www.googleapis.com/auth/gmail.send", // 다이제스트 이메일 발송 (보내기 전용)
   "openid",
   "email",
 ].join(" ");
@@ -311,4 +312,45 @@ export async function deleteGoogleEvent(event) {
   if (!res.ok && res.status !== 404 && res.status !== 410) {
     throw new Error(`Google Calendar 삭제 오류 (${res.status}).`);
   }
+}
+
+// 연결된 계정(hello.ccid 등)에서 HTML 이메일을 보낸다. gmail.send 스코프 필요 —
+// 없으면 재연결(재동의) 안내 에러를 던진다.
+export async function sendGmail(to, subject, html) {
+  const { token } = await ensureAccessToken();
+  const b64 = (s) => Buffer.from(s, "utf8").toString("base64");
+  const encSubject = `=?UTF-8?B?${b64(subject)}?=`;
+  const mime =
+    `To: ${to}\r\n` +
+    `Subject: ${encSubject}\r\n` +
+    `MIME-Version: 1.0\r\n` +
+    `Content-Type: text/html; charset="UTF-8"\r\n` +
+    `Content-Transfer-Encoding: base64\r\n\r\n` +
+    b64(html);
+  const raw = Buffer.from(mime, "utf8")
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+  const res = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ raw }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const msg = String(data?.error?.message || res.status);
+    if (/has not been used|disabled|is not enabled|Enable it/i.test(msg)) {
+      throw new Error(
+        "Gmail API가 프로젝트에서 활성화되지 않았습니다. Google Cloud Console에서 Gmail API를 사용 설정하세요 (1~2분 후 재시도)."
+      );
+    }
+    if (res.status === 403 || /insufficient|scope|permission/i.test(msg)) {
+      throw new Error(
+        "Gmail 발송 권한이 없습니다. /lab에서 Google을 다시 연결해 'Gmail 보내기' 권한에 동의하세요."
+      );
+    }
+    throw new Error(`Gmail 발송 오류 (${msg}).`);
+  }
+  return { ok: true, id: data.id };
 }

@@ -250,6 +250,14 @@ export default function LabClient() {
               .toLowerCase()
               .includes(needle)
           : true
+      )
+      // shortName의 번호("6. 현대차 산학 1/2")로 자연 정렬 → 분리한 프로젝트가 나란히.
+      .sort((a, b) =>
+        String(a.shortName || a.title || "").localeCompare(
+          String(b.shortName || b.title || ""),
+          "en",
+          { numeric: true }
+        )
       );
   }, [projects, q, statusFilter, researcherFilter, showArchived]);
 
@@ -558,12 +566,12 @@ function Shell({ children, onLogout, google, backend, me }) {
           </p>
         </div>
         <div className="flex items-center gap-4 pt-1">
-          {google && !google.connected && me?.role === "admin" && (
+          {me?.role === "admin" && (
             <a
               href="/api/lab/google/connect"
               className="hidden sm:inline text-[13px] text-[#5D009C] hover:text-[#7a1fc0] transition-colors"
             >
-              Google Calendar 연결
+              {google?.connected ? "Google 재연결" : "Google Calendar 연결"}
             </a>
           )}
           <span className="font-light uppercase text-[11px] tracking-[0.01em] text-[#888]">

@@ -89,7 +89,7 @@ export const PROJECT_COLS = [
   "category", "color", "emphasis", "progress", "description", "notes", "commLog",
   "archivedAt", "deletedAt", "createdAt", "updatedAt", "createdBy",
   // 신규 컬럼은 스키마 시프트 손상을 피하려 반드시 맨 뒤에 append.
-  "siteUrl", "figmaLinks",
+  "siteUrl", "figmaLinks", "digestNote",
 ];
 export const EVENT_COLS = [
   "id", "projectId", "title", "eventType", "start", "end", "allDay",
@@ -210,6 +210,7 @@ export function decodeProjectRow(row) {
   p.commLog = decodeCommLog(row.commLog);
   p.figmaLinks = decodeFigmaLinks(row.figmaLinks);
   p.siteUrl = String(row.siteUrl || "").trim();
+  p.digestNote = String(row.digestNote || "");
   p.emphasis = decodeBool(row.emphasis);
   p.progress = Number(row.progress) || 0;
   p.startDate = toKstDate(row.startDate);

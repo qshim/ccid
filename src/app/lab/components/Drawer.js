@@ -607,12 +607,22 @@ function EventMiniList({ title, list, dim = false, onRetrySync }) {
       <ul className={`flex flex-col gap-1.5 ${dim ? "opacity-55" : ""}`}>
         {list.map((e) => {
           const meta = EVENT_TYPE_META[e.eventType] || EVENT_TYPE_META.other;
+          // 종일 이벤트는 시간 없이 날짜만 — 다일(주차 블록)이면 시작~종료 범위.
+          const dateOnly = (iso) => formatSeoul(iso, { hour: undefined, minute: undefined });
+          let when;
+          if (e.allDay) {
+            const s = dateOnly(e.start);
+            const en = e.end ? dateOnly(e.end) : "";
+            when = en && en !== s ? `${s} – ${en}` : s;
+          } else {
+            when = formatSeoul(e.start);
+          }
           return (
             <li key={e.id} className="flex items-center gap-2 text-[13px] min-w-0">
               <Tag color={meta.color}>{meta.tag}</Tag>
               <span className="truncate">{e.title}</span>
               <span className="text-primaryB/40 text-[11px] shrink-0 ml-auto">
-                {formatSeoul(e.start)}
+                {when}
               </span>
               {e.googleMeetUrl && (
                 <a

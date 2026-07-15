@@ -72,14 +72,38 @@ export default function Timeline({
     const r = researcherById[m.researcherId];
     return r?.category || (/선생님\s*$/.test(m.researcherId) ? "Advisory Board" : "");
   };
-  const isDirectorOrAdvisor = (m) =>
-    memberCategory(m) === "Director" || memberCategory(m) === "Advisory Board";
+  const isDirectorOrAdvisor = (m) => {
+    const cat = memberCategory(m);
+    if (cat === "Director" || cat === "Advisory Board") return true;
+    // 역할에 "어드바이저/advisor/자문"이 있으면 어드바이저로 보고 참여 아바타에서 제외.
+    return /어드바이저|advisor|자문/i.test(String(m.role || ""));
+  };
   const isPM = (m) => String(m.role || "").toUpperCase().includes("PM");
-  // 필터(디렉터·어드바이저 제외) → 정렬(PM 우선, 나머지 안정 유지).
-  const avatarMembers = (members) =>
-    (members || [])
-      .filter((m) => !isDirectorOrAdvisor(m))
-      .sort((a, b) => (isPM(b) ? 1 : 0) - (isPM(a) ? 1 : 0));
+  // 역할에서 트랙명 추출 ("PM · 2D to 3D" → "2D to 3D", "PM" → "", "Website" → "Website").
+  const trackOf = (m) =>
+    String(m.role || "").replace(/^\s*PM\b\s*[·:∙・\-]*\s*/i, "").trim();
+  // 필터(디렉터·어드바이저 제외) → 트랙별 그룹핑(빈 트랙=단일 PM/미지정 먼저,
+  // 그 외 트랙은 첫 등장 순), 각 트랙 안에서는 PM 먼저.
+  const avatarMembers = (members) => {
+    const list = (members || []).filter((m) => !isDirectorOrAdvisor(m));
+    const order = [""];
+    list.forEach((m) => {
+      const t = trackOf(m);
+      if (t && !order.includes(t)) order.push(t);
+    });
+    return list
+      .map((m, i) => ({ m, i }))
+      .sort((a, b) => {
+        const ta = order.indexOf(trackOf(a.m));
+        const tb = order.indexOf(trackOf(b.m));
+        if (ta !== tb) return ta - tb;
+        const pa = isPM(a.m) ? 0 : 1;
+        const pb = isPM(b.m) ? 0 : 1;
+        if (pa !== pb) return pa - pb;
+        return a.i - b.i;
+      })
+      .map((x) => x.m);
+  };
 
   const containerRef = useRef(null);
   useEffect(() => {
