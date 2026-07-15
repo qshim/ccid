@@ -354,7 +354,7 @@ export default function Timeline({
                   const avatars = avatarMembers(p.members);
                   if (avatars.length === 0) return null;
                   return (
-                  <div className="flex items-center flex-wrap gap-[3px] mt-auto" aria-label={`참여 연구원 ${avatars.length}명`}>
+                  <div className="flex items-end flex-wrap gap-[3px] mt-1.5" aria-label={`참여 연구원 ${avatars.length}명`}>
                     {avatars.slice(0, 8).map((m) => {
                       const r = researcherById[m.researcherId];
                       // Ad hoc (not-yet-in-roster) names can still resolve to a
@@ -467,6 +467,7 @@ export default function Timeline({
                   const meta = EVENT_TYPE_META[ev.eventType] || EVENT_TYPE_META.other;
                   const top = ROW_PAD + lane * ROW_BASE;
                   const isMilestone = ev.eventType === "milestone";
+                  const isMeeting = ev.eventType === "meeting";
                   const bucketLabel =
                     slotsPerDay > 1 && span === 1 ? ` (${DAY_BUCKETS[startIndex % 3].label})` : "";
                   const label = `${ev.title} — ${meta.tag} ${formatSeoul(ev.start, { hour: undefined, minute: undefined })}${bucketLabel}${ev.syncStatus === "error" ? " (동기화 오류)" : ""}`;
@@ -501,13 +502,15 @@ export default function Timeline({
                       onClick={() => onOpenEvent(ev.id)}
                       title={label}
                       aria-label={label}
-                      className="absolute h-[22px] rounded-[2px] flex items-center gap-1 px-1.5 overflow-hidden text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] hover:brightness-95 transition-[filter]"
+                      className={`absolute rounded-[2px] flex items-center gap-1 px-1.5 overflow-hidden text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] hover:brightness-95 transition-[filter] ${
+                        isMeeting ? "h-[11px]" : "h-[22px]"
+                      }`}
                       style={{
                         top,
                         left: startIndex * unitPx,
                         width: Math.max(unitPx * span - (slotsPerDay > 1 ? 3 : 0), 46),
-                        backgroundColor: `${meta.color}1c`,
-                        borderLeft: `3px solid ${meta.color}`,
+                        backgroundColor: isMeeting ? meta.color : `${meta.color}1c`,
+                        borderLeft: isMeeting ? "none" : `3px solid ${meta.color}`,
                         // Deadlines get a stripe pattern — never color alone.
                         ...(ev.eventType === "deadline"
                           ? {
@@ -517,16 +520,22 @@ export default function Timeline({
                       }}
                     >
                       <span
-                        className="text-[9px] font-medium tracking-[0.08em] leading-none shrink-0"
-                        style={{ color: meta.color }}
+                        className={`font-medium tracking-[0.08em] leading-none shrink-0 ${
+                          isMeeting ? "text-[8px] text-white/90" : "text-[9px]"
+                        }`}
+                        style={isMeeting ? undefined : { color: meta.color }}
                       >
                         {meta.tag}
                       </span>
-                      <span className="text-[11px] leading-none text-primaryB/80 truncate">
+                      <span
+                        className={`leading-none truncate ${
+                          isMeeting ? "text-[9px] text-white" : "text-[11px] text-primaryB/80"
+                        }`}
+                      >
                         {ev.title}
                       </span>
                       {ev.googleMeetUrl && (
-                        <span aria-hidden="true" className="text-[9px] shrink-0" style={{ color: meta.color }}>
+                        <span aria-hidden="true" className="text-[9px] shrink-0" style={{ color: isMeeting ? "#FFFFFF" : meta.color }}>
                           ⌁
                         </span>
                       )}
