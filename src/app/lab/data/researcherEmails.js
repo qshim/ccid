@@ -34,6 +34,7 @@ export const researcherEmails = {
   "minseo-kang": "minseokang@riverplo.com",   // 강민서
   "sara-kang": "shinee2129@karts.ac.kr",      // 강사라
   "hayeon-jeon": "jhy98620@gmail.com",        // 전하연
+  "chanwoo-lee": "hellochanu@gmail.com",      // 이찬우 선생님 (#2 담당 선생님)
   "da-in-kim": "daindainhiyo@gmail.com",      // 김다인
   "yunso-jung": "jungyunsoda@gmail.com",      // 정윤소
   "hyosun-son": "smj070219@naver.com",        // 손효선
