@@ -44,6 +44,9 @@ export const researcherEmails = {
   "Eunseol Kim": "tjf3019@naver.com",         // 김은설
   "이지민": "vivajeremy02@gmail.com",
 
+  // 담당 선생님 (projectLead) — #3 Resonance
+  "최덕수 선생님": "duxchoi@gmail.com",
+
   // 신규 인원 (아직 로스터·프로젝트 배정 없음) — 배정 시 이 한글 이름으로 넣으면 매칭됨
   "채지호": "jennyjiho@gmail.com",
   "김예인": "01052865391a@gmail.com",
