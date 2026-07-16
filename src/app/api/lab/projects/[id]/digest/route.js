@@ -34,7 +34,8 @@ export async function POST(request, { params }) {
     if (!to) return NextResponse.json({ ok: false, error: "받는 주소가 없습니다." }, { status: 400 });
 
     const anchor = /^\d{4}-\d{2}-\d{2}$/.test(body.anchor || "") ? body.anchor : todayStr();
-    const { subject, html } = composeDigest(project, doc.events || [], anchor);
+    const nameOverride = typeof body.displayName === "string" ? body.displayName : undefined;
+    const { subject, html } = composeDigest(project, doc.events || [], anchor, nameOverride);
     // preview: 발송 없이 내용만 반환 (미리보기/검증용)
     if (body.preview) return NextResponse.json({ ok: true, preview: true, to, subject, html });
     const sent = await sendGmail(to, subject, html);

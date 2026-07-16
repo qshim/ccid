@@ -782,13 +782,10 @@ function EventPanel({
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [addName, setAddName] = useState("");
+  const [addId, setAddId] = useState("");
 
   const set = (k) => (e) =>
     setF((s) => ({ ...s, [k]: e?.target ? (e.target.type === "checkbox" ? e.target.checked : e.target.value) : e }));
-
-  // 담당자로 지정됐지만 공개 명단(researchers)에는 없는 이름 — 이름을 그대로 id로 저장.
-  const rosterIds = new Set(researchers.map((r) => r.id));
-  const extraAssigned = f.assignedResearchers.filter((id) => !rosterIds.has(id));
 
   const save = async () => {
     setError("");
@@ -893,65 +890,63 @@ function EventPanel({
         <div className="flex flex-col gap-4">
           <div>
             <FieldLabel>담당 연구원</FieldLabel>
-            <div className="flex flex-wrap gap-1.5">
-              {researchers
-                .filter((r) => r.active)
-                .map((r) => {
-                  const on = f.assignedResearchers.includes(r.id);
-                  const photo = resolvePhoto(r.name, r.image);
+            {/* 배정된 사람만 칩으로 표시 (전체 명단 나열 안 함). 추가는 아래 드롭다운/이름 입력. */}
+            {f.assignedResearchers.length === 0 ? (
+              <p className="text-[13px] text-primaryB/40">아직 배정된 연구원이 없습니다.</p>
+            ) : (
+              <div className="flex flex-wrap gap-1.5">
+                {f.assignedResearchers.map((id) => {
+                  const r = researchers.find((x) => x.id === id);
+                  const name = r?.name || id;
+                  const photo = r ? resolvePhoto(r.name, r.image) : resolvePhoto(id, "");
                   return (
                     <button
-                      key={r.id}
+                      key={id}
                       type="button"
-                      aria-pressed={on}
+                      aria-label={`${name} 제거`}
                       onClick={() =>
                         setF((s) => ({
                           ...s,
-                          assignedResearchers: on
-                            ? s.assignedResearchers.filter((x) => x !== r.id)
-                            : [...s.assignedResearchers, r.id],
+                          assignedResearchers: s.assignedResearchers.filter((x) => x !== id),
                         }))
                       }
-                      className={`inline-flex items-center gap-1.5 pl-1 pr-2.5 py-[3px] text-[11px] leading-none rounded-full border transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] ${
-                        on
-                          ? "border-[#4E22D6] bg-[#4E22D6]/10 text-[#4E22D6]"
-                          : "border-primaryB/20 text-primaryB/60 hover:border-primaryB/50"
-                      }`}
+                      className="inline-flex items-center gap-1.5 pl-1 pr-2 py-[3px] text-[11px] leading-none rounded-full border border-[#4E22D6] bg-[#4E22D6]/10 text-[#4E22D6] transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C]"
                     >
                       <span className="w-[20px] h-[20px] rounded-full overflow-hidden bg-[#E0E0FF] shrink-0">
                         {photo && (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={photo}
-                            alt=""
-                            className={`w-full h-full object-cover filter ${on ? "" : "grayscale"}`}
-                            referrerPolicy="no-referrer"
-                          />
+                          <img src={photo} alt="" className="w-full h-full object-cover filter grayscale" referrerPolicy="no-referrer" />
                         )}
                       </span>
-                      {r.name}
+                      {name}
+                      <span aria-hidden="true" className="text-[13px] leading-none opacity-60">×</span>
                     </button>
                   );
                 })}
-              {extraAssigned.map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  aria-pressed="true"
-                  onClick={() =>
-                    setF((s) => ({
-                      ...s,
-                      assignedResearchers: s.assignedResearchers.filter((x) => x !== name),
-                    }))
-                  }
-                  className="inline-flex items-center gap-1.5 pl-1 pr-2.5 py-[3px] text-[11px] leading-none rounded-full border border-[#4E22D6] bg-[#4E22D6]/10 text-[#4E22D6] transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C]"
-                >
-                  <span aria-hidden="true" className="w-[20px] h-[20px] rounded-full overflow-hidden bg-[#E0E0FF] shrink-0" />
-                  {name}
-                </button>
-              ))}
+              </div>
+            )}
+            {/* 명단에서 드롭다운으로 추가 */}
+            <div className="mt-2">
+              <SelectField
+                label="연구원 추가"
+                value={addId}
+                onChange={(e) => {
+                  const id = e.target.value;
+                  if (id) setF((s) => ({ ...s, assignedResearchers: [...s.assignedResearchers, id] }));
+                  setAddId("");
+                }}
+              >
+                <option value="">연구원 선택…</option>
+                {researchers
+                  .filter((r) => r.active && !f.assignedResearchers.includes(r.id))
+                  .map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+              </SelectField>
             </div>
-            {/* 명단에 없는 담당자도 이름으로 바로 추가 가능 — 사진은 빈 컬러로 대체됨. */}
+            {/* 명단에 없는 인원도 이름으로 추가 */}
             <div className="flex items-end gap-2 mt-2">
               <TextField
                 label="명단에 없는 인원 — 이름으로 추가"

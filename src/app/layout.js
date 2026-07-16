@@ -1,5 +1,6 @@
 import "./globals.css";
 import "./multilingual.css";
+import HideDevIndicator from "./HideDevIndicator";
 // import { Inter } from "next/font/google";
 import { pxGrotesk } from "@/fonts/fonts";
 
@@ -38,6 +39,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko" className={pxGrotesk.className}>
       <body className={`overflow-x-hidden w-[100%] scrollbar-hide antialiased select-none`}>
+        <HideDevIndicator />
         {children}
       </body>
     </html>
