@@ -9,11 +9,13 @@ export const researcherNamesKo = {
   "taery-kim": "김태리",
   "boram-lee": "이보람",
   "jiyeon-lee": "이지연",
-  "ingee-jeong": "정인지",
+  // 프로젝트 LEAD/어드바이저로 표기되는 분들은 '선생님' 호칭 포함
+  // (다른 LEAD가 '윤선빈 선생님'처럼 문자열로 들어와 있어 표기를 통일).
+  "ingee-jeong": "정인지 선생님",
   "yoonha-jeong": "정윤하",
-  "kiryung-nam": "남기륭",
+  "kiryung-nam": "남기륭 선생님",
   "yunhyeong-park": "박윤형",
-  "chanwoo-lee": "이찬우",
+  "chanwoo-lee": "이찬우 선생님",
   "taeho-kim": "김태호",
   "changmin-kim": "김창민",
   // Student Researchers / Interns
