@@ -22,10 +22,11 @@ import {
 } from "../lib/timelineMath";
 import { formatSeoul, utcIsoToSeoulLocal } from "../lib/tz";
 import { resolvePhoto } from "@/app/components/members";
+import { researcherKo } from "@/app/lab/data/researcherNamesKo";
 
 const LEFT_W = 232; // sticky project column width
-const ROW_BASE = 34; // px per event lane
-const ROW_PAD = 26; // project bar area height
+const ROW_BASE = 27; // px per event lane
+const ROW_PAD = 18; // project bar area height
 
 // Day view: split each day cell into 3 horizontal zones by time of day, so
 // same-day events land in different columns instead of only stacking
@@ -177,7 +178,7 @@ export default function Timeline({
         barStart: pStart ? diffDays(pStart, range.start) : null,
         barSpan: pStart ? Math.max(1, diffDays(pEnd || pStart, pStart) + 1) : null,
         items,
-        height: ROW_PAD + Math.max(1, laneCount) * ROW_BASE + 10,
+        height: ROW_PAD + Math.max(1, laneCount) * ROW_BASE + 6,
       };
     });
   }, [projects, events, range.start, slotsPerDay]);
@@ -370,7 +371,7 @@ export default function Timeline({
                       .split(/[,;]/)
                       .map((s) => s.trim())
                       .filter(Boolean)
-                      .map((id) => researcherById[id]?.name || id)
+                      .map((id) => (researcherById[id] ? researcherKo(researcherById[id]) : id))
                       .join(", ")}
                   </span>
                 )}
@@ -386,7 +387,7 @@ export default function Timeline({
                       // LOCAL_PHOTOS/SHEET_PHOTOS) — useful for people hidden from
                       // the public site or not yet added as a sheet row.
                       const photo = r ? resolvePhoto(r.name, r.image) : resolvePhoto(m.researcherId, "");
-                      const name = r?.name || m.researcherId;
+                      const name = r ? researcherKo(r) : m.researcherId;
                       const pm = isPM(m);
                       const label = `${name}${m.role ? ` — ${m.role}` : ""}`;
                       return (
@@ -527,7 +528,7 @@ export default function Timeline({
                       title={label}
                       aria-label={label}
                       className={`absolute rounded-[2px] flex items-center gap-1 px-1.5 overflow-hidden text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] hover:brightness-95 transition-[filter] ${
-                        isMeeting ? "h-[11px]" : "h-[22px]"
+                        isMeeting ? "h-[11px]" : "h-[20px]"
                       }`}
                       style={{
                         top,

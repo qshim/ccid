@@ -8,6 +8,7 @@
 import { useMemo, useState } from "react";
 import { PROJECT_STATUS_META, dateProgress } from "../lib/timelineMath";
 import { resolvePhoto } from "@/app/components/members";
+import { researcherKo } from "@/app/lab/data/researcherNamesKo";
 import { Tag } from "./ui";
 
 const splitLeads = (v) =>
@@ -25,7 +26,7 @@ function fmtDate(d) {
 
 function leadNames(project, byId) {
   return splitLeads(project.projectLead)
-    .map((id) => byId[id]?.name || id)
+    .map((id) => (byId[id] ? researcherKo(byId[id]) : id))
     .join(", ");
 }
 

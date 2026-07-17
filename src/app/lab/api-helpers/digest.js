@@ -19,7 +19,17 @@ function fmtGoal(ev) {
   let title = String(ev.title || "").replace(/^#\d+\s*/, "");
   title = title.replace(/^(W\d+)\s*·[^—]*—\s*/, "$1 ");
   const meet = ev.googleMeetUrl ? ` · <a href="${ev.googleMeetUrl}">Meet</a>` : "";
-  const when = timed ? `<span style="color:#555">${formatSeoul(ev.start, {})}</span> ` : "";
+  // 워크숍 등 기간 일정은 날짜 없이 제목만. 미팅/마감/마일스톤만 날짜 표기하되,
+  // 종일이면 시간 없이 날짜만(혼동 방지), 아니면 날짜+시간.
+  let when = "";
+  if (timed) {
+    if (ev.allDay) {
+      const [, mm, dd] = toDayStr(ev.start).split("-");
+      when = `<span style="color:#555">${Number(mm)}월 ${Number(dd)}일</span> `;
+    } else {
+      when = `<span style="color:#555">${formatSeoul(ev.start, {})}</span> `;
+    }
+  }
   return `<div style="margin:3px 0">${when}${escapeHtml(title)}${meet}</div>`;
 }
 

@@ -7,6 +7,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { pxGrotesk } from "@/fonts/fonts";
 import { resolvePhoto } from "@/app/components/members";
+import { researcherKo } from "@/app/lab/data/researcherNamesKo";
 import { utcIsoToSeoulLocal, seoulLocalToUtcIso, formatSeoul } from "../lib/tz";
 import { EVENT_TYPE_META, PROJECT_STATUS_META, dateProgress } from "../lib/timelineMath";
 import { COMM_CHANNELS, newId } from "../lib/model";
@@ -369,7 +370,7 @@ function ProjectPanel({
                     />
                   )}
                 </span>
-                <span className="text-[13px] truncate">{r?.name || m.researcherId}</span>
+                <span className="text-[13px] truncate">{r ? researcherKo(r) : m.researcherId}</span>
                 <input
                   type="text"
                   value={m.role || ""}
@@ -381,7 +382,7 @@ function ProjectPanel({
                     })
                   }
                   placeholder="역할"
-                  aria-label={`${r?.name || m.researcherId} 역할`}
+                  aria-label={`${r ? researcherKo(r) : m.researcherId} 역할`}
                   className="flex-1 min-w-0 bg-transparent text-[12px] py-0.5 border-0 border-b border-primaryB/15 focus:outline-none focus:border-primaryB/50 placeholder:text-primaryB/25"
                 />
                 <GhostButton
@@ -391,7 +392,7 @@ function ProjectPanel({
                       members: s.members.filter((x) => x.researcherId !== m.researcherId),
                     }))
                   }
-                  aria-label={`${r?.name || m.researcherId} 제거`}
+                  aria-label={`${r ? researcherKo(r) : m.researcherId} 제거`}
                 >
                   제거
                 </GhostButton>
@@ -404,7 +405,7 @@ function ProjectPanel({
             <option value="">선택…</option>
             {availableToAdd.map((r) => (
               <option key={r.id} value={r.id}>
-                {r.name} — {r.category}
+                {researcherKo(r)} — {r.category}
               </option>
             ))}
           </SelectField>
@@ -897,7 +898,7 @@ function EventPanel({
               <div className="flex flex-wrap gap-1.5">
                 {f.assignedResearchers.map((id) => {
                   const r = researchers.find((x) => x.id === id);
-                  const name = r?.name || id;
+                  const name = r ? researcherKo(r) : id;
                   const photo = r ? resolvePhoto(r.name, r.image) : resolvePhoto(id, "");
                   return (
                     <button
@@ -941,7 +942,7 @@ function EventPanel({
                   .filter((r) => r.active && !f.assignedResearchers.includes(r.id))
                   .map((r) => (
                     <option key={r.id} value={r.id}>
-                      {r.name}
+                      {researcherKo(r)}
                     </option>
                   ))}
               </SelectField>

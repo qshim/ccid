@@ -15,6 +15,7 @@ import Drawer from "./components/Drawer";
 import { ArrowButton, BoxButton, GhostButton } from "./components/ui";
 import { ZOOMS, EVENT_TYPE_META, PROJECT_STATUS_META, toDayStr } from "./lib/timelineMath";
 import { formatSeoul } from "./lib/tz";
+import { researcherKo, CATEGORY_RANK } from "./data/researcherNamesKo";
 
 export default function LabClient() {
   const router = useRouter();
@@ -228,6 +229,15 @@ export default function LabClient() {
     () => Object.fromEntries(researchers.map((r) => [r.id, r])),
     [researchers]
   );
+  // 연구원 필터 옵션: 한글 이름 표기, 직급(category) → 성(한글 이름) 순 정렬.
+  const researcherOptions = useMemo(
+    () =>
+      researchers
+        .filter((r) => r.active)
+        .map((r) => ({ id: r.id, ko: researcherKo(r), rank: CATEGORY_RANK[r.category] ?? 9 }))
+        .sort((a, b) => a.rank - b.rank || a.ko.localeCompare(b.ko, "ko")),
+    [researchers]
+  );
 
   const filteredProjects = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -330,6 +340,33 @@ export default function LabClient() {
           </>
         )}
 
+        {/* 필터: 퍼플 액션과 같은 줄에 배치해 공간 절약. 검색·아카이브 토글은 제거. */}
+        <span aria-hidden="true" className="hidden sm:block w-px h-[18px] bg-primaryB/15 mx-1" />
+        <FilterSelect value={statusFilter} onChange={setStatusFilter} label="상태">
+          <option value="">모든 상태</option>
+          {Object.entries(PROJECT_STATUS_META).map(([k, v]) => (
+            <option key={k} value={k}>
+              {v.label}
+            </option>
+          ))}
+        </FilterSelect>
+        <FilterSelect value={researcherFilter} onChange={setResearcherFilter} label="연구원">
+          <option value="">모든 연구원</option>
+          {researcherOptions.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.ko}
+            </option>
+          ))}
+        </FilterSelect>
+        <FilterSelect value={typeFilter} onChange={setTypeFilter} label="일정 유형">
+          <option value="">모든 유형</option>
+          {Object.entries(EVENT_TYPE_META).map(([k, v]) => (
+            <option key={k} value={k}>
+              {v.tag} — {k}
+            </option>
+          ))}
+        </FilterSelect>
+
         <span className="hidden lg:flex items-center gap-1.5 ml-auto">
           {[
             { key: "timeline", label: "Timeline" },
@@ -353,51 +390,6 @@ export default function LabClient() {
           )}
         </span>
 
-        <div className="w-full flex flex-wrap items-center gap-x-4 gap-y-2">
-          <input
-            type="search"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="프로젝트 검색"
-            aria-label="프로젝트 검색"
-            className="w-[180px] bg-transparent text-[13px] py-1 border-0 border-b border-primaryB/20 focus:outline-none focus:border-primaryB placeholder:text-primaryB/30"
-          />
-          <FilterSelect value={statusFilter} onChange={setStatusFilter} label="상태">
-            <option value="">모든 상태</option>
-            {Object.entries(PROJECT_STATUS_META).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v.label}
-              </option>
-            ))}
-          </FilterSelect>
-          <FilterSelect value={researcherFilter} onChange={setResearcherFilter} label="연구원">
-            <option value="">모든 연구원</option>
-            {researchers
-              .filter((r) => r.active)
-              .map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                </option>
-              ))}
-          </FilterSelect>
-          <FilterSelect value={typeFilter} onChange={setTypeFilter} label="일정 유형">
-            <option value="">모든 유형</option>
-            {Object.entries(EVENT_TYPE_META).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v.tag} — {k}
-              </option>
-            ))}
-          </FilterSelect>
-          <label className="inline-flex items-center gap-1.5 text-[12px] text-primaryB/60 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={showArchived}
-              onChange={(e) => setShowArchived(e.target.checked)}
-              className="appearance-none w-[12px] h-[12px] border border-primaryB/40 checked:bg-[#4E22D6] checked:border-[#4E22D6]"
-            />
-            아카이브 포함
-          </label>
-        </div>
       </div>
 
       {/* notice */}
@@ -488,7 +480,7 @@ export default function LabClient() {
                     .split(/[,;]/)
                     .map((s) => s.trim())
                     .filter(Boolean)
-                    .map((id) => researcherById[id]?.name || id)
+                    .map((id) => (researcherById[id] ? researcherKo(researcherById[id]) : id))
                     .join(", ")}
                 </p>
               )}
