@@ -51,7 +51,9 @@ export function composeDigest(project, allEvents, anchorDay, nameOverride) {
   const groups = { prev: [], this: [], next: [] };
   for (const e of evs) groups[weekOf(e)].push(e);
 
-  const name = (nameOverride && String(nameOverride).trim()) || project.shortName || project.title;
+  // 프로젝트명 앞 번호("2. ")는 공지 제목·본문 모두에서 제거.
+  const rawName = (nameOverride && String(nameOverride).trim()) || project.shortName || project.title;
+  const name = rawName.replace(/^\d+\.\s*/, "");
 
   // 컨테이너 안: 액션 아이템(digestNote) + 하단에 "다음주까지의 목표"(다음주 일정) 동봉.
   // 박스 안 텍스트는 모두 13px로 통일. digestNote 첫 줄(⏰ …)은 볼드.
@@ -69,8 +71,17 @@ export function composeDigest(project, allEvents, anchorDay, nameOverride) {
       ? `<div style="font-size:13px;line-height:1.5">${groups.next.map(fmtGoal).join("")}</div>`
       : `<p style="margin:0;color:#5f8b80">일정 없음</p>`);
 
+  // 피그마 링크(있으면): 클릭 가능한 라벨 링크로. 라벨에 pw 등 메모 포함 가능.
+  const figmaLinks = Array.isArray(project.figmaLinks) ? project.figmaLinks.filter((f) => f && f.url) : [];
+  const figmaInner = figmaLinks.length
+    ? `<h3 style="margin:0 0 6px;font-size:13px">🔗 피그마</h3>` +
+      figmaLinks
+        .map((f) => `<div style="margin:2px 0;font-size:13px"><a href="${escapeHtml(f.url)}" style="color:#1f7a63">${escapeHtml(f.label || f.url)}</a></div>`)
+        .join("")
+    : "";
+
   // 밝은 jade/청록 컨테이너. 섹션 사이는 얇은 구분선으로.
-  const boxParts = [noteInner, goalsInner].filter(Boolean);
+  const boxParts = [noteInner, goalsInner, figmaInner].filter(Boolean);
   const boxHtml = boxParts.length
     ? `<div style="margin:14px 0 4px;padding:14px 16px;background:#E4F5EF;border-radius:8px">` +
       boxParts.join(`<div style="height:1px;background:#BFE3D8;margin:12px 0"></div>`) +
@@ -84,7 +95,5 @@ export function composeDigest(project, allEvents, anchorDay, nameOverride) {
     boxHtml +
     `</div>`;
 
-  // 제목: 프로젝트명 앞 번호("3. ")·괄호·날짜 없이 "이름 프로젝트 공지".
-  const subjectName = name.replace(/^\d+\.\s*/, "");
-  return { subject: `${subjectName} 프로젝트 공지`, html };
+  return { subject: `${name} 프로젝트 공지`, html };
 }
