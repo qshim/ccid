@@ -14,6 +14,7 @@
 
 import { useMemo, useState } from "react";
 import { resolvePhoto } from "@/app/components/members";
+import { categoryRowBg } from "@/app/lab/data/researcherCategories";
 import {
   toDayStr,
   todayStr,
@@ -303,11 +304,12 @@ export default function PeopleView({ researchers, projects, onOpenProject, selec
             {/* rows */}
             {filtered.map(({ person, assignments, items, rowH }) => {
               const photo = resolvePhoto(person.name, person.image);
+              const catBg = categoryRowBg(person.id);
               return (
                 <div key={person.id} className="flex border-b border-primaryB/[0.06]">
                   <div
                     className="sticky left-0 z-10 shrink-0 bg-[#FBFBF8] border-r border-primaryB/10 px-3 flex items-center gap-2 min-w-0"
-                    style={{ width: LEFT_W, height: rowH }}
+                    style={{ width: LEFT_W, height: rowH, backgroundImage: catBg || undefined }}
                   >
                     <span className="w-[22px] h-[22px] rounded-full overflow-hidden bg-[#E0E0FF] shrink-0">
                       {photo && (
