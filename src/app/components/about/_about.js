@@ -83,21 +83,6 @@ function SectorsLogos() {
   );
 }
 
-// #4 시각요소: 텍스트만 있는 블록(Who We Are / Methodology)에 회색 배경 div를
-// 자리표시자(placeholder)로 넣어 리듬을 만든다. 나중에 이미지/도식으로 교체 가능.
-function VisualPlaceholder({ label }) {
-  return (
-    <div
-      aria-hidden="true"
-      className="w-full mt-8 lg:mt-12 rounded-2xl bg-[#DBDBE2] aspect-[16/6] flex items-center justify-center overflow-hidden"
-    >
-      <span className={`${pxGrotesk.className} text-[11px] uppercase tracking-[0.14em] text-[#9a9aa6] select-none`}>
-        {label}
-      </span>
-    </div>
-  );
-}
-
 export default function AboutIntro() {
   return (
     <div className={`w-full subpixel-antialiased about-text-tuning ${pretendardR.className}`}>
@@ -147,11 +132,7 @@ export default function AboutIntro() {
                     <Reveal delay={140}>
                       <SectorsLogos />
                     </Reveal>
-                  ) : (
-                    <Reveal delay={140}>
-                      <VisualPlaceholder label={section.title} />
-                    </Reveal>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </div>
