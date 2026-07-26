@@ -26,7 +26,7 @@ export const researcherEmails = {
   "juhae-kim": "kimjuhae4652@gmail.com",      // 김주해 (Juhae Kim)
   "taeeun-kim": "kte040324@gmail.com",        // 김태은 (대체: kte4183@naver.com)
   "hyunji-lee": "llllhj0325@naver.com",       // 이현지
-  "sooyoun-jo": "dus10167@naver.com",         // 조수연
+  "sooyoun-jo": "dus10167@gmail.com, dus10167@naver.com", // 조수연 (gmail + naver 동시)
   "jiyu-shin": "mystarjiyu@gmail.com, mystarjiyu@naver.com", // 신지유 (gmail + naver 동시)
   "suhyeon-cho": "chosuhyeon21@gmail.com",    // 조수현
   "seojin-hong": "hongseojin02@karts.ac.kr",  // 홍서진
