@@ -67,11 +67,16 @@ export function composeDigest(project, allEvents, anchorDay, nameOverride) {
 
   // 컨테이너 안: 액션 아이템(digestNote) + 하단에 "다음주까지의 목표"(다음주 일정) 동봉.
   // 박스 안 텍스트는 모두 13px로 통일. digestNote 첫 줄(⏰ …)은 볼드.
+  // [[ … ]] 로 감싼 블록은 아웃라인 박스로 렌더 (핵심 흐름/강조용).
   const note = String(project.digestNote || "").trim();
   const nl = note.indexOf("\n");
-  const noteHtmlInner = nl === -1
+  let noteHtmlInner = nl === -1
     ? `<b>${escapeHtml(note)}</b>`
     : `<b>${escapeHtml(note.slice(0, nl))}</b>${escapeHtml(note.slice(nl))}`;
+  noteHtmlInner = noteHtmlInner.replace(
+    /\[\[\s*([\s\S]*?)\s*\]\]/g,
+    `<div style="border:1.2px solid #7FB8A8;border-radius:8px;padding:10px 12px;margin:2px 0;font-weight:500">$1</div>`
+  );
   const noteInner = note
     ? `<div style="font-size:13px;line-height:1.55;white-space:pre-wrap">${noteHtmlInner}</div>`
     : "";
