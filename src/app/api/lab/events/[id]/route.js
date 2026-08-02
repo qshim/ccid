@@ -11,6 +11,10 @@ import { getSession, denyProjectWrite } from "@/app/lab/lib/authz";
 
 export const dynamic = "force-dynamic";
 
+// Sheets 브리지(Apps Script) 왕복이 5~10초, 쓰기는 뷰 재생성까지 더 걸린다.
+// Vercel 기본 10초 제한에 걸려 504가 나므로 여유를 준다.
+export const maxDuration = 60;
+
 // The event's write permission follows its project's.
 function denyEventWrite(doc, event, session) {
   const project = (doc.projects || []).find((p) => p.id === event.projectId && !p.deletedAt);

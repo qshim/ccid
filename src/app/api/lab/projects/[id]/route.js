@@ -9,6 +9,10 @@ import { getSession, denyProjectWrite } from "@/app/lab/lib/authz";
 
 export const dynamic = "force-dynamic";
 
+// Sheets 브리지(Apps Script) 왕복이 5~10초, 쓰기는 뷰 재생성까지 더 걸린다.
+// Vercel 기본 10초 제한에 걸려 504가 나므로 여유를 준다.
+export const maxDuration = 60;
+
 export async function PATCH(request, { params }) {
   const { id } = await params;
   const session = await getSession(request);

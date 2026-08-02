@@ -12,6 +12,10 @@ import { formatSeoul } from "@/app/lab/lib/tz";
 
 export const dynamic = "force-dynamic";
 
+// Sheets 브리지(Apps Script) 왕복이 5~10초, 쓰기는 뷰 재생성까지 더 걸린다.
+// Vercel 기본 10초 제한에 걸려 504가 나므로 여유를 준다.
+export const maxDuration = 60;
+
 function fallbackDraft(project, upcoming) {
   const next = upcoming[0];
   const agenda = [
