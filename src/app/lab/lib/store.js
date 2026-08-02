@@ -70,27 +70,41 @@ function bridgeConfig() {
 }
 
 // Apps Script /exec는 간헐적으로 실패한다 — 5xx를 주거나, HTTP 200에 JSON 대신
-// HTML 오류 페이지를 실어 보내기도 한다(그 경우 data가 null이라 "bridge error: 200").
+// HTML 오류 페이지를 실어 보내기도 하고(그 경우 data가 null이라 "bridge error: 200"),
+// 아예 응답 없이 멈추기도 한다.
+//
+// 그래서 시도마다 반드시 타임아웃을 건다. 타임아웃이 없으면 멈춘 호출이 그대로
+// 쌓여 재시도가 오히려 함수 전체를 잡아먹는다(재시도만 넣었을 때 60초 한도에
+// 걸려 504가 늘었다).
+//
 // `retries`는 멱등한 호출(읽기)에만 쓴다. 쓰기는 재시도하면 중복 적용될 수 있다.
-async function bridgeCall(payload, { retries = 0 } = {}) {
+async function bridgeCall(payload, { retries = 0, timeoutMs = 12000 } = {}) {
   const { url, secret } = bridgeConfig();
   let lastErr;
   for (let attempt = 0; attempt <= retries; attempt++) {
     if (attempt > 0) {
       await new Promise((r) => setTimeout(r, 500 * attempt));
     }
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
       const res = await fetch(url, {
         method: "POST",
         redirect: "follow", // Apps Script /exec answers via 302
         headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({ secret, ...payload }),
+        signal: ctrl.signal,
       });
       const data = await res.json().catch(() => null);
       if (!data?.ok) throw new Error(`bridge error: ${data?.error || res.status}`);
       return data;
     } catch (err) {
-      lastErr = err;
+      lastErr =
+        err?.name === "AbortError"
+          ? new Error(`bridge timeout (${timeoutMs}ms)`)
+          : err;
+    } finally {
+      clearTimeout(timer);
     }
   }
   throw lastErr;
@@ -319,7 +333,12 @@ async function sheetsPut(nextDoc, _expectedVersion, beforeDoc) {
     // Roster rides along so the Apps Script can rebuild the People overview and
     // per-project view tabs without depending on the content spreadsheet —
     // the ops sheet can live under any account (e.g. hello.ccid@gmail.com).
-    await bridgeCall({ action: "opsApply", ops, roster: rosterPayload() });
+    // 쓰기는 뷰 재생성까지 하느라 읽기보다 훨씬 오래 걸린다. 재시도는 하지 않되
+    // (중복 적용 위험) 함수 한도(60초) 안에서 최대한 기다린다.
+    await bridgeCall(
+      { action: "opsApply", ops, roster: rosterPayload() },
+      { timeoutMs: 45000 }
+    );
   }
   return { ok: true, doc: nextDoc };
 }
