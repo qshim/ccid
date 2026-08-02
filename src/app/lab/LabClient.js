@@ -46,12 +46,34 @@ export default function LabClient() {
         router.replace("/lab/login");
         return;
       }
-      const json = await res.json();
-      if (!json.ok) throw new Error(json.error);
+      // 서버가 죽었거나 500을 내면 본문이 JSON이 아닌 HTML 에러 페이지다.
+      // 그대로 res.json()하면 "Unexpected token 'A'…" 같은 파서 오류가 사용자에게
+      // 그대로 노출되므로, 텍스트로 읽어 직접 파싱하고 실패 시 안내 문구로 바꾼다.
+      const raw = await res.text();
+      let json = null;
+      try {
+        json = JSON.parse(raw);
+      } catch {
+        json = null;
+      }
+      if (!json) {
+        throw new Error(
+          res.status >= 500
+            ? `서버에 일시적인 문제가 있습니다 (${res.status}). 잠시 후 다시 시도해 주세요.`
+            : `데이터를 불러오지 못했습니다 (${res.status}).`
+        );
+      }
+      if (!json.ok) throw new Error(json.error || "데이터를 불러오지 못했습니다.");
       setData(json);
       setLoadError("");
     } catch (err) {
-      setLoadError(String(err?.message || "데이터를 불러오지 못했습니다."));
+      const msg = String(err?.message || "");
+      // fetch 자체 실패(서버 다운·오프라인)도 사람이 읽을 수 있는 문구로.
+      setLoadError(
+        !msg || /failed to fetch|networkerror|load failed/i.test(msg)
+          ? "서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요."
+          : msg
+      );
     }
   }, [router]);
 
@@ -90,7 +112,14 @@ export default function LabClient() {
           router.replace("/lab/login");
           return { ok: false, error: "세션이 만료되었습니다. 다시 로그인하세요." };
         }
-        if (!json?.ok) return { ok: false, error: json?.error || `오류 (${res.status})` };
+        if (!json?.ok) {
+          // 본문이 JSON이 아니면(HTML 에러 페이지 등) json은 null이다.
+          const fallback =
+            res.status >= 500
+              ? `서버에 일시적인 문제가 있습니다 (${res.status}). 잠시 후 다시 시도해 주세요.`
+              : `오류 (${res.status})`;
+          return { ok: false, error: json?.error || fallback };
+        }
         await load();
         return json;
       } catch {
