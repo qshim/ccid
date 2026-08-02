@@ -69,17 +69,31 @@ function bridgeConfig() {
   return { url, secret };
 }
 
-async function bridgeCall(payload) {
+// Apps Script /exec는 간헐적으로 실패한다 — 5xx를 주거나, HTTP 200에 JSON 대신
+// HTML 오류 페이지를 실어 보내기도 한다(그 경우 data가 null이라 "bridge error: 200").
+// `retries`는 멱등한 호출(읽기)에만 쓴다. 쓰기는 재시도하면 중복 적용될 수 있다.
+async function bridgeCall(payload, { retries = 0 } = {}) {
   const { url, secret } = bridgeConfig();
-  const res = await fetch(url, {
-    method: "POST",
-    redirect: "follow", // Apps Script /exec answers via 302
-    headers: { "Content-Type": "text/plain" },
-    body: JSON.stringify({ secret, ...payload }),
-  });
-  const data = await res.json().catch(() => null);
-  if (!data?.ok) throw new Error(`bridge error: ${data?.error || res.status}`);
-  return data;
+  let lastErr;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    if (attempt > 0) {
+      await new Promise((r) => setTimeout(r, 500 * attempt));
+    }
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        redirect: "follow", // Apps Script /exec answers via 302
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ secret, ...payload }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!data?.ok) throw new Error(`bridge error: ${data?.error || res.status}`);
+      return data;
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr;
 }
 
 // Column orders — must match ensureSheet_ headers in the Apps Script extension.
@@ -281,7 +295,8 @@ export function diffDocs(before, after) {
 }
 
 async function sheetsGet() {
-  const data = await bridgeCall({ action: "opsGetAll" });
+  // 읽기는 멱등하므로 브리지가 흔들릴 때 조용히 재시도한다.
+  const data = await bridgeCall({ action: "opsGetAll" }, { retries: 2 });
   let settings = {};
   try {
     settings = JSON.parse(data.settings || "{}") || {};
