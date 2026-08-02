@@ -80,16 +80,37 @@ export function ArrowButton({ children, className = "", ...props }) {
   );
 }
 
+// 툴바 액션(+Project / +Schedule / +Google). 버튼과 링크가 섞여 있어도 같은 크기로
+// 보이도록 클래스를 공유한다.
+const actionCls =
+  "inline-flex items-center justify-center min-h-[30px] px-2 text-[14px] font-medium leading-none text-[#5D009C] hover:text-[#7a1fc0] disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C]";
+
+export function ActionButton({ children, className = "", ...props }) {
+  return (
+    <button type="button" {...props} className={`${actionCls} ${className}`}>
+      {children}
+    </button>
+  );
+}
+
+export function ActionLink({ children, className = "", ...props }) {
+  return (
+    <a {...props} className={`${actionCls} ${className}`}>
+      {children}
+    </a>
+  );
+}
+
 // Thin-border box button — echoes the public nav's boxed indicator.
 export function BoxButton({ children, active = false, className = "", ...props }) {
   return (
     <button
       type="button"
       {...props}
-      className={`inline-flex items-center justify-center min-h-[30px] px-3 text-[13px] leading-none border transition-colors duration-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] disabled:opacity-40 ${
+      className={`inline-flex items-center justify-center min-h-[30px] px-3 text-[13px] leading-none border transition-[opacity,background-color,border-color] duration-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] disabled:opacity-40 ${
         active
-          ? "border-primaryB/70 text-primaryB"
-          : "border-primaryB/25 text-primaryB/70 hover:border-primaryB/60 hover:text-primaryB"
+          ? "bg-white/80 border-primaryB/70 text-primaryB"
+          : "opacity-50 border-primaryB/25 text-primaryB hover:opacity-100 hover:border-primaryB/60"
       } ${className}`}
     >
       {children}

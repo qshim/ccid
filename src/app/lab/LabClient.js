@@ -12,7 +12,7 @@ import Timeline from "./components/Timeline";
 import PeopleView from "./components/PeopleView";
 import { TableView, BoardView } from "./components/Boards";
 import Drawer from "./components/Drawer";
-import { ArrowButton, BoxButton, GhostButton } from "./components/ui";
+import { ActionButton, ActionLink, BoxButton, GhostButton } from "./components/ui";
 import { ZOOMS, EVENT_TYPE_META, PROJECT_STATUS_META, toDayStr } from "./lib/timelineMath";
 import { formatSeoul } from "./lib/tz";
 import { researcherKo, CATEGORY_RANK } from "./data/researcherNamesKo";
@@ -357,17 +357,28 @@ export default function LabClient() {
     <Shell onLogout={logout} google={data.google} backend={data.backend} me={me}>
       {/* toolbar */}
       <div className="px-4 sm:px-6 flex flex-wrap items-center gap-x-4 gap-y-3 pb-4">
-        {canCreate && (
-          <>
-            <ArrowButton onClick={() => setSelection({ type: "new-project" })}>New project</ArrowButton>
-            <ArrowButton
-              onClick={() => setSelection({ type: "new-event", prefill: { day: toDayStr(new Date()) } })}
-              disabled={projects.length === 0}
+        {/* 액션 3종은 같은 크기·간격으로 붙여 배치 (+Google은 admin에게만 보임). */}
+        <span className="inline-flex items-center gap-1">
+          {canCreate && (
+            <>
+              <ActionButton onClick={() => setSelection({ type: "new-project" })}>+Project</ActionButton>
+              <ActionButton
+                onClick={() => setSelection({ type: "new-event", prefill: { day: toDayStr(new Date()) } })}
+                disabled={projects.length === 0}
+              >
+                +Schedule
+              </ActionButton>
+            </>
+          )}
+          {me?.role === "admin" && (
+            <ActionLink
+              href="/api/lab/google/connect"
+              title={data.google?.connected ? "Google 재연결" : "Google Calendar 연결"}
             >
-              New schedule
-            </ArrowButton>
-          </>
-        )}
+              +Google
+            </ActionLink>
+          )}
+        </span>
 
         {/* 필터: 퍼플 액션과 같은 줄에 배치해 공간 절약. 검색·아카이브 토글은 제거. */}
         <span aria-hidden="true" className="hidden sm:block w-px h-[18px] bg-primaryB/15 mx-1" />
@@ -559,7 +570,7 @@ function FilterSelect({ value, onChange, label, children }) {
       value={value}
       onChange={(e) => onChange(e.target.value)}
       aria-label={label}
-      className="bg-transparent text-[13px] py-1 border-0 border-b border-primaryB/20 focus:outline-none focus:border-primaryB cursor-pointer max-w-[150px]"
+      className="bg-transparent text-[13px] py-1 border-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5D009C] cursor-pointer max-w-[150px]"
     >
       {children}
     </select>
@@ -580,23 +591,20 @@ function Shell({ children, onLogout, google, backend, me }) {
               cciD
             </a>
           </div>
-          <p className="font-light uppercase text-[11px] tracking-[0.01em] text-[#888] mt-1">
-            Research Operations
-            {backend ? ` · ${backend === "sheets" ? "Sheets store" : "Local store"}` : ""}
-            {google?.connected ? ` · Google 연결됨 (${google.email})` : ""}
-          </p>
+          {backend ? (
+            <p className="font-light uppercase text-[11px] tracking-[0.01em] text-[#888] mt-1">
+              {backend === "sheets" ? "Sheets store" : "Local store"}
+            </p>
+          ) : null}
         </div>
         <div className="flex items-center gap-4 pt-1">
-          {me?.role === "admin" && (
-            <a
-              href="/api/lab/google/connect"
-              className="hidden sm:inline text-[13px] text-[#5D009C] hover:text-[#7a1fc0] transition-colors"
-            >
-              {google?.connected ? "Google 재연결" : "Google Calendar 연결"}
-            </a>
-          )}
-          <span className="font-light uppercase text-[11px] tracking-[0.01em] text-[#888]">
-            {me ? `${me.name} · ${me.role}` : "admin"}
+          {/* 이름과 역할이 같으면(admin/admin) 한 번만 노출. 크기는 Logout과 맞춘다. */}
+          <span className="text-[13px] uppercase text-primaryB/60">
+            {me
+              ? me.name?.toLowerCase() === me.role?.toLowerCase()
+                ? me.role
+                : `${me.name} · ${me.role}`
+              : "admin"}
           </span>
           <GhostButton onClick={onLogout}>Logout</GhostButton>
         </div>

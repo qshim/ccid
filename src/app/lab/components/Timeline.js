@@ -259,7 +259,7 @@ export default function Timeline({
         {/* ---- rows ---- */}
         {rows.length === 0 && (
           <div className="px-4 py-10 text-[14px] text-primaryB/50">
-            표시할 프로젝트가 없습니다. 우측 상단의 New project로 첫 프로젝트를 추가하세요.
+            표시할 프로젝트가 없습니다. 위의 +Project로 첫 프로젝트를 추가하세요.
           </div>
         )}
         {rows.map(({ project: p, barStart, barSpan, items, height }) => {
