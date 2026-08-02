@@ -81,7 +81,7 @@ export function composeDigest(project, allEvents, anchorDay, nameOverride) {
     ? `<div style="font-size:13px;line-height:1.55;white-space:pre-wrap">${noteHtmlInner}</div>`
     : "";
   const goalsInner =
-    `<h3 style="margin:0 0 6px;font-size:13px">다음주까지의 목표</h3>` +
+    `<h3 style="margin:0 0 6px;font-size:13px">다음주의 목표</h3>` +
     (groups.next.length
       ? `<div style="font-size:13px;line-height:1.5">${groups.next.map(fmtGoal).join("")}</div>`
       : `<p style="margin:0;color:#5f8b80">일정 없음</p>`);
