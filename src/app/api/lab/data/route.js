@@ -42,6 +42,9 @@ export async function GET(request) {
         lastSyncAt: doc.settings?.google?.lastSyncAt || "",
       },
       backend: process.env.LAB_DATA_BACKEND === "sheets" ? "sheets" : "json",
+      // 시트 브리지가 죽어 있어 직전 데이터를 대신 보여주는 중이면 알린다.
+      stale: Boolean(doc.stale),
+      staleAt: doc.staleAt || null,
     });
   } catch (err) {
     return NextResponse.json(

@@ -308,14 +308,29 @@ export function diffDocs(before, after) {
   return ops;
 }
 
-async function sheetsGet() {
-  // 읽기는 멱등하므로 브리지가 흔들릴 때 조용히 재시도한다.
-  const data = await bridgeCall({ action: "opsGetAll" }, { retries: 2 });
+// 브리지가 몇 분씩 죽는 구간이 있어서, 마지막으로 성공한 문서를 들고 있다가
+// 조회가 실패하면 그걸 대신 돌려준다(에러 화면 대신 보던 화면이 유지되도록).
+// 쓰기는 절대 이 값을 쓰면 안 된다 — 낡은 문서로 diff를 뜨면 남의 수정을 되돌린다.
+// 그래서 allowStale은 표시용 읽기(getDoc)에서만 켠다.
+let lastGoodDoc = null; // { doc, at }
+const STALE_MAX_MS = 10 * 60 * 1000;
+
+async function sheetsGet({ allowStale = false } = {}) {
+  let data;
+  try {
+    // 읽기는 멱등하므로 브리지가 흔들릴 때 조용히 재시도한다.
+    data = await bridgeCall({ action: "opsGetAll" }, { retries: 2 });
+  } catch (err) {
+    if (allowStale && lastGoodDoc && Date.now() - lastGoodDoc.at < STALE_MAX_MS) {
+      return { ...lastGoodDoc.doc, stale: true, staleAt: lastGoodDoc.at };
+    }
+    throw err;
+  }
   let settings = {};
   try {
     settings = JSON.parse(data.settings || "{}") || {};
   } catch {}
-  return {
+  const doc = {
     version: 0, // row-level last-write; no doc version on this backend
     projects: (data.projects || []).map(decodeProjectRow).filter((p) => p.id),
     events: (data.events || []).map(decodeEventRow).filter((e) => e.id),
@@ -325,6 +340,8 @@ async function sheetsGet() {
     // newest first (the sheet appends; the app expects recent-first)
     activity: (data.activity || []).filter((a) => a.id).reverse(),
   };
+  lastGoodDoc = { doc, at: Date.now() };
+  return doc;
 }
 
 async function sheetsPut(nextDoc, _expectedVersion, beforeDoc) {
@@ -360,8 +377,10 @@ function backend() {
     : { get: jsonGet, put: jsonPut };
 }
 
-export async function getDoc() {
-  return backend().get();
+// 표시용 읽기. 브리지가 죽어 있으면 마지막으로 성공한 문서를 stale 표시와 함께
+// 돌려준다(수정 경로인 updateDoc은 항상 최신만 쓴다 — 아래 참고).
+export async function getDoc({ allowStale = true } = {}) {
+  return backend().get({ allowStale });
 }
 
 // Read-modify-write; `mutate` receives a deep copy and must return the mutated
@@ -370,7 +389,9 @@ export async function getDoc() {
 export async function updateDoc(mutate, { retries = 3 } = {}) {
   const b = backend();
   for (let attempt = 0; attempt <= retries; attempt++) {
-    const current = await b.get();
+    // 반드시 최신 문서로 diff를 떠야 한다. 캐시된 문서로 쓰면 그 사이 다른 곳에서
+    // 바뀐 행을 옛 값으로 덮어쓴다.
+    const current = await b.get({ allowStale: false });
     const draft = JSON.parse(JSON.stringify(current));
     const mutated = await mutate(draft);
     if (!mutated) throw new Error("mutate must return the document");

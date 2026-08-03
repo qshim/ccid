@@ -439,6 +439,18 @@ export default function LabClient() {
         </div>
       )}
 
+      {/* 시트 브리지가 응답하지 않아 직전 데이터를 보여주는 중 — 편집은 위험하므로 알린다. */}
+      {data.stale && (
+        <div role="status" className="px-4 sm:px-6 pb-3">
+          <p className="text-[13px] text-[#8a6d00]">
+            시트에 연결하지 못해 마지막으로 불러온 내용을 보여주고 있습니다. 최신이 아닐 수 있어요.{" "}
+            <GhostButton onClick={load} className="ml-1">
+              새로고침
+            </GhostButton>
+          </p>
+        </div>
+      )}
+
       {/* desktop main view: timeline | table | board */}
       <div className="hidden lg:block px-6 pb-8">
         {view === "timeline" && (
