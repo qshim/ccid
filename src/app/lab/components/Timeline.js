@@ -7,7 +7,7 @@
 // v1 editing is click-based (empty area → new event; block → drawer);
 // drag interactions can layer on later without changing the data flow.
 
-import { useMemo, useRef, useEffect, useCallback } from "react";
+import { Fragment, useMemo, useRef, useEffect, useCallback } from "react";
 import {
   toDayStr,
   todayStr,
@@ -19,6 +19,7 @@ import {
   assignLanes,
   EVENT_TYPE_META,
   PROJECT_STATUS_META,
+  isFutureProject,
 } from "../lib/timelineMath";
 import { formatSeoul, utcIsoToSeoulLocal } from "../lib/tz";
 import { resolvePhoto } from "@/app/components/members";
@@ -262,14 +263,32 @@ export default function Timeline({
             표시할 프로젝트가 없습니다. 위의 +Project로 첫 프로젝트를 추가하세요.
           </div>
         )}
-        {rows.map(({ project: p, barStart, barSpan, items, height }) => {
+        {rows.map(({ project: p, barStart, barSpan, items, height }, rowIdx) => {
           const status = PROJECT_STATUS_META[p.status] || PROJECT_STATUS_META.planning;
+          // 예정 프로젝트는 정렬로 아래에 모여 있다. 그 첫 행 앞에 구분 머리글을 넣어
+          // "여기부터는 아직 시작 전"이라는 걸 드러낸다.
+          const startsFutureGroup =
+            isFutureProject(p) && (rowIdx === 0 || !isFutureProject(rows[rowIdx - 1].project));
           // 강조 프로젝트: 진한 프로젝트 색 배경 + 밝은 텍스트 (색만으로 구분하지
           // 않도록 텍스트/구성은 동일하게 유지).
           const em = Boolean(p.emphasis);
           const emColor = p.color || "#4E22D6";
           return (
-            <div key={p.id} className="flex border-b border-primaryB/[0.08]">
+            <Fragment key={p.id}>
+              {startsFutureGroup && (
+                <div className="flex border-b border-primaryB/[0.08]">
+                  <div
+                    className="sticky left-0 z-30 shrink-0 border-r border-primaryB/15 bg-[#E8E8E2] px-3 py-1.5"
+                    style={{ width: LEFT_W }}
+                  >
+                    <span className="font-light uppercase text-[10px] tracking-[0.05em] text-[#888]">
+                      예정 · Upcoming
+                    </span>
+                  </div>
+                  <div className="shrink-0 bg-[#E8E8E2]" style={{ width: gridW }} />
+                </div>
+              )}
+            <div className="flex border-b border-primaryB/[0.08]">
               {/* sticky left: project info */}
               <div
                 className={`sticky left-0 z-20 shrink-0 border-r border-primaryB/15 px-3 py-2.5 flex flex-col gap-0.5 min-w-0 ${
@@ -574,6 +593,7 @@ export default function Timeline({
                 })}
               </div>
             </div>
+            </Fragment>
           );
         })}
       </div>

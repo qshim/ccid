@@ -134,6 +134,11 @@ export const EVENT_TYPE_META = {
   other: { tag: "ETC", color: "#5c5c66" },
 };
 
+// 아직 본격적으로 굴러가지 않는 프로젝트는 타임라인 아래쪽에 따로 묶어 본다.
+// 시작일이 아니라 상태로 판단한다 — 시작일이 지났어도 준비 단계인 경우가 있다
+// (예: 삼성 두 건은 8/1 시작이지만 아직 planning).
+export const isFutureProject = (p) => p?.status === "planning";
+
 export const PROJECT_STATUS_META = {
   planning: { label: "Planning", color: "#7A6BB0" },
   active: { label: "Active", color: "#4E22D6" },

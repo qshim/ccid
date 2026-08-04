@@ -13,7 +13,13 @@ import PeopleView from "./components/PeopleView";
 import { TableView, BoardView } from "./components/Boards";
 import Drawer from "./components/Drawer";
 import { ActionButton, ActionLink, BoxButton, GhostButton } from "./components/ui";
-import { ZOOMS, EVENT_TYPE_META, PROJECT_STATUS_META, toDayStr } from "./lib/timelineMath";
+import {
+  ZOOMS,
+  EVENT_TYPE_META,
+  PROJECT_STATUS_META,
+  isFutureProject,
+  toDayStr,
+} from "./lib/timelineMath";
 import { formatSeoul } from "./lib/tz";
 import { researcherKo, CATEGORY_RANK } from "./data/researcherNamesKo";
 
@@ -290,13 +296,16 @@ export default function LabClient() {
               .includes(needle)
           : true
       )
+      // 예정(planning) 프로젝트는 아래로 몰아 따로 보이게 하고, 그 안에서는
       // shortName의 번호("6. 현대차 산학 1/2")로 자연 정렬 → 분리한 프로젝트가 나란히.
-      .sort((a, b) =>
-        String(a.shortName || a.title || "").localeCompare(
-          String(b.shortName || b.title || ""),
-          "en",
-          { numeric: true }
-        )
+      .sort(
+        (a, b) =>
+          Number(isFutureProject(a)) - Number(isFutureProject(b)) ||
+          String(a.shortName || a.title || "").localeCompare(
+            String(b.shortName || b.title || ""),
+            "en",
+            { numeric: true }
+          )
       );
   }, [projects, q, statusFilter, researcherFilter, showArchived]);
 
