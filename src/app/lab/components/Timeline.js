@@ -24,6 +24,7 @@ import {
 import { formatSeoul, utcIsoToSeoulLocal } from "../lib/tz";
 import { resolvePhoto } from "@/app/components/members";
 import { researcherKo } from "@/app/lab/data/researcherNamesKo";
+import { badgeOf } from "@/app/lab/data/researcherBadges";
 
 const LEFT_W = 232; // sticky project column width
 const ROW_BASE = 27; // px per event lane
@@ -408,7 +409,9 @@ export default function Timeline({
                       const photo = r ? resolvePhoto(r.name, r.image) : resolvePhoto(m.researcherId, "");
                       const name = r ? researcherKo(r) : m.researcherId;
                       const pm = isPM(m);
-                      const label = `${name}${m.role ? ` — ${m.role}` : ""}`;
+                      // 성실 근무 뱃지(👑) — 아바타 우상단에 얹고 이름표에도 표시.
+                      const badge = badgeOf(m.researcherId);
+                      const label = `${badge ? `${badge} ` : ""}${name}${m.role ? ` — ${m.role}` : ""}`;
                       return (
                         <span
                           key={m.researcherId}
@@ -430,6 +433,15 @@ export default function Timeline({
                               <span aria-hidden="true" className="block w-full h-full bg-[#E0E0FF]" />
                             )}
                           </span>
+                          {badge && (
+                            <span
+                              aria-hidden="true"
+                              className="pointer-events-none absolute -top-[6px] -right-[4px] text-[11px] leading-none select-none"
+                              style={{ textShadow: "0 1px 2px rgba(0,0,0,.35)" }}
+                            >
+                              {badge}
+                            </span>
+                          )}
                           {/* hover 플로팅 이름표 */}
                           <span
                             role="tooltip"
