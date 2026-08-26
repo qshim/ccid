@@ -10,7 +10,11 @@ export const BADGE = {
 };
 
 export const researcherBadges = {
-  // 예) "minjeong-joo": BADGE.crown,
+  "juwan-kim": BADGE.crown, // 김주완
+  "kiryung-nam": BADGE.crown, // 남기륭 선생님
+  "윤선빈 선생님": BADGE.crown,
+  "박현우": BADGE.crown,
+  "함도원": BADGE.crown,
 };
 
 export function badgeOf(id) {
