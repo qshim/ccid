@@ -15,7 +15,6 @@
 import { useMemo, useState } from "react";
 import { resolvePhoto } from "@/app/components/members";
 import { categoryRowBg } from "@/app/lab/data/researcherCategories";
-import { badgeOf } from "@/app/lab/data/researcherBadges";
 import {
   toDayStr,
   todayStr,
@@ -325,11 +324,6 @@ export default function PeopleView({ researchers, projects, onOpenProject, selec
                     </span>
                     <div className="min-w-0">
                       <div className="text-[12px] font-medium text-primaryB truncate">
-                        {badgeOf(person.id) && (
-                          <span aria-label="성실 근무" className="mr-0.5">
-                            {badgeOf(person.id)}
-                          </span>
-                        )}
                         {person.name}
                       </div>
                       <div className="font-light uppercase text-[9px] tracking-[0.05em] text-[#888] truncate">

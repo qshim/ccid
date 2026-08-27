@@ -139,6 +139,16 @@ export const EVENT_TYPE_META = {
 // (예: 삼성 두 건은 8/1 시작이지만 아직 planning).
 export const isFutureProject = (p) => p?.status === "planning";
 
+// 이미 끝난 프로젝트 — 종료일이 지났거나 완료/보관 상태. 타임라인에서 톤을 낮춰
+// 진행 중인 것들에 시선이 가도록 한다.
+export const isPastProject = (p) => {
+  if (!p) return false;
+  if (p.status === "completed" || p.status === "archived") return true;
+  const end = String(p.endDate || "").slice(0, 10);
+  if (!end) return false;
+  return end < todayStr();
+};
+
 export const PROJECT_STATUS_META = {
   planning: { label: "Planning", color: "#7A6BB0" },
   active: { label: "Active", color: "#4E22D6" },

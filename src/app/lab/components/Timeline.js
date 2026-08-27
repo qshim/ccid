@@ -20,11 +20,12 @@ import {
   EVENT_TYPE_META,
   PROJECT_STATUS_META,
   isFutureProject,
+  isPastProject,
 } from "../lib/timelineMath";
 import { formatSeoul, utcIsoToSeoulLocal } from "../lib/tz";
 import { resolvePhoto } from "@/app/components/members";
 import { researcherKo } from "@/app/lab/data/researcherNamesKo";
-import { badgeOf } from "@/app/lab/data/researcherBadges";
+import { projectBadgeOf } from "@/app/lab/data/projectBadges";
 
 const LEFT_W = 232; // sticky project column width
 const ROW_BASE = 27; // px per event lane
@@ -272,7 +273,9 @@ export default function Timeline({
             isFutureProject(p) && (rowIdx === 0 || !isFutureProject(rows[rowIdx - 1].project));
           // 강조 프로젝트: 진한 프로젝트 색 배경 + 밝은 텍스트 (색만으로 구분하지
           // 않도록 텍스트/구성은 동일하게 유지).
-          const em = Boolean(p.emphasis);
+          // 끝난 프로젝트는 강조색을 쓰지 않고 밝은 회색 위 옅은 회색 글씨로 낮춘다.
+          const past = isPastProject(p);
+          const em = Boolean(p.emphasis) && !past;
           const emColor = p.color || "#4E22D6";
           return (
             <Fragment key={p.id}>
@@ -293,7 +296,7 @@ export default function Timeline({
               {/* sticky left: project info */}
               <div
                 className={`sticky left-0 z-20 shrink-0 border-r border-primaryB/15 px-3 py-2.5 flex flex-col gap-0.5 min-w-0 ${
-                  em ? "" : "bg-[#F0F0EC]"
+                  em ? "" : past ? "bg-[#E9E9E5]" : "bg-[#F0F0EC]"
                 }`}
                 style={{ width: LEFT_W, minHeight: height, ...(em ? { backgroundColor: emColor } : {}) }}
               >
@@ -307,9 +310,16 @@ export default function Timeline({
                       className={`block text-[14px] font-medium leading-[1.25] transition-colors truncate ${
                         em
                           ? "text-white group-hover:text-white/80"
-                          : "text-primaryB group-hover:text-[#5D009C]"
+                          : past
+                            ? "text-[#96968F] group-hover:text-[#6d6d67]"
+                            : "text-primaryB group-hover:text-[#5D009C]"
                       }`}
                     >
+                      {projectBadgeOf(p.id) && (
+                        <span aria-hidden="true" className="mr-1">
+                          {projectBadgeOf(p.id)}
+                        </span>
+                      )}
                       {p.shortName || p.title}
                     </span>
                     {/* 도트·클라이언트·기본 상태(active/planning)는 숨김.
@@ -409,9 +419,7 @@ export default function Timeline({
                       const photo = r ? resolvePhoto(r.name, r.image) : resolvePhoto(m.researcherId, "");
                       const name = r ? researcherKo(r) : m.researcherId;
                       const pm = isPM(m);
-                      // 성실 근무 뱃지(👑) — 아바타 우상단에 얹고 이름표에도 표시.
-                      const badge = badgeOf(m.researcherId);
-                      const label = `${badge ? `${badge} ` : ""}${name}${m.role ? ` — ${m.role}` : ""}`;
+                      const label = `${name}${m.role ? ` — ${m.role}` : ""}`;
                       return (
                         <span
                           key={m.researcherId}
@@ -433,15 +441,6 @@ export default function Timeline({
                               <span aria-hidden="true" className="block w-full h-full bg-[#E0E0FF]" />
                             )}
                           </span>
-                          {badge && (
-                            <span
-                              aria-hidden="true"
-                              className="pointer-events-none absolute -top-[6px] -right-[4px] text-[11px] leading-none select-none"
-                              style={{ textShadow: "0 1px 2px rgba(0,0,0,.35)" }}
-                            >
-                              {badge}
-                            </span>
-                          )}
                           {/* hover 플로팅 이름표 */}
                           <span
                             role="tooltip"
@@ -504,8 +503,8 @@ export default function Timeline({
                       top: 8,
                       left: Math.max(0, barStart) * pxPerDay,
                       width: Math.max(pxPerDay, barSpan * pxPerDay),
-                      backgroundColor: em ? emColor : `${emColor}26`,
-                      border: `1px solid ${em ? emColor : `${emColor}55`}`,
+                      backgroundColor: past ? "#DEDED8" : em ? emColor : `${emColor}26`,
+                      border: `1px solid ${past ? "#CFCFC8" : em ? emColor : `${emColor}55`}`,
                     }}
                   >
                     <span
