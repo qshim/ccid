@@ -269,8 +269,17 @@ export default function Timeline({
           const status = PROJECT_STATUS_META[p.status] || PROJECT_STATUS_META.planning;
           // 예정 프로젝트는 정렬로 아래에 모여 있다. 그 첫 행 앞에 구분 머리글을 넣어
           // "여기부터는 아직 시작 전"이라는 걸 드러낸다.
-          const startsFutureGroup =
-            isFutureProject(p) && (rowIdx === 0 || !isFutureProject(rows[rowIdx - 1].project));
+          // 구획(진행 중 → 예정 → 종료)이 바뀌는 첫 행 앞에 머리글을 넣는다.
+          const groupOf = (proj) =>
+            isPastProject(proj) ? "past" : isFutureProject(proj) ? "future" : "now";
+          const myGroup = groupOf(p);
+          const prevGroup = rowIdx === 0 ? null : groupOf(rows[rowIdx - 1].project);
+          const groupLabel =
+            myGroup !== prevGroup && myGroup !== "now"
+              ? myGroup === "future"
+                ? "예정 · Upcoming"
+                : "종료 · Completed"
+              : null;
           // 강조 프로젝트: 진한 프로젝트 색 배경 + 밝은 텍스트 (색만으로 구분하지
           // 않도록 텍스트/구성은 동일하게 유지).
           // 끝난 프로젝트는 강조색을 쓰지 않고 밝은 회색 위 옅은 회색 글씨로 낮춘다.
@@ -279,14 +288,14 @@ export default function Timeline({
           const emColor = p.color || "#4E22D6";
           return (
             <Fragment key={p.id}>
-              {startsFutureGroup && (
+              {groupLabel && (
                 <div className="flex border-b border-primaryB/[0.08]">
                   <div
                     className="sticky left-0 z-30 shrink-0 border-r border-primaryB/15 bg-[#E8E8E2] px-3 py-1.5"
                     style={{ width: LEFT_W }}
                   >
                     <span className="font-light uppercase text-[10px] tracking-[0.05em] text-[#888]">
-                      예정 · Upcoming
+                      {groupLabel}
                     </span>
                   </div>
                   <div className="shrink-0 bg-[#E8E8E2]" style={{ width: gridW }} />

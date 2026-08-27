@@ -18,10 +18,14 @@ import {
   EVENT_TYPE_META,
   PROJECT_STATUS_META,
   isFutureProject,
+  isPastProject,
   toDayStr,
 } from "./lib/timelineMath";
 import { formatSeoul } from "./lib/tz";
 import { researcherKo, CATEGORY_RANK } from "./data/researcherNamesKo";
+
+// 타임라인 구획: 진행 중 → 예정 → 종료. 끝난 일은 맨 아래로 보내 시야에서 비운다.
+const groupRank = (p) => (isPastProject(p) ? 2 : isFutureProject(p) ? 1 : 0);
 
 export default function LabClient() {
   const router = useRouter();
@@ -296,11 +300,11 @@ export default function LabClient() {
               .includes(needle)
           : true
       )
-      // 예정(planning) 프로젝트는 아래로 몰아 따로 보이게 하고, 그 안에서는
+      // 진행 중 → 예정 → 종료 순으로 구획을 나누고, 각 구획 안에서는
       // shortName의 번호("6. 현대차 산학 1/2")로 자연 정렬 → 분리한 프로젝트가 나란히.
       .sort(
         (a, b) =>
-          Number(isFutureProject(a)) - Number(isFutureProject(b)) ||
+          groupRank(a) - groupRank(b) ||
           String(a.shortName || a.title || "").localeCompare(
             String(b.shortName || b.title || ""),
             "en",
