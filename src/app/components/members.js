@@ -99,10 +99,28 @@ function photoOrigin(name) {
   return PHOTO_ORIGIN[(name || "").trim()];
 }
 
+// 프로젝트 리딩 선생님들은 로스터에 없는 애드혹 항목이라("최덕수 선생님" 같은
+// 한글 문자열이 곧 id다) 영문 이름 키로는 사진이 잡히지 않는다. 한글 이름 →
+// 파일 경로를 따로 두고, "선생님" 호칭이 붙어도 같은 항목으로 해석한다.
+const ADHOC_PHOTOS = {
+  "최덕수": "/img/members/adhoc/duksoo-choi.png",
+  "이태헌": "/img/members/adhoc/taeheon-lee.png",
+  "윤선빈": "/img/members/adhoc/sunbin-yoon.png",
+  "안예윤": "/img/members/adhoc/yeyoon-ahn.png",
+  "조슈아": "/img/members/adhoc/joshua-cho.png",
+};
+
 // Exported for reuse (Lab Ops researcher UI) — keeps photo overrides single-source.
 export function resolvePhoto(name, image) {
   const key = (name || "").trim();
-  return LOCAL_PHOTOS[key] || SHEET_PHOTOS[key] || String(image || "").trim() || "";
+  const bare = key.replace(/\s*선생님\s*$/, "");
+  return (
+    LOCAL_PHOTOS[key] ||
+    SHEET_PHOTOS[key] ||
+    ADHOC_PHOTOS[bare] ||
+    String(image || "").trim() ||
+    ""
+  );
 }
 
 function normalizeRole(role) {
