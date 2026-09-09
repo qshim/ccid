@@ -48,10 +48,18 @@ export const researcherEmails = {
   // 담당 선생님 (projectLead)
   "최덕수 선생님": "duxchoi@gmail.com",     // #3 Resonance
   "이태헌 선생님": "ted@taeheonlee.com",    // #4 Retail Robotics
+  "윤선빈 선생님": "seonbin.yun.design@gmail.com", // #1 MIT · #13 삼성 평가 · #15 Future TV
 
   // 신규 인원 (아직 로스터·프로젝트 배정 없음) — 배정 시 이 한글 이름으로 넣으면 매칭됨
   "채지호": "jennyjiho@gmail.com",
   "김예인": "01052865391a@gmail.com",
   "이연우": "l.yeonwu0@gmail.com",
   "이미현": "qweiopalzm@naver.com",
+
+  // #13 삼성 GenUI 사용자 평가 팀
+  "이채영": "cayeormi@gmail.com",
+  "김민지": "minjikim10303@gmail.com",
+  "원영우": "wonyoungwoo0000@gmail.com",
+  "허지영": "antandart21@gmail.com",
+  "임성원": "ahdekd21@gmail.com",
 };
