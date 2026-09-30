@@ -22,10 +22,8 @@ export default function Home() {
   const ko = lang === 'ko';
   return <main id="main">
     <section className="home-hero">
-      <div className="hero-topline"><span>Center for Creative Intelligence Design</span><span>Seoul, Korea <span className="tiny-star">✳</span></span></div>
       <h1>{ko ? <>컴퓨테이셔널 디자인을<br /><span>사람의 경험으로.</span></> : <>Computational design,<br /><span>made human.</span></>}</h1>
       <div className="hero-lower"><div className="hero-statement"><span className="eyebrow">Research. Strategy. Implementation.</span><p><DecodeText text={ko ? '리서치로 방향을 정하고,\n내일을 디자인합니다.' : 'Research sets the direction.\nDesign builds tomorrow.'} /></p><div className="hero-description"><DecodeText text={ko ? 'cciD는 컴퓨테이셔널 디자인과 생성형 AI 기반의 사용자 경험 디자인 및 리서치로 내일의 고객과 사용자를 인터랙션 디자인으로 연결하는 인간 중심의 디자인 센터입니다. 기업의 기술이 제품과 브랜드 안에서 어떤 경험을 만들어야 하는지 실험하고 정의하고 구현합니다.' : 'cciD is a human-centred design centre that connects tomorrow’s customers and users through interaction design, working from computational design and generative-AI user experience research. We experiment with, define, and build the experiences a company’s technology should create inside its products and brands.'} /></div></div><QuestionField /></div>
-      <div className="hero-bottom"><span>Research · Design · Prototyping</span></div>
     </section>
 
     <section className="research-section site-section" id="research">
