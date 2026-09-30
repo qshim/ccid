@@ -21,11 +21,9 @@
 .ccid-site .site-skip{position:fixed;top:-100px;left:20px;background:var(--ink);color:white;padding:12px;z-index:1001}
 .ccid-site .site-skip:focus{top:10px}
 .ccid-site .site-header>*:not(.gradual-blur){position:relative;z-index:1}
-/* 헤더의 회색 층과 블러 세기는 --head-p 를 따라간다 (0 = 맨 위, 1 = research 도달).
-   켜고 끄는 것이 아니라 스크롤에 붙어 자라므로, 되돌아가면 그대로 풀린다.
-   ::after 는 자식(블러 층)보다 늦게 칠해지므로 블러 위, 내용(z-index:1) 아래에 놓인다. */
+/* 헤더의 블러 세기는 --head-p 를 따라간다 (0 = 맨 위, 1 = research 도달).
+   켜고 끄는 것이 아니라 스크롤에 붙어 자라므로, 되돌아가면 그대로 풀린다. */
 @property --head-p{syntax:'<number>';inherits:true;initial-value:0}
-.ccid-site .site-header::after{content:'';position:absolute;inset:0;background:#ccc;opacity:calc(.18 * var(--head-p,0));pointer-events:none}
 .ccid-site .site-header .gradual-blur{--gblur-scale:calc(.15 + .85 * var(--head-p,0))}
 .ccid-site .site-header{height:90px;padding:0 clamp(24px,4.5vw,88px);display:flex;align-items:center;justify-content:space-between;gap:28px;position:sticky;top:0;z-index:100;overflow:visible;background:linear-gradient(to bottom,rgba(244,243,239,.84) 0%,rgba(244,243,239,.7) 62%,rgba(244,243,239,0) 100%);border-bottom:0;transition:background .3s}
 @supports not (backdrop-filter:blur(1px)){.ccid-site .site-header{background:var(--paper)}}
@@ -183,7 +181,6 @@ html[lang="en"] .ccid-site .join-section h2{line-height:1.14}
 .ccid-site .row-themes a .site-arrow{display:none}
 .ccid-site .row-themes .site-arrow{width:12px;height:12px}
 .ccid-site .row-themes a:hover{text-decoration:underline;text-underline-offset:3px}
-.ccid-site .archive-note{font-size:11px;color:var(--muted);margin-top:28px}
 .ccid-site .archive-empty{padding:70px 0;border-block:1px solid var(--line)}
 .ccid-site .archive-empty h2{font-size:24px;margin-bottom:20px}
 .ccid-site .detail-intro{padding-top:36px;padding-bottom:45px}
@@ -301,8 +298,8 @@ html[lang="en"] .ccid-site .join-section h2{line-height:1.14}
 .ccid-site .group-research-interns .person-initials,
 .ccid-site .group-alumni .person-initials{font-size:22px}
 .ccid-site .director-group .people-grid{display:block}
-.ccid-site .director-group .person{display:grid;grid-template-columns:1fr 1.1fr;column-gap:30px;align-content:start}
-.ccid-site .director-group .person-image{grid-row:1/5;width:100%;aspect-ratio:.85;margin:0;border-radius:0}
+.ccid-site .director-group .person{display:grid;grid-template-columns:200px minmax(0,1fr);column-gap:30px;align-content:start}
+.ccid-site .director-group .person-image{grid-row:1/5;width:100%;max-width:200px;aspect-ratio:.85;margin:0;border-radius:0}
 .ccid-site .director-group .person-image>img{transform:none}
 .ccid-site .director-group .person:hover .person-image>img{transform:scale(1.025)}
 .ccid-site .director-group .person h3{font-size:27px;align-self:end;margin-top:20px}

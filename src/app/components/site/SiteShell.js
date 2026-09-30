@@ -137,7 +137,7 @@ export function SiteShell({ children }) {
   return <Language.Provider value={{ lang }}><div className={`ccid-site ${pretendardR.className}`} style={{ '--display-font': pxGrotesk.style.fontFamily }}>
     <a className="site-skip" href="#main">{lang === 'ko' ? '본문으로 건너뛰기' : 'Skip to content'}</a>
     <header ref={headerRef} className={`site-header ${scrolled ? 'is-scrolled' : ''} ${menu ? 'menu-is-open' : ''}`}>
-      <GradualBlur position="top" height="112px" strength={2.2} divCount={6} curve="ease-out" style={{ top: 0, height: 112, bottom: 'auto' }} />
+      <GradualBlur position="top" height="112px" strength={2.2} divCount={6} curve="ease-out" opacity={.5} style={{ top: 0, height: 112, bottom: 'auto' }} />
       <Link className="wordmark" href="/" aria-label="cciD home" onClick={e => navigate(e, "/")}>cciD<span className="wordmark-dot" /></Link>
       <nav className="desktop-nav" aria-label="Main navigation">{links.map(l => <Link key={l.href} href={l.href} onClick={e => navigate(e, l.href)} className={l.active ? 'is-active' : ''} aria-current={l.active ? 'page' : undefined}>{l.text}</Link>)}</nav>
       <div className="header-actions"><button className="language-button" onClick={changeLanguage} aria-label={lang === 'ko' ? 'Switch to English' : '한국어로 전환'}>{lang === 'ko' ? 'EN' : 'KO'}</button><button ref={menuButton} className="menu-toggle" aria-controls="mobile-navigation" aria-expanded={menu} aria-label={menu ? 'Close menu' : 'Open menu'} onClick={() => setMenu(v => !v)}><span /><span /></button></div>
