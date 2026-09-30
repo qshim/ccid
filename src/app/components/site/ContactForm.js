@@ -100,7 +100,6 @@ export default function ContactForm({ lang }) {
         onClick={() => setOpen((v) => !v)}
       >
         Let’s talk.
-        <span aria-hidden="true" className={`contact-caret${open ? " is-open" : ""}`}>↓</span>
       </button>
 
       <form id="contact-form" className="contact-form" hidden={!open} onSubmit={submit} noValidate>
