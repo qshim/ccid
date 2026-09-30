@@ -46,3 +46,11 @@ next-env.d.ts
 
 # Apps Script write bridge — contains the shared secret, keep local
 google-apps-script/doPost-write-bridge.gs
+
+# 작업 도구·실험물 — 사이트 빌드와 무관
+/.agents/
+/.claude/skills/
+/skills-lock.json
+/public/style-lab/
+# 외부 전달용으로 변환한 PNG 사본(58MB). 웹에서는 원본 webp 를 쓴다.
+/public/img/imgs/

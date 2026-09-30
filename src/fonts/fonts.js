@@ -1,3 +1,4 @@
+import { Spectral } from "next/font/google";
 import localFont from "next/font/local";
 
 export const programme = localFont({
@@ -34,4 +35,14 @@ export const neuehaas = localFont({
   weight: '400',
   style: 'normal',
   display: 'swap',
+});
+// 히어로의 강조 세리프. Georgia는 본래 화면의 작은 크기를 위해 그려진 서체라
+// 89px 디스플레이에서는 의도된 용도를 벗어난다. Spectral은 큰 크기를 전제로 한
+// 에디토리얼 세리프이고, ExtraLight(200)로 얇게 쓴다.
+export const spectral = Spectral({
+  subsets: ["latin"],
+  weight: ["200", "300"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-spectral",
 });

@@ -1,0 +1,13 @@
+"use client";
+import { useState } from 'react';
+import { collaborations, themes } from '@/app/data/research';
+import { useSiteLanguage } from './SiteShell';
+import CollaborationRows from './CollaborationRows';
+export default function Archive() {
+  const { lang } = useSiteLanguage(); const ko = lang === 'ko';
+  const [theme, setTheme] = useState('all');
+  const [year, setYear] = useState('all');
+  const years = [...new Set(collaborations.map(c => c.year))];
+  const filtered = collaborations.filter(c => (theme === 'all' || c.themes.includes(theme)) && (year === 'all' || c.year === year));
+  return <main id="main" className="archive-page site-section"><div className="page-topline eyebrow">A shared body of inquiry / {years.at(-1)}—{years[0]}</div><h1>Collaborations<span className="heading-period">.</span></h1><div className="archive-intro"><p>{ko ? <>함께한 질문들,<br />이어지는 가능성.</> : <>Shared questions.<br />Continuing possibilities.</>}</p><div>{ko ? '여러 기업과 기관을 만나며 쌓아온 연구와 협업의 이력입니다. 각 협업은 하나 이상의 연구 주제로 이어집니다.' : 'A record of research with organizations across disciplines. Each collaboration connects to one or more ongoing research themes.'}</div></div><div className="archive-controls"><div className="filter-list" role="group" aria-label={ko ? '연구 주제 필터' : 'Filter by research theme'}><button aria-pressed={theme === 'all'} onClick={() => setTheme('all')}>{ko ? '전체' : 'All'}<sup>{collaborations.length}</sup></button>{themes.map(t => <button key={t.id} aria-pressed={theme===t.id} onClick={() => setTheme(t.id)}>{ko ? t.title : t.short}</button>)}</div><label className="year-select"><span className="sr-only">{ko ? '연도 선택' : 'Select year'}</span><select value={year} onChange={e => setYear(e.target.value)}><option value="all">{ko ? '모든 연도' : 'All years'}</option>{years.map(y => <option key={y} value={y}>{y}</option>)}</select></label></div><div className="archive-results"><span aria-live="polite">{filtered.length} {ko ? '개의 협업' : (filtered.length === 1 ? 'collaboration' : 'collaborations')}</span>{(theme !== 'all' || year !== 'all') && <button onClick={() => {setTheme('all');setYear('all');}}>{ko ? '필터 초기화' : 'Clear filters'} ×</button>}</div>{filtered.length ? <CollaborationRows items={filtered} expanded /> : <div className="archive-empty"><h2>{ko ? '이 조건에 해당하는 협업이 없습니다.' : 'No collaborations match these filters.'}</h2><button className="text-link" onClick={() => {setTheme('all');setYear('all');}}>{ko ? '전체 협업 보기' : 'View all collaborations'} →</button></div>}<p className="archive-note">{ko ? '기간은 공개된 기록의 연도를 기준으로 표기했습니다.' : 'Years reflect the dates available in the published record.'}</p></main>;
+}

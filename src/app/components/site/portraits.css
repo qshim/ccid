@@ -1,0 +1,97 @@
+/* 자동 생성 — 인물 사진 얼굴 크기·위치 정렬.
+ * 얼굴 검출(OpenCV Haar)로 각 사진의 얼굴 폭과 중심을 재고,
+ * 원형 마스크 안에서 얼굴이 같은 크기로, 중심이 가운데 오도록 계산한 값이다.
+ * 얼굴 폭이 같아지면 턱선과 어깨선도 자연히 비슷한 높이에 놓인다.
+ * 다시 만들려면 scratchpad/faces.py → portrait-fit.json 순서로 실행. */
+
+.ccid-site .person-image[data-portrait="boram-lee"]>img{object-position:50.0% 50.0%;transform:scale(1.425)}
+.ccid-site .person:hover .person-image[data-portrait="boram-lee"]>img{transform:scale(1.468)}
+.ccid-site .person-image[data-portrait="changmin-kim"]>img{object-position:50.0% 50.0%;transform:scale(1.13)}
+.ccid-site .person:hover .person-image[data-portrait="changmin-kim"]>img{transform:scale(1.164)}
+.ccid-site .person-image[data-portrait="chanwoo-lee"]>img{object-position:50.0% 50.0%;transform:scale(1.333)}
+.ccid-site .person:hover .person-image[data-portrait="chanwoo-lee"]>img{transform:scale(1.373)}
+.ccid-site .person-image[data-portrait="dain-kim"]>img{object-position:50.0% 50.0%;transform:scale(1.181)}
+.ccid-site .person:hover .person-image[data-portrait="dain-kim"]>img{transform:scale(1.216)}
+.ccid-site .person-image[data-portrait="euna-jang"]>img{object-position:50.0% 0%;transform:scale(1.361)}
+.ccid-site .person:hover .person-image[data-portrait="euna-jang"]>img{transform:scale(1.402)}
+.ccid-site .person-image[data-portrait="eunseol-kim"]>img{object-position:50.0% 50.0%;transform:scale(1.38)}
+.ccid-site .person:hover .person-image[data-portrait="eunseol-kim"]>img{transform:scale(1.421)}
+.ccid-site .person-image[data-portrait="hankak-lee"]>img{object-position:50.0% 50.0%;transform:scale(1.287)}
+.ccid-site .person:hover .person-image[data-portrait="hankak-lee"]>img{transform:scale(1.326)}
+.ccid-site .person-image[data-portrait="hayeon-jeon"]>img{object-position:50.0% 50.0%;transform:scale(1.28)}
+.ccid-site .person:hover .person-image[data-portrait="hayeon-jeon"]>img{transform:scale(1.318)}
+.ccid-site .person-image[data-portrait="heeyun-sul"]>img{object-position:50.0% 50.0%;transform:scale(1.561)}
+.ccid-site .person:hover .person-image[data-portrait="heeyun-sul"]>img{transform:scale(1.608)}
+.ccid-site .person-image[data-portrait="hyebin-park"]>img{object-position:50.0% 50.0%;transform:scale(1.412)}
+.ccid-site .person:hover .person-image[data-portrait="hyebin-park"]>img{transform:scale(1.454)}
+.ccid-site .person-image[data-portrait="hyeji-jeong"]>img{object-position:50.0% 50.0%;transform:scale(1.433)}
+.ccid-site .person:hover .person-image[data-portrait="hyeji-jeong"]>img{transform:scale(1.476)}
+.ccid-site .person-image[data-portrait="hyosun-son"]>img{object-position:50.0% 50.0%;transform:scale(1.378)}
+.ccid-site .person:hover .person-image[data-portrait="hyosun-son"]>img{transform:scale(1.419)}
+.ccid-site .person-image[data-portrait="hyunji-lee"]>img{object-position:50.0% 50.0%;transform:scale(1.6)}
+.ccid-site .person:hover .person-image[data-portrait="hyunji-lee"]>img{transform:scale(1.648)}
+.ccid-site .person-image[data-portrait="ingee-jeong"]>img{object-position:50.0% 50.0%;transform:scale(1.363)}
+.ccid-site .person:hover .person-image[data-portrait="ingee-jeong"]>img{transform:scale(1.404)}
+.ccid-site .person-image[data-portrait="inyoung-kim"]>img{object-position:50.0% 50.0%;transform:scale(1.371)}
+.ccid-site .person:hover .person-image[data-portrait="inyoung-kim"]>img{transform:scale(1.412)}
+.ccid-site .person-image[data-portrait="jeremy-lee"]>img{object-position:50.0% 50.0%;transform:scale(1.218)}
+.ccid-site .person:hover .person-image[data-portrait="jeremy-lee"]>img{transform:scale(1.255)}
+.ccid-site .person-image[data-portrait="jiwon-park"]>img{object-position:50.0% 0%;transform:scale(1.686)}
+.ccid-site .person:hover .person-image[data-portrait="jiwon-park"]>img{transform:scale(1.737)}
+.ccid-site .person-image[data-portrait="jiyeon-lee"]>img{object-position:50.0% 50.0%;transform:scale(1.26)}
+.ccid-site .person:hover .person-image[data-portrait="jiyeon-lee"]>img{transform:scale(1.298)}
+.ccid-site .person-image[data-portrait="jiyu-shin"]>img{object-position:60.0% 50.0%;transform:scale(1.53)}
+.ccid-site .person:hover .person-image[data-portrait="jiyu-shin"]>img{transform:scale(1.576)}
+.ccid-site .person-image[data-portrait="juhae-kim"]>img{object-position:50.0% 0%;transform:scale(1.711)}
+.ccid-site .person:hover .person-image[data-portrait="juhae-kim"]>img{transform:scale(1.762)}
+.ccid-site .person-image[data-portrait="juwan-kim"]>img{object-position:50.0% 50.0%;transform:scale(1.208)}
+.ccid-site .person:hover .person-image[data-portrait="juwan-kim"]>img{transform:scale(1.244)}
+.ccid-site .person-image[data-portrait="kiryung-nam"]>img{object-position:50.0% 50.0%;transform:scale(1.675)}
+.ccid-site .person:hover .person-image[data-portrait="kiryung-nam"]>img{transform:scale(1.725)}
+.ccid-site .person-image[data-portrait="kyuha-shim-frsa"]>img{object-position:50.0% 50.0%;transform:scale(1.459)}
+.ccid-site .person:hover .person-image[data-portrait="kyuha-shim-frsa"]>img{transform:scale(1.503)}
+.ccid-site .person-image[data-portrait="minjeong-joo"]>img{object-position:50.0% 50.0%;transform:scale(1.346)}
+.ccid-site .person:hover .person-image[data-portrait="minjeong-joo"]>img{transform:scale(1.386)}
+.ccid-site .person-image[data-portrait="minji-park"]>img{object-position:50.0% 50.0%;transform:scale(1.5)}
+.ccid-site .person:hover .person-image[data-portrait="minji-park"]>img{transform:scale(1.545)}
+.ccid-site .person-image[data-portrait="minseo-kang"]>img{object-position:50.0% 50.0%;transform:scale(1.328)}
+.ccid-site .person:hover .person-image[data-portrait="minseo-kang"]>img{transform:scale(1.368)}
+.ccid-site .person-image[data-portrait="sara-kang"]>img{object-position:50.0% 50.0%;transform:scale(1.25)}
+.ccid-site .person:hover .person-image[data-portrait="sara-kang"]>img{transform:scale(1.288)}
+.ccid-site .person-image[data-portrait="seojin-hong"]>img{object-position:50.0% 50.0%;transform:scale(1.236)}
+.ccid-site .person:hover .person-image[data-portrait="seojin-hong"]>img{transform:scale(1.273)}
+.ccid-site .person-image[data-portrait="seungju-lee"]>img{object-position:50.0% 50.0%;transform:scale(1.429)}
+.ccid-site .person:hover .person-image[data-portrait="seungju-lee"]>img{transform:scale(1.472)}
+.ccid-site .person-image[data-portrait="sooyoun-jo"]>img{object-position:50.0% 50.0%;transform:scale(1.215)}
+.ccid-site .person:hover .person-image[data-portrait="sooyoun-jo"]>img{transform:scale(1.251)}
+.ccid-site .person-image[data-portrait="suhyeon-cho"]>img{object-position:50.0% 50.0%;transform:scale(1.267)}
+.ccid-site .person:hover .person-image[data-portrait="suhyeon-cho"]>img{transform:scale(1.305)}
+.ccid-site .person-image[data-portrait="taeeun-kim"]>img{object-position:50.0% 50.0%;transform:scale(1.762)}
+.ccid-site .person:hover .person-image[data-portrait="taeeun-kim"]>img{transform:scale(1.815)}
+.ccid-site .person-image[data-portrait="taeho-kim"]>img{object-position:50.0% 99.4%;transform:scale(1.12)}
+.ccid-site .person:hover .person-image[data-portrait="taeho-kim"]>img{transform:scale(1.154)}
+.ccid-site .person-image[data-portrait="taery-kim"]>img{object-position:50.0% 50.0%;transform:scale(1.153)}
+.ccid-site .person:hover .person-image[data-portrait="taery-kim"]>img{transform:scale(1.188)}
+.ccid-site .person-image[data-portrait="yoonha-jeong"]>img{object-position:50.0% 50.0%;transform:scale(1.323)}
+.ccid-site .person:hover .person-image[data-portrait="yoonha-jeong"]>img{transform:scale(1.363)}
+.ccid-site .person-image[data-portrait="yoonseo-oh"]>img{object-position:50.0% 50.0%;transform:scale(1.524)}
+.ccid-site .person:hover .person-image[data-portrait="yoonseo-oh"]>img{transform:scale(1.57)}
+.ccid-site .person-image[data-portrait="yunhyeong-park"]>img{object-position:0% 50.0%;transform:scale(1.631)}
+.ccid-site .person:hover .person-image[data-portrait="yunhyeong-park"]>img{transform:scale(1.68)}
+.ccid-site .person-image[data-portrait="yunso-jung"]>img{object-position:50.0% 0%;transform:scale(1.746)}
+.ccid-site .person:hover .person-image[data-portrait="yunso-jung"]>img{transform:scale(1.798)}
+
+.ccid-site .director-group .person-image>img,.ccid-site .director-group .person:hover .person-image>img{object-position:50% 30%;transform:none}
+
+/* 사각 크롭 그룹(연구원·인턴·알럼나이)은 인위적 확대를 하지 않는다.
+   object-fit:cover + scale 로 얼굴 크기를 맞추려면 "가장 큰 얼굴"에 나머지를 모두
+   끌어올릴 수밖에 없다 — 줄이면 빈틈이 생기기 때문이다. 그래서 1.2~1.8배까지
+   당겨졌는데, 원형과 달리 사각은 프레임 전체가 보여 과한 줌이 그대로 드러난다.
+   여기서는 얼굴 중심만 맞추고(object-position 은 위 규칙 유지) 배율은 1로 둔다.
+   이 블록은 수기 작성분 — 자동 생성분을 덮어쓴다. */
+.ccid-site .group-student-researchers .person-image[data-portrait]>img,
+.ccid-site .group-research-interns .person-image[data-portrait]>img,
+.ccid-site .group-alumni .person-image[data-portrait]>img{transform:none}
+.ccid-site .group-student-researchers .person:hover .person-image[data-portrait]>img,
+.ccid-site .group-research-interns .person:hover .person-image[data-portrait]>img,
+.ccid-site .group-alumni .person:hover .person-image[data-portrait]>img{transform:scale(1.03)}
