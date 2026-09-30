@@ -3,14 +3,13 @@ import Image from 'next/image';
 import { sheetsStatic } from '@/app/data/sheetsStatic';
 import { resolvePhoto } from '@/app/components/members';
 import { useSiteLanguage, Arrow } from './SiteShell';
-const hidden = new Set(['Ji min Rhee', 'Eunseol Kim', 'Taeho Kim']);
+const hidden = new Set(['Ji min Rhee', 'Eunseol Kim', 'Taeho Kim', 'Duksoo Choi']);
 // 시트의 소속을 코드에서 덮어쓰는 오버레이. 시트 원본을 고칠 수 있게 되면 옮기고 지운다.
 const recategorised = { 'Boram Lee': 'Former Advisors', 'Jiyeon Lee': 'Former Advisors', 'Yunhyeong Park': 'Former Advisors' };
 const categoryOf = (m) => recategorised[m[1]] || m[0];
 // 시트의 약력(4번째 칸)을 코드에서 덮는 오버레이. 시트를 고칠 수 있게 되면 옮기고 지운다.
 // 시트의 전문분야(3번째 칸)를 코드에서 덮는 오버레이.
 const roleOverrides = {
-  'Chanwoo Lee': 'Physical Computing and Hardware Prototyping',
   'Yunhyeong Park': '', // 전문분야 표기 제외
   'Ingee Jeong': 'Visual Interaction',
 };
@@ -44,5 +43,5 @@ function Portrait({ member }) {
 }
 export default function People() {
   const { lang } = useSiteLanguage(); const ko = lang === 'ko';
-  return <main id="main" className="people-page site-section"><div className="page-topline eyebrow">Many perspectives. Shared curiosity.</div><h1>People<span className="heading-period">.</span></h1><div className="archive-intro"><p>{ko ? <>다른 시선으로,<br />함께 묻습니다.</> : <>Different perspectives.<br />A shared inquiry.</>}</p><div>{ko ? '디자이너, 리서처, 개발자가 함께합니다. 서로 다른 경험과 전문성이 만나 질문의 깊이와 가능성을 넓힙니다.' : 'Designers, researchers, and developers working together. Different experiences and expertise deepen our questions and broaden the possibilities.'}</div></div>{groups.map(group => group.members.length ? <section key={group.category} className={`people-group group-${group.category.toLowerCase().replace(/\s+/g, '-')} ${group.category === 'Director' ? 'director-group' : ''}`}><div className="people-group-label"><h2>{group.category}</h2><span className="micro">{String(group.members.length).padStart(2,'0')}</span></div><div className="people-grid">{group.members.map(m => <Portrait key={m[1]} member={m}/>)}</div></section> : null)}<section className="join-section"><span className="eyebrow">Join the inquiry</span><h2>{ko ? '당신의 관점이 궁금합니다.' : 'We’re curious about your perspective.'}</h2><p>{ko ? 'cciD의 인턴십과 참여 기회에 관한 안내를 확인하세요.' : 'Explore information about internships and opportunities at cciD.'}</p><a href="https://ccid-26-summer.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-link">{ko ? '참여 및 채용 안내' : 'Opportunities at cciD'}<Arrow diagonal /></a></section></main>;
+  return <main id="main" className="people-page site-section"><div className="page-topline eyebrow">Many perspectives. Shared curiosity.</div><h1 className="sr-only">People</h1>{groups.map(group => group.members.length ? <section key={group.category} className={`people-group group-${group.category.toLowerCase().replace(/\s+/g, '-')} ${group.category === 'Director' ? 'director-group' : ''}`}><div className="people-group-label"><h2>{group.category}</h2></div><div className="people-grid">{group.members.map(m => <Portrait key={m[1]} member={m}/>)}</div></section> : null)}<section className="join-section"><span className="eyebrow">Join the inquiry</span><h2>{ko ? '당신의 관점이 궁금합니다.' : 'We’re curious about your perspective.'}</h2><p>{ko ? 'cciD의 인턴십과 참여 기회에 관한 안내를 확인하세요.' : 'Explore information about internships and opportunities at cciD.'}</p><a href="https://ccid-26-summer.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-link">{ko ? '참여 및 채용 안내' : 'Opportunities at cciD'}<Arrow diagonal /></a></section></main>;
 }

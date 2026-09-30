@@ -6,6 +6,7 @@ import { pxGrotesk, pretendardR } from '@/fonts/fonts';
 import './site.css';
 import './portraits.css';
 import ContactForm from './ContactForm';
+import GradualBlur from './GradualBlur';
 
 const Language = createContext({ lang: 'ko' });
 export function useSiteLanguage() { return useContext(Language); }
@@ -25,6 +26,7 @@ export function SiteShell({ children }) {
   const [menu, setMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [section, setSection] = useState('');
+  const headerRef = useRef(null);
   const cancelScroll = useRef(null);
   const menuButton = useRef(null);
   const pathname = usePathname();
@@ -39,6 +41,15 @@ export function SiteShell({ children }) {
       const about = document.getElementById('about');
       const marker = window.innerHeight * .35;
       setSection(about && about.getBoundingClientRect().top <= marker ? 'about' : research && research.getBoundingClientRect().top <= marker ? 'research' : '');
+      // 맨 위(0)에서 research 가 마커에 닿는 지점까지를 0→1 로 읽는다. 헤더의 회색
+      // 층과 블러 세기가 이 값을 따라가므로, 켜지고 꺼지는 것이 아니라 스크롤에
+      // 붙어 서서히 짙어지고 되돌아간다.
+      const el = headerRef.current;
+      if (el) {
+        const span = research ? research.getBoundingClientRect().top + window.scrollY - marker : window.innerHeight;
+        const p = Math.min(1, Math.max(0, window.scrollY / Math.max(1, span)));
+        el.style.setProperty('--head-p', p.toFixed(3));
+      }
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -125,10 +136,11 @@ export function SiteShell({ children }) {
   ];
   return <Language.Provider value={{ lang }}><div className={`ccid-site ${pretendardR.className}`} style={{ '--display-font': pxGrotesk.style.fontFamily }}>
     <a className="site-skip" href="#main">{lang === 'ko' ? '본문으로 건너뛰기' : 'Skip to content'}</a>
-    <header className={`site-header ${scrolled ? 'is-scrolled' : ''} ${menu ? 'menu-is-open' : ''}`}>
+    <header ref={headerRef} className={`site-header ${scrolled ? 'is-scrolled' : ''} ${menu ? 'menu-is-open' : ''}`}>
+      <GradualBlur position="top" height="112px" strength={2.2} divCount={6} curve="ease-out" style={{ top: 0, height: 112, bottom: 'auto' }} />
       <Link className="wordmark" href="/" aria-label="cciD home" onClick={e => navigate(e, "/")}>cciD<span className="wordmark-dot" /></Link>
       <nav className="desktop-nav" aria-label="Main navigation">{links.map(l => <Link key={l.href} href={l.href} onClick={e => navigate(e, l.href)} className={l.active ? 'is-active' : ''} aria-current={l.active ? 'page' : undefined}>{l.text}</Link>)}</nav>
-      <div className="header-actions"><button className="language-button" onClick={changeLanguage} aria-label={lang === 'ko' ? 'Switch to English' : '한국어로 전환'}>{lang === 'ko' ? 'EN' : 'KO'}</button><button type="button" className="contact-link" onClick={() => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); window.dispatchEvent(new Event('ccid-open-contact')); }}>Let’s talk <Arrow diagonal /></button><button ref={menuButton} className="menu-toggle" aria-controls="mobile-navigation" aria-expanded={menu} aria-label={menu ? 'Close menu' : 'Open menu'} onClick={() => setMenu(v => !v)}><span /><span /></button></div>
+      <div className="header-actions"><button className="language-button" onClick={changeLanguage} aria-label={lang === 'ko' ? 'Switch to English' : '한국어로 전환'}>{lang === 'ko' ? 'EN' : 'KO'}</button><button ref={menuButton} className="menu-toggle" aria-controls="mobile-navigation" aria-expanded={menu} aria-label={menu ? 'Close menu' : 'Open menu'} onClick={() => setMenu(v => !v)}><span /><span /></button></div>
       {menu && <nav id="mobile-navigation" className="mobile-nav" aria-label="Mobile navigation">{links.map((l, i) => <Link key={l.href} href={l.href} onClick={e => navigate(e, l.href)} className={l.active ? 'is-active' : ''} aria-current={l.active ? 'page' : undefined}><span className="micro">0{i + 1}</span>{l.text}<Arrow /></Link>)}<button type="button" onClick={() => { setMenu(false); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); window.dispatchEvent(new Event('ccid-open-contact')); }}><span className="micro" aria-hidden="true" />Let’s talk <Arrow diagonal /></button><p>Center for Creative Intelligence Design</p></nav>}
     </header>
     <div inert={menu || undefined}>

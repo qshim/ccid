@@ -52,6 +52,11 @@ export default function ContactForm({ lang }) {
     return () => window.removeEventListener("ccid-open-contact", onOpen);
   }, []);
 
+  // 폼이 열리면 위쪽 문구 블록이 살짝 올라가고, 비워진 자리에 폼이 떠오른다.
+  useEffect(() => {
+    hostRef.current?.closest(".footer-top")?.classList.toggle("contact-open", open);
+  }, [open]);
+
   // 호버로 열렸을 때 화면이 따라 움직이면 손도 대지 않았는데 페이지가 튄다.
   useEffect(() => {
     if (!open || !jumped.current) return;
@@ -102,7 +107,9 @@ export default function ContactForm({ lang }) {
         Let’s talk.
       </button>
 
-      <form id="contact-form" className="contact-form" hidden={!open} onSubmit={submit} noValidate>
+      <div className={`contact-form-wrap${open ? " is-open" : ""}`}>
+        <div>
+      <form id="contact-form" className="contact-form" aria-hidden={!open} onSubmit={submit} noValidate>
         <label>
           <span>{ko ? "이름" : "Name"}</span>
           <input
@@ -206,6 +213,8 @@ export default function ContactForm({ lang }) {
           </span>
         </div>
       </form>
+        </div>
+      </div>
     </div>
   );
 }
