@@ -39,7 +39,7 @@ export default function ResearchDetail({ theme }) {
     </section>
     <section className="selected-engagements site-section">
       <div className="section-kicker"><span className="eyebrow">Selected engagements</span><span className="micro">Strategy into practice.</span></div>
-      <div className="engagements-heading"><h2>{ko ? '대표 협업' : 'Selected work'}<span className="heading-period">.</span></h2><p>{ko ? theme.question : theme.questionEn}</p></div>
+      <div className="engagements-heading"><h2>{ko ? '대표 프로젝트' : 'Selected work'}<span className="heading-period">.</span></h2><p>{ko ? theme.question : theme.questionEn}</p></div>
       {selected.map(({ project, scope, contribution }, index) => <article className="engagement" key={project.id}>
         <div className="engagement-index micro">{String(index + 1).padStart(2, '0')}</div>
         <div className="engagement-work"><h3>{ko ? project.titleKo : project.title}</h3><div className="engagement-client"><span>{ko ? project.clientKo : project.client}</span><span>{project.year}</span></div></div>
@@ -47,10 +47,10 @@ export default function ResearchDetail({ theme }) {
       </article>)}
     </section>
     <section className="detail-related site-section">
-      <div className="section-kicker"><span className="eyebrow">Collaboration record</span><span className="micro">{related.length} collaborations</span></div>
-      <h2>{ko ? '이 분야의 협업 이력' : 'Collaborations in this field'}</h2>
+      <div className="section-kicker"><span className="eyebrow">Project record</span><span className="micro">{related.length} projects</span></div>
+      <h2>{ko ? '이 분야의 프로젝트' : 'Projects in this field'}</h2>
       <CollaborationRows items={related} expanded />
-      <Link className="text-link" href="/collaborations">{ko ? '전체 협업 이력' : 'All collaborations'}<Arrow /></Link>
+      <Link className="text-link" href="/collaborations">{ko ? '전체 프로젝트' : 'All projects'}<Arrow /></Link>
     </section>
     <Link className="next-theme site-section" href={`/research/${next.id}`}>
       <div><span className="eyebrow">Next research theme / {next.number}</span><h2>{ko ? next.title : next.en}</h2></div><Arrow />

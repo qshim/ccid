@@ -130,7 +130,7 @@ export function SiteShell({ children }) {
   };
   const links = [
     { href: '/#research', text: 'Research', active: pathname.startsWith('/research') || (pathname === '/' && section === 'research') },
-    { href: '/collaborations', text: 'Collaborations', active: pathname === '/collaborations' },
+    { href: '/collaborations', text: 'Projects', active: pathname === '/collaborations' },
     { href: '/people', text: 'People', active: pathname === '/people' },
     { href: '/#about', text: 'About', active: pathname === '/' && section === 'about' },
   ];
