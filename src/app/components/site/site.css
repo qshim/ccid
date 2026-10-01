@@ -125,11 +125,11 @@ html[lang="en"] .ccid-site .join-section h2{line-height:1.14}
 .ccid-site .collaboration-heading,.ccid-site .collaboration-row{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,.85fr) 85px;gap:30px}
 .ccid-site .collaboration-heading{font-size:11px;color:var(--muted);padding:16px 0;border-bottom:1px solid var(--line)}
 .ccid-site .collaboration-heading>span:last-child{text-align:right}
-.ccid-site .collaboration-row{padding:28px 0;border-bottom:1px solid var(--line);align-items:end;transition:background .2s,padding .2s}
+.ccid-site .collaboration-row{padding:28px 0;border-bottom:1px solid var(--line);align-items:start;transition:background .2s,padding .2s}
 .ccid-site .collaboration-row:hover{background:#ded4e84d}
 .ccid-site .collaboration-title h3{font-size:18px;font-weight:460;letter-spacing:-.03em;line-height:1.5;text-wrap:pretty}
-.ccid-site .collaboration-client{font-size:14px;color:#6b6470;padding-top:3px}
-.ccid-site .collaboration-year{font:15px/1.5 var(--display);font-variant-numeric:tabular-nums;text-align:right;padding-top:3px}
+.ccid-site .collaboration-client{font-size:14px;color:#6b6470;padding-top:6px}
+.ccid-site .collaboration-year{font:15px/1.5 var(--display);font-variant-numeric:tabular-nums;text-align:right;padding-top:4px}
 .ccid-site .archive-bottom-link{display:flex;justify-content:space-between;padding:28px 0 0;font-size:13px}
 .ccid-site .archive-bottom-link>span:last-child{display:flex;align-items:center;gap:24px;color:var(--muted);font-family:var(--display)}
 .ccid-site .about-section{padding-top:95px;padding-bottom:120px}
