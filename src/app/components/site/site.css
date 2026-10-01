@@ -27,7 +27,7 @@
 .ccid-site .site-header .gradual-blur{--gblur-scale:calc(.15 + .85 * var(--head-p,0))}
 .ccid-site .site-header{height:90px;padding:0 clamp(24px,4.5vw,88px);display:flex;align-items:center;justify-content:space-between;gap:28px;position:sticky;top:0;z-index:100;overflow:visible;background:linear-gradient(to bottom,rgba(244,243,239,.88) 0%,rgba(244,243,239,.84) 50%,rgba(244,243,239,.7) 82%,rgba(244,243,239,0) 100%);border-bottom:0;transition:background .3s}
 @supports not (backdrop-filter:blur(1px)){.ccid-site .site-header{background:var(--paper)}}
-.ccid-site .wordmark{font-family:var(--display);font-size:43px;letter-spacing:-3.5px;line-height:1;display:inline-flex;align-items:center;gap:5px;flex:none}
+.ccid-site .wordmark{font-family:var(--wordmark-font),var(--display);font-size:43px;letter-spacing:-3.5px;line-height:1;display:inline-flex;align-items:center;gap:5px;flex:none}
 .ccid-site .wordmark-dot{width:6px;height:6px;background:var(--purple);border-radius:50%;align-self:flex-end;margin:0 0 7px 1px}
 .ccid-site .desktop-nav{display:flex;gap:32px;font-family:var(--display);font-size:14px;margin-left:auto;margin-right:60px}
 .ccid-site .desktop-nav a{position:relative;padding:10px 0;transition:color .2s}
