@@ -18,7 +18,7 @@ export default function ResearchDetail({ theme }) {
 
   return <main id="main" className="research-detail">
     <div className="detail-intro site-section">
-      <Link href="/#research" className="back-link">← {ko ? '모든 연구 주제' : 'All research themes'}</Link>
+      <Link href="/#research" className="back-link">← {ko ? '연구 주제 전체' : 'All research themes'}</Link>
       <div className="detail-number eyebrow">Research theme / {theme.number}</div>
       <h1>{ko ? theme.title : theme.en}</h1>
       <div className="detail-summary">
@@ -53,7 +53,7 @@ export default function ResearchDetail({ theme }) {
       <Link className="text-link" href="/collaborations">{ko ? '전체 프로젝트' : 'All projects'}<Arrow /></Link>
     </section>
     <Link className="next-theme site-section" href={`/research/${next.id}`}>
-      <div><span className="eyebrow">Next research theme / {next.number}</span><h2>{ko ? next.title : next.en}</h2></div><Arrow />
+      <span className="eyebrow">Next research theme / {next.number}</span><h2>{ko ? next.title : next.en}</h2><Arrow />
     </Link>
   </main>;
 }

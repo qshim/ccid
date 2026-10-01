@@ -20,12 +20,12 @@
 .ccid-site .micro{color:var(--muted)}
 .ccid-site .site-skip{position:fixed;top:-100px;left:20px;background:var(--ink);color:white;padding:12px;z-index:1001}
 .ccid-site .site-skip:focus{top:10px}
-.ccid-site .site-header>*:not(.gradual-blur){position:relative;z-index:1}
+.ccid-site .site-header>*:not(.gradual-blur):not(.mobile-nav){position:relative;z-index:1}
 /* 헤더의 블러 세기는 --head-p 를 따라간다 (0 = 맨 위, 1 = research 도달).
    켜고 끄는 것이 아니라 스크롤에 붙어 자라므로, 되돌아가면 그대로 풀린다. */
 @property --head-p{syntax:'<number>';inherits:true;initial-value:0}
 .ccid-site .site-header .gradual-blur{--gblur-scale:calc(.15 + .85 * var(--head-p,0))}
-.ccid-site .site-header{height:90px;padding:0 clamp(24px,4.5vw,88px);display:flex;align-items:center;justify-content:space-between;gap:28px;position:sticky;top:0;z-index:100;overflow:visible;background:linear-gradient(to bottom,rgba(244,243,239,.84) 0%,rgba(244,243,239,.7) 62%,rgba(244,243,239,0) 100%);border-bottom:0;transition:background .3s}
+.ccid-site .site-header{height:90px;padding:0 clamp(24px,4.5vw,88px);display:flex;align-items:center;justify-content:space-between;gap:28px;position:sticky;top:0;z-index:100;overflow:visible;background:linear-gradient(to bottom,rgba(244,243,239,.96) 0%,rgba(244,243,239,.88) 34%,rgba(244,243,239,.6) 72%,rgba(244,243,239,0) 100%);border-bottom:0;transition:background .3s}
 @supports not (backdrop-filter:blur(1px)){.ccid-site .site-header{background:var(--paper)}}
 .ccid-site .site-header.is-scrolled{background:linear-gradient(to bottom,rgba(244,243,239,.9) 0%,rgba(244,243,239,.74) 62%,rgba(244,243,239,0) 100%)}
 .ccid-site .wordmark{font-family:var(--display);font-size:43px;letter-spacing:-3.5px;line-height:1;display:inline-flex;align-items:center;gap:5px;flex:none}
@@ -212,10 +212,11 @@ html[lang="en"] .ccid-site .join-section h2{line-height:1.14}
 .ccid-site .detail-related{padding-top:85px;padding-bottom:90px}
 .ccid-site .detail-related h2{margin-bottom:35px}
 .ccid-site .detail-related>.text-link{margin-top:25px}
-.ccid-site .next-theme{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:50px;padding-bottom:60px;gap:30px}
+.ccid-site .next-theme{display:grid;grid-template-columns:minmax(0,1fr) auto;row-gap:18px;column-gap:30px;border-top:1px solid var(--line);padding-top:50px;padding-bottom:60px}
 .ccid-site .next-theme .eyebrow{color:var(--muted)}
-.ccid-site .next-theme h2{font-size:clamp(24px,3.2vw,45px);margin-top:18px;letter-spacing:-.04em}
-.ccid-site .next-theme>.site-arrow{width:50px;height:50px}
+.ccid-site .next-theme .eyebrow{grid-area:1/1}
+.ccid-site .next-theme h2{grid-area:2/1;font-size:clamp(24px,3.2vw,45px);letter-spacing:-.04em}
+.ccid-site .next-theme>.site-arrow{grid-area:2/2;align-self:center;width:50px;height:50px}
 .ccid-site .people-group{padding-top:40px;padding-bottom:50px;border-top:1px solid var(--line)}
 .ccid-site .people-group-label{display:flex;justify-content:space-between;margin-bottom:30px}
 .ccid-site .people-group-label h2{font:22px var(--display)}
