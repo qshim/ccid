@@ -41,7 +41,7 @@ export default function GradualBlur({
       const progress = ease(i / divCount);
       const blur = exponential
         ? Math.pow(2, progress * 4) * 0.0625 * strength
-        : 0.0625 * (progress * divCount + 1) * strength;
+        : 0.0625 * progress * divCount * strength;
 
       // 인접한 층과 구간을 겹쳐 띠 사이에 빈틈이 생기지 않게 한다.
       const a = Math.round((step * i - step) * 10) / 10;
