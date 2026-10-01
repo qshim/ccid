@@ -25,9 +25,8 @@
    켜고 끄는 것이 아니라 스크롤에 붙어 자라므로, 되돌아가면 그대로 풀린다. */
 @property --head-p{syntax:'<number>';inherits:true;initial-value:0}
 .ccid-site .site-header .gradual-blur{--gblur-scale:calc(.15 + .85 * var(--head-p,0))}
-.ccid-site .site-header{height:90px;padding:0 clamp(24px,4.5vw,88px);display:flex;align-items:center;justify-content:space-between;gap:28px;position:sticky;top:0;z-index:100;overflow:visible;background:linear-gradient(to bottom,rgba(244,243,239,.96) 0%,rgba(244,243,239,.88) 34%,rgba(244,243,239,.6) 72%,rgba(244,243,239,0) 100%);border-bottom:0;transition:background .3s}
+.ccid-site .site-header{height:90px;padding:0 clamp(24px,4.5vw,88px);display:flex;align-items:center;justify-content:space-between;gap:28px;position:sticky;top:0;z-index:100;overflow:visible;background:linear-gradient(to bottom,rgba(244,243,239,.88) 0%,rgba(244,243,239,.84) 50%,rgba(244,243,239,.7) 82%,rgba(244,243,239,0) 100%);border-bottom:0;transition:background .3s}
 @supports not (backdrop-filter:blur(1px)){.ccid-site .site-header{background:var(--paper)}}
-.ccid-site .site-header.is-scrolled{background:linear-gradient(to bottom,rgba(244,243,239,.9) 0%,rgba(244,243,239,.74) 62%,rgba(244,243,239,0) 100%)}
 .ccid-site .wordmark{font-family:var(--display);font-size:43px;letter-spacing:-3.5px;line-height:1;display:inline-flex;align-items:center;gap:5px;flex:none}
 .ccid-site .wordmark-dot{width:6px;height:6px;background:var(--purple);border-radius:50%;align-self:flex-end;margin:0 0 7px 1px}
 .ccid-site .desktop-nav{display:flex;gap:32px;font-family:var(--display);font-size:14px;margin-left:auto;margin-right:60px}
@@ -156,8 +155,8 @@ html[lang="en"] .ccid-site .join-section h2{line-height:1.14}
 .ccid-site .footer-bottom{border-top:1px solid #bfb1cc;padding-top:35px;display:grid;grid-template-columns:.55fr 1fr 1fr 1.25fr;gap:30px;font-size:12px;line-height:1.7}
 /* 푸터 로고 아래 저작권 한 줄 — 본문보다 한 단계 옅게. */
 .ccid-site .footer-brand{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
-.ccid-site .footer-name{display:flex;flex-direction:column;align-items:flex-start;gap:10px;white-space:nowrap}
-.ccid-site .footer-copy{color:var(--muted)}
+.ccid-site .footer-name{display:flex;flex-direction:column;align-items:flex-start;white-space:nowrap}
+.ccid-site .footer-copy{color:inherit}
 .ccid-site .footer-bottom .wordmark{font-size:40px;align-self:start}
 .ccid-site .footer-bottom>div{display:flex;flex-direction:column}
 .ccid-site .footer-legal{display:flex;justify-content:space-between;font:10px var(--display);color:#71627d;padding-top:65px}
