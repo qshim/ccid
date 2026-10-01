@@ -9,7 +9,7 @@ export const themes = [
     intro: "Gen UI의 설계 원칙부터 대화면 에디터와 미래 모빌리티 UX까지. 사용자의 의도를 실제로 작동하는 인터페이스로 연결합니다.",
     introEn: "From Gen UI principles to large-screen editors and future mobility UX. We translate user intent into working interfaces.",
     tags: ['Generative UI', 'Adaptive interfaces', 'Multimodal interaction'],
-    image: '/img/2026/samsung-gen-ui.webp', images: ['/img/2026/samsung-gen-ui.webp', '/img/2025/mx_galaxy_ai_0.webp', '/img/2025/mx_galaxy_ai_1.webp', '/img/2025/kia_0.webp', '/img/2025/kia_1.webp'], imageAlt: '생성형 사용자 인터페이스의 개념 이미지',
+    image: '/img/2026/samsung-gen-ui.webp', images: ['/img/2026/samsung-gen-ui.webp', '/img/2025/mx_galaxy_ai_0.webp', '/img/2025/kia_0.webp', '/img/2025/kia_1.webp'], imageAlt: '생성형 사용자 인터페이스의 개념 이미지',
     premise: "삼성전자의 Generative UI 연구에서는 사용자 맥락과 의도, 디바이스와 작업 흐름에 대응하는 프레임워크를 다뤘습니다. Gen UI 원칙, 로직 파이프라인, 인터랙티브 프로토타입을 연결하며 인터페이스가 생성되고 변화하는 방식을 설계합니다.",
     premiseEn: "Our Generative UI work with Samsung Electronics addresses user context, intent, devices, and task flows. We connect Gen UI principles, logic pipelines, and interactive prototypes to design how interfaces are generated and how they adapt.",
 
