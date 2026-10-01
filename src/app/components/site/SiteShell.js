@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { pxGrotesk, pretendardR, neuehaas } from '@/fonts/fonts';
+import { pxGrotesk, pretendardR } from '@/fonts/fonts';
 import './site.css';
 import './portraits.css';
 import ContactForm from './ContactForm';
@@ -134,7 +134,7 @@ export function SiteShell({ children }) {
     { href: '/people', text: 'People', active: pathname === '/people' },
     { href: '/#about', text: 'About', active: pathname === '/' && section === 'about' },
   ];
-  return <Language.Provider value={{ lang }}><div className={`ccid-site ${pretendardR.className}`} style={{ '--display-font': pxGrotesk.style.fontFamily, '--wordmark-font': neuehaas.style.fontFamily }}>
+  return <Language.Provider value={{ lang }}><div className={`ccid-site ${pretendardR.className}`} style={{ '--display-font': pxGrotesk.style.fontFamily }}>
     <a className="site-skip" href="#main">{lang === 'ko' ? '본문으로 건너뛰기' : 'Skip to content'}</a>
     <header ref={headerRef} className={`site-header ${scrolled ? 'is-scrolled' : ''} ${menu ? 'menu-is-open' : ''}`}>
       <GradualBlur position="top" height="112px" strength={1.1} divCount={6} curve="ease-out" opacity={.5} style={{ top: 0, height: 112, bottom: 'auto' }} />
