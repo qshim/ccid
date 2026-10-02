@@ -170,8 +170,6 @@ html[lang="en"] .ccid-site .join-section h2{line-height:1.14}
 .ccid-site .filter-list>button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .ccid-site .filter-list sup{font-size:9px;padding-left:6px}
 .ccid-site .year-select select{padding:11px 20px 11px 0;font-size:13px;background:transparent;border:0;border-bottom:1px solid var(--line);min-width:110px;border-radius:0}
-.ccid-site .archive-results{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);min-height:40px;padding-bottom:12px}
-.ccid-site .archive-results button{font-size:11px;text-decoration:underline;text-underline-offset:4px}
 .ccid-site .row-themes{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:6px}
 .ccid-site .row-themes a{display:inline-flex;align-items:center;gap:5px;color:#78628e;font-size:11px}
 .ccid-site .row-themes a .site-arrow{display:none}
@@ -180,7 +178,6 @@ html[lang="en"] .ccid-site .join-section h2{line-height:1.14}
 .ccid-site .archive-empty{padding:70px 0;border-block:1px solid var(--line)}
 .ccid-site .archive-empty h2{font-size:24px;margin-bottom:20px}
 .ccid-site .detail-intro{padding-top:36px;padding-bottom:45px}
-.ccid-site .back-link{font-size:12px;color:var(--muted)}
 .ccid-site .detail-number{margin-top:60px;color:var(--purple)}
 .ccid-site .detail-intro h1{font-size:clamp(32px,3.6vw,56px);letter-spacing:-.055em;line-height:1.25;margin:22px 0 35px}
 .ccid-site .detail-summary{display:grid;grid-template-columns:1.2fr 1fr;gap:13%;align-items:end}

@@ -18,7 +18,6 @@ export default function ResearchDetail({ theme }) {
 
   return <main id="main" className="research-detail">
     <div className="detail-intro site-section">
-      <Link href="/#research" className="back-link">← {ko ? '연구 주제 전체' : 'All research themes'}</Link>
       <div className="detail-number eyebrow">Research theme / {theme.number}</div>
       <h1>{ko ? theme.title : theme.en}</h1>
       <div className="detail-summary">

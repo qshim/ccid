@@ -5,7 +5,7 @@ import { resolvePhoto } from '@/app/components/members';
 import { useSiteLanguage, Arrow } from './SiteShell';
 const hidden = new Set(['Ji min Rhee', 'Eunseol Kim', 'Taeho Kim', 'Duksoo Choi']);
 // 시트의 소속을 코드에서 덮어쓰는 오버레이. 시트 원본을 고칠 수 있게 되면 옮기고 지운다.
-const recategorised = { 'Boram Lee': 'Former Advisors', 'Jiyeon Lee': 'Former Advisors', 'Yunhyeong Park': 'Former Advisors' };
+const recategorised = { 'Boram Lee': 'Former Advisors', 'Jiyeon Lee': 'Former Advisors', 'Yunhyeong Park': 'Former Advisors', 'Juwan Kim': 'Student Researchers' };
 const categoryOf = (m) => recategorised[m[1]] || m[0];
 // 시트의 약력(4번째 칸)을 코드에서 덮는 오버레이. 시트를 고칠 수 있게 되면 옮기고 지운다.
 // 시트의 전문분야(3번째 칸)를 코드에서 덮는 오버레이.
@@ -25,7 +25,6 @@ const bioOverrides = {
 // 전문분야·약력·사진은 아직 받지 못해 비워 둔다 — 지어내지 않는다.
 const extraMembers = [
   ['Advisory Board', 'Seonbin Yun', '', 'Data-driven Design', 'Royal College of Art MA\nInformation Experience Design', ''],
-  ['Advisory Board', 'Taeheon Lee', '', 'Immersive Media Art', 'Royal College of Art MA\nDigital Direction', ''],
   ['Advisory Board', 'Duksoo Choi', '', 'Industrial Design and Design Engineering', 'Royal College of Art MA\nInnovation Design Engineering', ''],
 ];
 const allMembers = [...sheetsStatic.members, ...extraMembers];
