@@ -26,6 +26,8 @@ const bioOverrides = {
 const extraMembers = [
   ['Advisory Board', 'Seonbin Yun', '', 'Data-driven Design', 'Royal College of Art MA\nInformation Experience Design', ''],
   ['Advisory Board', 'Duksoo Choi', '', 'Industrial Design and Design Engineering', 'Royal College of Art MA\nInnovation Design Engineering', ''],
+  ['Research Interns', 'Chaeyeon Kang', '', '', '', ''],
+  ['Research Interns', 'Yerin Choi', '', '', '', ''],
 ];
 const allMembers = [...sheetsStatic.members, ...extraMembers];
 const order = ['Director', 'Advisory Board', 'Former Advisors', 'Student Researchers', 'Research Interns', 'Alumni'];

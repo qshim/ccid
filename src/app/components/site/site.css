@@ -29,7 +29,7 @@
    그대로 선으로 보인다. smootherstep(6x⁵-15x⁴+10x³)은 양 끝 기울기가 0 이라
    위의 평평한 구간과 이어 붙여도 경계가 없고, 바닥에서도 끊기지 않는다.
    larsenwork.com/easing-gradients 와 같은 방식이다. */
-.ccid-site .site-header{height:90px;padding:0 clamp(24px,4.5vw,88px);display:flex;align-items:center;justify-content:space-between;gap:28px;position:sticky;top:0;z-index:100;overflow:visible;background:linear-gradient(to bottom,rgba(244,243,239,.88) 0%,rgba(244,243,239,.88) 60%,rgba(244,243,239,.872) 64%,rgba(244,243,239,.829) 68%,rgba(244,243,239,.736) 72%,rgba(244,243,239,.601) 76%,rgba(244,243,239,.44) 80%,rgba(244,243,239,.279) 84%,rgba(244,243,239,.144) 88%,rgba(244,243,239,.051) 92%,rgba(244,243,239,.008) 96%,rgba(244,243,239,0) 100%);border-bottom:0;transition:background .3s}
+.ccid-site .site-header{height:90px;padding:0 clamp(24px,4.5vw,88px);display:flex;align-items:center;justify-content:space-between;gap:28px;position:sticky;top:0;z-index:100;overflow:visible;background:linear-gradient(to bottom,rgba(244,243,239,.96) 0%,rgba(244,243,239,.96) 60%,rgba(244,243,239,.952) 64%,rgba(244,243,239,.904) 68%,rgba(244,243,239,.803) 72%,rgba(244,243,239,.655) 76%,rgba(244,243,239,.48) 80%,rgba(244,243,239,.305) 84%,rgba(244,243,239,.157) 88%,rgba(244,243,239,.056) 92%,rgba(244,243,239,.008) 96%,rgba(244,243,239,0) 100%);border-bottom:0;transition:background .3s}
 @supports not (backdrop-filter:blur(1px)){.ccid-site .site-header{background:var(--paper)}}
 .ccid-site .wordmark{font-family:var(--display);font-size:43px;letter-spacing:-.045em;line-height:1;display:inline-flex;align-items:center;gap:5px;flex:none}
 .ccid-site .wordmark-dot{width:6px;height:6px;background:var(--purple);border-radius:50%;align-self:flex-end;margin:0 0 7px 1px}
