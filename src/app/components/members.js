@@ -10,6 +10,7 @@ import Reveal from "@/app/components/common/Reveal";
 // sheet image — used when a member has no sheet photo or the sheet URL is broken.
 const LOCAL_PHOTOS = {
   "Yoonha Jeong": "/img/members/yoonha-jeong.png",
+  "Seonbin Yun": "/img/members/seonbin-yun.png",
   "Ingee Jeong": "/img/members/ingee-jeong.png",
   "Chanwoo Lee": "/img/members/chanwoo-lee.png",
   "Yoonseo Oh": "/img/members/yoonseo-oh.png",
