@@ -8,11 +8,11 @@ import { pxGrotesk, spectral } from "@/fonts/fonts";
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://c-c-i-d.kr"),
   title: "Center for Creative Intelligence Design",
-  description: "사람을 이해하고, 기술을 탐구하며, 아직 오지 않은 경험을 디자인합니다.",
+  description: "컴퓨테이셔널 디자인과 생성형 AI를 바탕으로 사용자 경험을 연구하고 디자인하는 인간 중심의 디자인 센터입니다.",
   keywords: "CCID, creative, intelligence, karts, design, ai, lab, convergence",
   openGraph: {
     title: "Center for Creative Intelligence Design",
-    description: "사람을 이해하고, 기술을 탐구하며, 아직 오지 않은 경험을 디자인합니다.",
+    description: "컴퓨테이셔널 디자인과 생성형 AI를 바탕으로 사용자 경험을 연구하고 디자인하는 인간 중심의 디자인 센터입니다.",
     images: [
       {
         url: "/img/og800.png",

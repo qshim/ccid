@@ -209,7 +209,7 @@ export default function ContactForm({ lang }) {
         <div className="contact-form-actions">
           <button type="submit">{ko ? "메일 보내기" : "Send email"}</button>
           <span className="micro">
-            {ko ? `사용하시는 메일 앱이 열리고 ${TO} 로 전송됩니다.` : `Opens your mail app, addressed to ${TO}.`}
+            {ko ? `메일 앱이 열리면 내용을 확인한 뒤 보내 주세요.` : `Opens your mail app, addressed to ${TO}.`}
           </span>
         </div>
       </form>

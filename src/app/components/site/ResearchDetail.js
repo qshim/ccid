@@ -27,7 +27,7 @@ export default function ResearchDetail({ theme }) {
     </div>
     <figure className="detail-image site-section">
       <ProjectImages images={theme.images || [theme.image]} alt={theme.imageAlt} width={1600} height={1000} priority sizes="100vw" />
-      <figcaption>{ko ? '일부 이미지는 기밀 유지를 위해 프로젝트를 설명하고자 생성하였습니다.' : 'Some visuals are conceptual representations of confidential work.'}</figcaption>
+      <figcaption>{ko ? '일부 이미지는 기밀 유지를 위해 별도로 제작한 개념 이미지입니다.' : 'Some visuals are conceptual representations of confidential work.'}</figcaption>
     </figure>
     <section className="detail-position site-section">
       <div className="detail-section-label eyebrow">Our perspective</div>
@@ -46,7 +46,7 @@ export default function ResearchDetail({ theme }) {
       </article>)}
     </section>
     <section className="detail-related site-section">
-      <div className="section-kicker"><span className="eyebrow">Project record</span><span className="micro">{related.length} projects</span></div>
+      <div className="section-kicker"><span className="eyebrow">Project record</span></div>
       <h2>{ko ? '이 분야의 프로젝트' : 'Projects in this field'}</h2>
       <CollaborationRows items={related} expanded />
       <Link className="text-link" href="/collaborations">{ko ? '전체 프로젝트' : 'All projects'}<Arrow /></Link>

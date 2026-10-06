@@ -14,10 +14,10 @@ const roleOverrides = {
   'Ingee Jeong': 'Visual Interaction',
 };
 const bioOverrides = {
-  'Changmin Kim': 'former KAIST PostDoc\nprofessor of Design, Sungkyunkwan University',
+  'Changmin Kim': 'former KAIST Postdoc\nProfessor of Design, Sungkyunkwan University',
   // 학력 두 줄은 두고 현직만 교체 (HSAD AI Art Director → 삼성전자)
   'Yunhyeong Park': 'Royal College of Art MA\nInformation Experience Design\nSamsung Electronics AI Creative Director',
-  'Hankak Lee': 'Royal College of Art MA\nInnovation Design Engineering\nprofessor of Industrial Design, Keimyung University',
+  'Hankak Lee': 'Royal College of Art MA\nInnovation Design Engineering\nProfessor of Industrial Design, Keimyung University',
   'Ingee Jeong': 'Royal College of Art MA\nVisual Communication\nformer Ordinary People',
 };
 // 시트(members 탭)에 아직 없는 자문 인력. 시트를 직접 쓸 수 있게 되면 옮기고 지운다.
@@ -44,5 +44,5 @@ function Portrait({ member }) {
 }
 export default function People() {
   const { lang } = useSiteLanguage(); const ko = lang === 'ko';
-  return <main id="main" className="people-page site-section"><div className="page-topline eyebrow">Many perspectives. Shared curiosity.</div><h1 className="sr-only">People</h1>{groups.map(group => group.members.length ? <section key={group.category} className={`people-group group-${group.category.toLowerCase().replace(/\s+/g, '-')} ${group.category === 'Director' ? 'director-group' : ''}`}><div className="people-group-label"><h2>{group.category}</h2></div><div className="people-grid">{group.members.map(m => <Portrait key={m[1]} member={m}/>)}</div></section> : null)}<section className="join-section"><span className="eyebrow">Join the inquiry</span><h2>{ko ? '당신의 관점이 궁금합니다.' : 'We’re curious about your perspective.'}</h2><p>{ko ? 'cciD의 인턴십과 참여 기회에 관한 안내를 확인하세요.' : 'Explore information about internships and opportunities at cciD.'}</p><a href="https://ccid-26-summer.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-link">{ko ? '참여 및 채용 안내' : 'Opportunities at cciD'}<Arrow diagonal /></a></section></main>;
+  return <main id="main" className="people-page site-section"><div className="page-topline eyebrow">Many perspectives. Shared curiosity.</div><h1 className="sr-only">People</h1>{groups.map(group => group.members.length ? <section key={group.category} className={`people-group group-${group.category.toLowerCase().replace(/\s+/g, '-')} ${group.category === 'Director' ? 'director-group' : ''}`}><div className="people-group-label"><h2>{group.category}</h2></div><div className="people-grid">{group.members.map(m => <Portrait key={m[1]} member={m}/>)}</div></section> : null)}<section className="join-section"><span className="eyebrow">Join the inquiry</span><h2>{ko ? '새로운 관점을 기다립니다.' : 'We’re curious about your perspective.'}</h2><p>{ko ? 'cciD의 인턴십과 참여 기회를 안내합니다.' : 'Explore information about internships and opportunities at cciD.'}</p><a href="https://ccid-26-summer.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-link">{ko ? '참여 및 채용 안내' : 'Opportunities at cciD'}<Arrow diagonal /></a></section></main>;
 }
