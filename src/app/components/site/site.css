@@ -213,7 +213,7 @@ html[lang="en"] .ccid-site .join-section h2{line-height:1.14}
 .ccid-site .people-group-label{display:flex;justify-content:space-between;margin-bottom:30px}
 .ccid-site .people-group-label h2{font:22px var(--display)}
 .ccid-site .people-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:34px 20px}
-.ccid-site .person-image{position:relative;width:64%;aspect-ratio:1;overflow:hidden;background:#e6e1e9;margin-bottom:13px;border-radius:50%}
+.ccid-site .person-image{position:relative;width:64%;aspect-ratio:1;overflow:hidden;background:#e6e1e9;margin-bottom:13px;border-radius:3px}
 .ccid-site .person-image>img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;position:relative;z-index:1;filter:grayscale(1);transform:scale(1.12);transition:filter .5s,transform .5s}
 .ccid-site .person:hover .person-image>img{transform:scale(1.15)}
 .ccid-site .person-initials{position:absolute;inset:0;display:grid;place-items:center;font:32px var(--display);color:#b4a4c7;z-index:0}
@@ -278,7 +278,7 @@ html[lang="en"] .ccid-site .join-section h2{line-height:1.14}
 .ccid-site .group-alumni .people-grid{grid-template-columns:repeat(9,minmax(0,1fr));gap:26px 14px}
 .ccid-site .group-student-researchers .person-image,
 .ccid-site .group-research-interns .person-image,
-.ccid-site .group-alumni .person-image{width:100%;border-radius:0;aspect-ratio:1}
+.ccid-site .group-alumni .person-image{width:100%;aspect-ratio:1}
 .ccid-site .group-student-researchers .person h3,
 .ccid-site .group-research-interns .person h3,
 .ccid-site .group-alumni .person h3{font-size:13px;margin-bottom:4px}
@@ -293,7 +293,7 @@ html[lang="en"] .ccid-site .join-section h2{line-height:1.14}
 .ccid-site .group-alumni .person-initials{font-size:22px}
 .ccid-site .director-group .people-grid{display:block}
 .ccid-site .director-group .person{display:grid;grid-template-columns:200px minmax(0,1fr);column-gap:30px;align-content:start}
-.ccid-site .director-group .person-image{grid-row:1/5;width:100%;max-width:200px;aspect-ratio:.85;margin:0;border-radius:0}
+.ccid-site .director-group .person-image{grid-row:1/5;width:100%;max-width:200px;aspect-ratio:.85;margin:0}
 .ccid-site .director-group .person-image>img{transform:none}
 .ccid-site .director-group .person:hover .person-image>img{transform:scale(1.025)}
 .ccid-site .director-group .person h3{font-size:27px;align-self:end;margin-top:20px}
