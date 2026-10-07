@@ -1,7 +1,7 @@
 "use client";
 import Link from 'next/link';
 import Image from 'next/image';
-import { themes, collaborations } from '@/app/data/research';
+import { themes, withScheduled } from '@/app/data/research';
 import { useSiteLanguage, Arrow } from './SiteShell';
 import DecodeText from './DecodeText';
 import ProjectImages from './ProjectImages';
@@ -16,7 +16,8 @@ function TypedCaption({ text, offset = 0, secondary = false }) {
   </span>;
 }
 
-export default function Home() {
+export default function Home({ extra }) {
+  const collaborations = withScheduled(extra);
   const { lang } = useSiteLanguage();
   const ko = lang === 'ko';
   return <main id="main">

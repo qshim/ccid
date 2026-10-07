@@ -2,11 +2,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import ProjectImages from './ProjectImages';
-import { themes, collaborations } from '@/app/data/research';
+import { themes, withScheduled } from '@/app/data/research';
 import { useSiteLanguage, Arrow } from './SiteShell';
 import CollaborationRows from './CollaborationRows';
 
-export default function ResearchDetail({ theme }) {
+export default function ResearchDetail({ theme, extra }) {
+  const collaborations = withScheduled(extra);
   const { lang } = useSiteLanguage();
   const ko = lang === 'ko';
   const related = collaborations.filter(c => c.themes.includes(theme.id));

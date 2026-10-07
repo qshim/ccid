@@ -107,3 +107,9 @@ export const collaborations = (sheetsStatic.works?.[1] || []).slice(1).flatMap((
   const override = clientOverrides[title];
   return [{ id: `collab-${index}`, title, titleKo: mapped?.[0] || title, client: override?.[0] || client, clientKo: override?.[1] || clients[client] || client, year, themes: mapped?.[1] || [], description: sheetsStatic.works[2]?.[index + 1] || '' }];
 }).concat(extraCollaborations).sort((a, b) => Number(b.year) - Number(a.year));
+
+// 공개일이 지난 예약 프로젝트(scheduled.js, 서버 전용)를 페이지가 넘겨주면 같은 순서로
+// 합친다. 정렬은 안정적이라 같은 해 안에서는 기존 순서 뒤에 붙는다.
+export const withScheduled = (extra = []) => extra.length
+  ? [...collaborations, ...extra].sort((a, b) => Number(b.year) - Number(a.year))
+  : collaborations;

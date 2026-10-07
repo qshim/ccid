@@ -1,9 +1,10 @@
 "use client";
 import { useState } from 'react';
-import { collaborations, themes } from '@/app/data/research';
+import { withScheduled, themes } from '@/app/data/research';
 import { useSiteLanguage } from './SiteShell';
 import CollaborationRows from './CollaborationRows';
-export default function Archive() {
+export default function Archive({ extra }) {
+  const collaborations = withScheduled(extra);
   const { lang } = useSiteLanguage(); const ko = lang === 'ko';
   const [theme, setTheme] = useState('all');
   const [year, setYear] = useState('all');
