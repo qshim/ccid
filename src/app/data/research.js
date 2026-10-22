@@ -89,6 +89,10 @@ const extraCollaborations = [
     title: 'Generative UI Process & UX Value Validation', titleKo: 'Generative UI 디자인 프로세스 및 사용자 경험 가치 검증',
     themes: ['interfaces', 'human-understanding'],
     description: 'Defining a Generative UI design process and validating the user experience value it creates.' },
+  { id: 'collab-x3', year: '2026', client: 'Samsung Electronics VD', clientKo: '삼성전자 VD',
+    title: 'AI TV Flexible UI Principles & Adaptive Interaction', titleKo: 'AI TV Flexible UI 구성 원칙 및 Adaptive Interaction 연구',
+    themes: ['interfaces'],
+    description: '' },
 ];
 
 // 시트의 발주처 표기가 실제와 다른 건만 과제명 기준으로 덮는다.

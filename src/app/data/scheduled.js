@@ -8,16 +8,10 @@ import 'server-only';
 // props 로 넘긴다. 'server-only' 는 클라이언트에서 이 파일을 가져오면 빌드를 멈춘다.
 //
 // 날짜는 KST 로 적는다. 서버는 UTC 로 돈다.
-const SCHEDULED = [
-  {
-    visibleFrom: '2026-10-27T00:00:00+09:00',
-    id: 'collab-x3', year: '2026', client: 'Samsung Electronics VD', clientKo: '삼성전자 VD',
-    title: 'AI TV Flexible UI Principles & Adaptive Interaction',
-    titleKo: 'AI TV Flexible UI 구성 원칙 및 Adaptive Interaction 연구',
-    themes: ['interfaces'],
-    description: '',
-  },
-];
+// 지금 예약된 항목은 없다. 넣는 법:
+// { visibleFrom: '2026-10-27T00:00:00+09:00', id, year, client, clientKo, title, titleKo, themes, description }
+// (삼성전자 VD AI TV Flexible UI 는 예약일 전에 공개로 앞당겨 research.js 로 옮겼다.)
+const SCHEDULED = [];
 
 export function visibleScheduled(now = Date.now()) {
   return SCHEDULED
