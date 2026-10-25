@@ -24,6 +24,14 @@
 
 // var SECRET = "<여기에 시크릿>";  // ← 기존 값 유지 또는 새로 생성
 
+// 사이트 Let's talk 문의를 받는 주소(action "inquiry").
+var INQUIRY_TO = "hello.ccid@gmail.com";
+
+// 처음 한 번: 편집기 위쪽에서 이 함수를 골라 ▶ 실행하면 메일 보내기 권한을 승인하는 창이 뜬다.
+function authorizeInquiryMail() {
+  Logger.log("오늘 남은 메일 발송 수: " + MailApp.getRemainingDailyQuota());
+}
+
 function doPost(e) {
   try {
     var body = JSON.parse(e.postData.contents);
@@ -75,6 +83,30 @@ function doPost(e) {
     if (action === "opsRebuildViews") {
       rebuildViews_(doc, body.roster || []);
       return json_({ ok: true });
+    }
+
+    // --- INQUIRY: 사이트의 Let's talk 에이전트가 정리하고 방문자가 확인한 문의를 메일로 ---
+    // 받는 주소는 여기 고정한다(요청이 정하지 못한다). 답장은 방문자에게 가도록 replyTo 만 둔다.
+    // 처음 배포할 때 MailApp 권한(메일 보내기)을 한 번 승인해야 한다.
+    if (action === "inquiry") {
+      var q = body.inquiry || {};
+      var clip = function (v, n) { return String(v || "").slice(0, n); };
+      var from = clip(q.email, 120);
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(from) || !q.name || !q.message) {
+        return json_({ ok: false, error: "invalid inquiry" });
+      }
+      var ko = q.lang !== "en";
+      var lines = [clip(q.message, 1200), "", "—", clip(q.name, 80)];
+      if (q.organization) lines.push(clip(q.organization, 120));
+      lines.push(from, "", ko ? "(웹사이트 Let's talk 에이전트로 접수)" : "(Sent through the Let's talk agent on c-c-i-d.kr)");
+      MailApp.sendEmail({
+        to: INQUIRY_TO,
+        replyTo: from,
+        name: "cciD website",
+        subject: (ko ? "cciD 문의 · " : "cciD enquiry · ") + clip(q.topicLabel, 60) + " — " + clip(q.name, 80),
+        body: lines.join("\n"),
+      });
+      return json_({ ok: true, sent: true });
     }
 
     // --- WRITE one or many cells (기존 기능 유지) ---

@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useRef, useState, useSyncExternal
 import { pxGrotesk, pretendardR } from '@/fonts/fonts';
 import './site.css';
 import './portraits.css';
-import ContactForm from './ContactForm';
+import TalkAgent from './talk/TalkAgent';
 import GradualBlur from './GradualBlur';
 
 const Language = createContext({ lang: 'ko' });
@@ -145,6 +145,6 @@ export function SiteShell({ children }) {
     </header>
     <div inert={menu || undefined}>
     {children}
-    <footer className="site-footer" id="contact"><div className="footer-top"><span className="eyebrow">A conversation is a beginning.</span><p>{lang === 'ko' ? '함께 탐구하고 싶은 질문이 있나요?' : 'What would you like to explore together?'}</p><ContactForm lang={lang} /></div><div className="footer-bottom"><div className="footer-brand"><Link href="/" className="wordmark">cciD</Link></div><p className="footer-name">Center for Creative Intelligence Design<span className="footer-copy">© {new Date().getFullYear()} cciD</span></p><div><a href="mailto:hello.ccid@gmail.com">hello.ccid@gmail.com</a><a href="tel:+8227469620">+82 2 746 9620</a></div><p>{lang === 'ko' ? '한국예술종합학교 석관동 캠퍼스' : 'Korea National University of Arts'}<br />{lang === 'ko' ? '서울 성북구 화랑로32길 146-37' : '146-37 Hwarang-ro 32-gil, Seoul'}</p></div></footer></div>
+    <footer className="site-footer" id="contact"><div className="footer-top"><span className="eyebrow">A conversation is a beginning.</span><p>{lang === 'ko' ? '함께 탐구하고 싶은 질문이 있나요?' : 'What would you like to explore together?'}</p><TalkAgent lang={lang} /></div><div className="footer-bottom"><div className="footer-brand"><Link href="/" className="wordmark">cciD</Link></div><p className="footer-name">Center for Creative Intelligence Design<span className="footer-copy">© {new Date().getFullYear()} cciD</span></p><div><a href="mailto:hello.ccid@gmail.com">hello.ccid@gmail.com</a><a href="tel:+8227469620">+82 2 746 9620</a></div><p>{lang === 'ko' ? '한국예술종합학교 석관동 캠퍼스' : 'Korea National University of Arts'}<br />{lang === 'ko' ? '서울 성북구 화랑로32길 146-37' : '146-37 Hwarang-ro 32-gil, Seoul'}</p></div></footer></div>
   </div></Language.Provider>;
 }

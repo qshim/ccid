@@ -23,7 +23,7 @@ export default function Home({ extra }) {
   return <main id="main">
     <section className="home-hero">
       <h1>{ko ? <>컴퓨테이셔널 디자인을<br /><span>사람의 경험으로.</span></> : <>From computational design<br /><span>to human experience.</span></>}</h1>
-      <div className="hero-lower"><div className="hero-statement"><span className="eyebrow">Research. Strategy. Systems. Prototypes.</span><p><DecodeText text={ko ? '리서치로 방향을 정하고,\n내일을 디자인합니다.' : 'Research sets the direction.\nDesign builds tomorrow.'} /></p><div className="hero-description"><DecodeText text={ko ? 'cciD는 컴퓨테이셔널 디자인과 생성형 AI를 바탕으로 사용자 경험을 연구하고 디자인하는 인간 중심의 디자인 센터입니다. 제품과 브랜드 안에서 만들 수 있는 새로운 가능성을 찾고, 설계하고, 구현합니다.' : 'cciD is a human-centered design center that researches and designs user experience through computational design and generative AI. We find, design, and build new possibilities within products and brands.'} /></div></div></div>
+      <div className="hero-lower"><div className="hero-statement"><p><DecodeText text={ko ? '리서치로 방향을 정하고,\n내일을 디자인합니다.' : 'Research sets the direction.\nDesign builds tomorrow.'} /></p><div className="hero-description"><DecodeText text={ko ? 'cciD는 컴퓨테이셔널 디자인과 생성형 AI를 바탕으로 사용자 경험을 연구하고 디자인하는 인간 중심의 디자인 센터입니다. 제품과 브랜드 안에서 만들 수 있는 새로운 가능성을 찾고, 설계하고, 구현합니다.' : 'cciD is a human-centered design center that researches and designs user experience through computational design and generative AI. We find, design, and build new possibilities within products and brands.'} /></div></div></div>
     </section>
 
     <section className="research-section site-section" id="research">
