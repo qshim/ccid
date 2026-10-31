@@ -14,6 +14,11 @@
 //   · 이어 말하기: 대답이 나오기 전에 방문자가 다시 말을 시작하면, 앞의 말과 합쳐 한 번으로 묻는다.
 //
 // 음성 감지(Silero VAD)는 마이크를 켤 때만 CDN 에서 불러온다(버전 고정).
+//
+// 첫 인사: 푸터에 닿으면 저절로 글로 인사하고(greet silent), 그 전에 먼저 말을 걸면 미리 녹음해 둔 같은
+// 목소리(public/talk/{lang}-greet.mp3)로 인사하며 같은 말을 글로 드러낸다. 마이크는 인사 뒤에 청한다(TalkAgent).
+
+import GREETING from './greeting.json';
 
 const CDN = {
   ort: 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/',
@@ -226,6 +231,64 @@ export class TalkEngine {
     this.muted = muted;
     if (this.master && this.ctx) this.master.gain.setTargetAtTime(muted ? 0 : 1, this.ctx.currentTime, 0.03);
     this.emit({ muted });
+  }
+
+  // 처음 말을 걸 때의 인사(대화에서 한 번). 문구는 greeting.json, 소리는 scripts/generate_talk_greeting.mjs 로
+  // 만든 public/talk/{lang}-greet.mp3. 소리에 맞춰 글을 단어 끝까지 드러내고, 소리를 껐거나 없으면 글로만.
+  // 대답처럼 끊을 수 있다(interrupt) — 방문자가 먼저 말하거나 묻으면 멈춘다.
+  // silent: 푸터에 닿아 저절로 깨어날 때. 아직 누른 손길이 없어 소리를 낼 수 없으니 글로만, 앞은 빠르고
+  // 끝으로 갈수록 느리게 드러낸다(instant 면 한 번에).
+  async greet({ silent = false, instant = false } = {}) {
+    if (this.greeted || this.ended) return;
+    this.greeted = true;
+    const text = GREETING[this.lang] || GREETING.en;
+    const turn = { id: ++this.seq, role: 'assistant', text, shown: 0 };
+    this.turns.push(turn);
+    this.history.push({ role: 'assistant', content: text });
+    this.setTurns();
+    if (silent) {
+      const duration = instant ? 0 : Math.min(2200, text.length * 34);
+      const start = performance.now();
+      await new Promise((resolve) => {
+        const step = (now) => {
+          const t = duration ? Math.min(1, (now - start) / duration) : 1;
+          turn.shown = revealTo(text, 1 - (1 - t) ** 3);
+          this.setTurns();
+          if (t < 1) requestAnimationFrame(step); else resolve();
+        };
+        requestAnimationFrame(step);
+      });
+      return;
+    }
+    const ctx = await this.ensureAudio();
+    let buffer = null;
+    try {
+      if (ctx && !this.muted) buffer = await ctx.decodeAudioData(await (await fetch(`/talk/${this.lang}-greet.mp3`)).arrayBuffer());
+    } catch { /* 소리가 없으면 글로만 */ }
+    if (!buffer) { turn.shown = text.length; this.setTurns(); return; }
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(this.master);
+    this.greeting = source;
+    this.setPhase('speaking');
+    const start = ctx.currentTime;
+    source.start();
+    await new Promise((resolve) => {
+      source.onended = resolve;
+      const step = () => {
+        if (this.greeting !== source) return resolve();
+        turn.shown = revealTo(text, (ctx.currentTime - start) / buffer.duration);
+        this.setTurns();
+        if (ctx.currentTime - start < buffer.duration) requestAnimationFrame(step);
+      };
+      step();
+    });
+    const cut = this.greeting !== source;
+    this.greeting = null;
+    if (cut) { turn.interrupted = true; this.setTurns(); return; }
+    turn.shown = text.length;
+    this.setTurns();
+    if (this.phase === 'speaking' && !this.current) this.setPhase(this.voice ? 'listening' : 'idle');
   }
 
   // ---------- 묻고 답하기 ----------
@@ -472,6 +535,7 @@ export class TalkEngine {
   // 대답을 멈춘다. 소리가 나던 중이면 줄이며 멈추고, 들린 데까지만 기록에 남긴다.
   // 아직 소리가 나기 전이면(생각 중) 그 차례를 없던 일로 하고, 방문자의 말은 다음 말과 합친다.
   interrupt({ merge = false } = {}) {
+    if (this.greeting) { try { this.greeting.stop(); } catch { /* 이미 끝남 */ } this.greeting = null; }
     const cur = this.current;
     if (!cur) return;
     this.current = null;

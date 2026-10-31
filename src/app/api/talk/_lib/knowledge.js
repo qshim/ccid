@@ -13,12 +13,12 @@ const ABOUT = `
 - Name: cciD, Center for Creative Intelligence Design. Founded in 2023 at Korea National University of Arts (한국예술종합학교).
 - Website: c-c-i-d.kr
 - Founding Director: Kyuha Shim (심규하), FRSA, tenured Full Professor of Design at Korea National University of Arts. Full biography under People.
-- KO headline: 컴퓨테이셔널 디자인을 사람의 경험으로. 리서치로 방향을 정하고, 내일을 디자인합니다.
-- EN headline: From computational design to human experience. Research sets the direction. Design builds tomorrow.
+- KO headline: 컴퓨테이셔널하게, 보다 인간 중심적으로. 리서치를 통해 기업의 문제를 함께 찾고, 실무진들과 AI를 통해 내일의 디자인을 설계합니다.
+- EN headline: Computational, and more human-centered. Through research, we find companies’ problems with them, and design tomorrow with their teams and AI.
 - KO: cciD는 컴퓨테이셔널 디자인과 생성형 AI를 바탕으로 사용자 경험을 연구하고 디자인하는 인간 중심의 디자인 센터입니다. 제품과 브랜드 안에서 만들 수 있는 새로운 가능성을 찾고, 설계하고, 구현합니다.
 - EN: cciD is a human-centered design center that researches and designs user experience through computational design and generative AI. We find, design, and build new possibilities within products and brands.
-- KO: cciD는 사용자 리서치, 생성형 AI, 인터랙션 디자인을 하나의 과정으로 잇습니다. 기술이 제품과 브랜드 안에서 어떤 경험이 되어야 하는지 정의하고, 그 경험을 직접 구현합니다. 삼성전자와는 차세대 UI와 감성 UX를, 현대자동차그룹과는 AI를 내재화한 디자인 프로세스를, LG전자와는 브랜드의 AI 비전을 공간 경험으로 다뤘습니다. cciD는 CMU의 Computational Design Thinking과 MIT의 Demo or Die를 하나로 잇습니다.
-- EN: cciD brings user research, generative AI, and interaction design into a single process. We define the experience technology should create within products and brands, then build it ourselves. Our work spans next-generation UI and emotional UX with Samsung Electronics, AI-integrated in-house design processes with Hyundai Motor Group, and spatial AI brand experiences with LG Electronics. cciD brings together Carnegie Mellon's Computational Design Thinking and MIT's Demo or Die.
+- KO: cciD는 사용자 리서치, 생성형 AI, 인터랙션 디자인을 하나의 과정으로 잇습니다. 기술이 제품과 브랜드 안에서 어떤 경험이 되어야 하는지 정의하고, 그 경험을 직접 구현합니다. 삼성전자와는 차세대 UI와 감성 UX를, 현대자동차그룹과는 AI를 내재화한 디자인 프로세스를, LG전자와는 AI 비전을 공간 경험으로 다뤘습니다. 지금은 롯데와 함께 지주사 차원의 AX를 브랜드 관점에서 풀어가고 있습니다. cciD는 CMU의 Computational Design Thinking과 MIT의 Demo or Die를 하나로 잇습니다.
+- EN: cciD brings user research, generative AI, and interaction design into a single process. We define the experience technology should create within products and brands, then build it ourselves. Our work spans next-generation UI and emotional UX with Samsung Electronics, AI-integrated in-house design processes with Hyundai Motor Group, and turning AI visions into spatial experiences with LG Electronics. With Lotte, we are now approaching the holding company's AX (AI transformation) from a brand perspective. cciD brings together Carnegie Mellon's Computational Design Thinking and MIT's Demo or Die.
 - How we work: Research, Strategy, Systems, Prototypes.
 
 ## Contact and location

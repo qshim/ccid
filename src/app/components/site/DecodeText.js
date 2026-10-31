@@ -34,19 +34,23 @@ const prefersReducedMotion = () =>
 // 길이에 따라 두 가지 방식으로 푼다.
 //  · 긴 글(문단)은 단어 단위로 훑는다 — 낱자로 하면 한 문단에 수십 초가 걸린다.
 //  · 짧은 글(제목·선언)은 낱자 단위로 푼다 — 글자가 하나씩 맞춰지는 맛이 산다.
-// 어느 쪽이든 전체 소요를 목표 시간(LONG_MS / SHORT_MS)에 맞춰 간격을 역산하므로,
-// 문장이 길어져도 끝나는 시점은 비슷하다.
+// 글자마다 같은 시간을 주지 않는다. 처음에는 아주 빠르게 풀리다가 끝으로 갈수록 느려진다
+// (ease-out, 1 − (1 − t)³). 문장이 길어도 끝나는 시점은 목표 시간(LONG_MS / SHORT_MS)으로 같다.
+// 아직 맞춰지지 않은 꼬리 글자는 몇 개만, 옅게(.decode-tail) 보여 맞춰진 글이 먼저 읽힌다.
 const WORD_MODE_OVER = 60; // 글자 수 기준
-const LONG_MS = 3400;      // 문단 전체가 풀리는 목표 시간
-const SHORT_MS = 1500;
+const LONG_MS = 1900;      // 문단 전체가 풀리는 목표 시간
+const SHORT_MS = 1000;
+const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+// "\n"은 <br />로. 원문에 줄바꿈이 있던 문장(히어로·섹션 제목)을 그대로 쓴다.
+const withBreaks = (s) => String(s).split("\n").map((line, i) => <span key={i}>{i > 0 && <br />}{line}</span>);
 
 export default function DecodeText({ text, onView = false, className }) {
-  const [shown, setShown] = useState(text);
+  const [shown, setShown] = useState({ done: text, tail: "" });
   const [armed, setArmed] = useState(!onView);
   const hostRef = useRef(null);
   const first = useRef(true);
   const raf = useRef(0);
-  const timer = useRef(0);
 
   // onView: 처음 화면에 들어올 때 한 번만 무장한다.
   useEffect(() => {
@@ -76,27 +80,24 @@ export default function DecodeText({ text, onView = false, className }) {
     if (first.current) {
       first.current = false;
       if (!onView) {
-        setShown(text);
+        setShown({ done: text, tail: "" });
         return;
       }
     }
     if (prefersReducedMotion()) {
-      setShown(text);
+      setShown({ done: text, tail: "" });
       return;
     }
 
     const wordMode = text.length > WORD_MODE_OVER;
     // 단어 모드에서는 공백도 하나의 단위로 둔다 — 단어 경계와 줄바꿈이 유지된다.
     const units = wordMode ? text.split(/(\s+)/).filter((u) => u !== "") : Array.from(text);
-    const trail = wordMode ? 3 : 10;
-    const scrambleMs = wordMode ? 42 : 58;
-    // 목표 시간을 단위 수로 나눠 간격을 정한다. 너무 빨라 깜빡이거나(14ms 미만)
-    // 너무 느려 늘어지지(90ms 초과) 않도록 양끝을 막는다.
-    const target = wordMode ? LONG_MS : SHORT_MS;
-    const step = Math.min(90, Math.max(14, Math.round(target / Math.max(1, units.length))));
+    const trail = wordMode ? 2 : 4;
+    const scrambleMs = wordMode ? 50 : 64;
+    const duration = wordMode ? LONG_MS : SHORT_MS;
 
-    let settled = 0;
-    let lastScramble = 0;
+    let start = 0;
+    let lastScramble = -Infinity;
     let frozen = [];
 
     const scrambleUnit = (u) =>
@@ -104,50 +105,39 @@ export default function DecodeText({ text, onView = false, className }) {
         .map((ch) => (isScrambleable(ch) ? scrambleFor(ch) : ch))
         .join("");
 
-    const tick = (now = 0) => {
+    const tick = (now) => {
+      if (!start) start = now;
+      const t = Math.min(1, (now - start) / duration);
+      const settled = Math.floor(units.length * easeOut(t));
+      if (t >= 1) {
+        setShown({ done: text, tail: "" });
+        return;
+      }
       if (now - lastScramble >= scrambleMs) {
         lastScramble = now;
         frozen = units.map(scrambleUnit);
       }
-      const out = units.map((u, i) => {
-        if (i < settled) return u;
-        if (!/[A-Za-z\uac00-\ud7a3]/.test(u)) return u; // 공백·부호는 제자리
-        if (i < settled + trail) return frozen[i] ?? u;
-        return "";
+      // 꼬리 뒤로는 빈칸·줄바꿈만 남겨 줄 수가 흔들리지 않게 한다(떠 있는 마침표가 남지 않게 부호는 뺀다).
+      const tail = units.slice(settled).map((u, k) => {
+        if (/^\s+$/.test(u)) return u;
+        if (k >= trail) return "";
+        return /[A-Za-z\uac00-\ud7a3]/.test(u) ? frozen[settled + k] ?? u : u;
       });
-      setShown(out.join(""));
-      if (settled >= units.length) {
-        setShown(text);
-        return;
-      }
+      setShown({ done: units.slice(0, settled).join(""), tail: tail.join("") });
       raf.current = requestAnimationFrame(tick);
     };
-
-    timer.current = window.setInterval(() => {
-      settled += 1;
-      if (settled > units.length) window.clearInterval(timer.current);
-    }, step);
     raf.current = requestAnimationFrame(tick);
 
-    return () => {
-      cancelAnimationFrame(raf.current);
-      window.clearInterval(timer.current);
-    };
+    return () => cancelAnimationFrame(raf.current);
   }, [text, armed, onView]);
 
   // 스크린리더에는 확정된 문장만 읽히게 하고, 흔들리는 글자는 숨긴다.
-  // "\n"은 <br />로. 원문에 줄바꿈이 있던 문장(히어로·섹션 제목)을 그대로 쓴다.
-  const lines = String(shown).split("\n");
   return (
     <span className={className} ref={hostRef}>
       <span className="sr-only">{text}</span>
       <span aria-hidden="true">
-        {lines.map((line, i) => (
-          <span key={i}>
-            {i > 0 && <br />}
-            {line}
-          </span>
-        ))}
+        {withBreaks(shown.done)}
+        {shown.tail && <span className="decode-tail">{withBreaks(shown.tail)}</span>}
       </span>
     </span>
   );

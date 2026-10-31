@@ -17,6 +17,7 @@ const s = {
   touchSeqs: 0, touchMoves: 0, taps: 0, tapGaps: [], lastTap: 0,
   keys: 0, keyGaps: [], lastKey: 0,
   views: new Set(), pages: new Set(),
+  menu: 0,
 };
 
 const std = (a) => {
@@ -121,6 +122,11 @@ export function watchHuman() {
   if (process.env.NODE_ENV !== "production") window.__talkHuman = () => ({ summary: humanSummary(), verdict: scoreHuman(humanSummary(), navigator.userAgent) });
 }
 
+// 메뉴의 "Let's talk" 을 사람이 직접 눌렀다(SiteShell 이 누른 이벤트의 isTrusted 를 넘긴다).
+export function noteMenuTap() {
+  s.menu++;
+}
+
 // 페이지를 옮겼을 때(레이아웃은 그대로라 watchHuman 은 다시 불리지 않는다) 부른다.
 export function notePage(pathname) {
   s.pages.add(pathname);
@@ -139,6 +145,7 @@ export function humanSummary() {
     keys: { n: s.keys, gapStd: Math.round(std(s.keyGaps)), uniform: uniform(s.keyGaps) },
     views: s.views.size,
     pages: s.pages.size,
+    menu: s.menu,
   };
 }
 

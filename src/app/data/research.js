@@ -2,12 +2,13 @@ import { sheetsStatic } from './sheetsStatic';
 
 // Editorial positions and selected work, grounded in the existing published project record.
 // Dates and performance outcomes are not inferred.
+// wip: true 를 넣으면 그 테마 카드가 액자 모드(회색 매트, 뎁스 없음)로 보인다 — 진행 중인 작업을 보여줄 때만.
 export const themes = [
   {
     id: 'interfaces', number: '01', title: '차세대 사용자 인터페이스', en: 'Next-generation interfaces', short: 'Future interfaces',
     question: '인터페이스가 우리를 이해한다면,\n무엇이 달라질까요?', questionEn: 'What changes when an interface\nunderstands us?',
-    intro: "Gen UI의 설계 원칙부터 대화면 에디터와 미래 모빌리티 UX까지. 사용자의 의도를 실제로 작동하는 인터페이스로 연결합니다.",
-    introEn: "From Gen UI principles to large-screen editors and future mobility UX. We translate user intent into working interfaces.",
+    intro: "Gen UI의 설계 원칙부터 삼성의 모바일과 TV, 현대\u2060·\u2060기아의 미래 모빌리티까지. 사용자의 의도를 실제로 작동하는 인터페이스로 연결합니다.",
+    introEn: "From Gen UI principles to Samsung’s mobile and TV, and future mobility for Hyundai and Kia. We translate user intent into working interfaces.",
     tags: ['Generative UI', 'Adaptive interfaces', 'Multimodal interaction'],
     image: '/img/2026/samsung-gen-ui.webp', images: ['/img/2026/samsung-gen-ui.webp', '/img/2025/mx_galaxy_ai_0.webp', '/img/2025/kia_0.webp', '/img/2025/kia_1.webp'], imageAlt: '생성형 사용자 인터페이스의 개념 이미지',
     premise: "삼성전자의 Generative UI 연구에서는 사용자 맥락과 의도, 디바이스와 작업 흐름에 대응하는 프레임워크를 다뤘습니다. Gen UI 원칙, 로직 파이프라인, 인터랙티브 프로토타입을 연결하며 인터페이스가 생성되고 변화하는 방식을 설계합니다.",
@@ -20,8 +21,8 @@ export const themes = [
   {
     id: 'creative-intelligence', number: '02', title: '인간과 AI의 창의적 협업', en: 'Human–AI co-creation', short: 'Creative intelligence',
     question: 'AI와 함께 만드는 일은\n어떻게 달라질까요?', questionEn: 'How does making change\nwhen we create with AI?',
-    intro: "현대자동차그룹의 AI 디자인 워크플로우와 국가 R&D 창작 파이프라인. 생성, 리뷰, 판단을 하나의 프로세스로 설계합니다.",
-    introEn: "AI design workflows for Hyundai Motor Group and creative pipelines for national R&D. Connecting generation, review, and judgment in one process.",
+    intro: "현대자동차그룹의 내재화된 AI 디자인 파이프라인과 산자부 R&D 생성형 AI 워크플로우. 생성, 리뷰, 판단을 하나의 프로세스로 설계합니다.",
+    introEn: "An in-house AI design pipeline for Hyundai Motor Group and a generative AI workflow for MOTIE R&D. Connecting generation, review, and judgment in one process.",
     tags: ['Human–AI collaboration', 'Generative workflows', 'Design tools'],
     image: '/img/2025/hd_ai_driven_design.webp', images: ['/img/2025/hd_ai_driven_design.webp', '/img/2026/hd-design-axes.webp', '/img/2025/motie_2.webp', '/img/2025/motie_1.webp'], imageAlt: 'AI 기반 디자인 탐색 프로세스의 개념 이미지',
     premise: "AI 도입의 설계 단위는 팀의 작업 과정 전체입니다. 현대자동차그룹과의 연구에서는 컨셉 탐색, 디자인 리뷰, 평가를 연결하는 워크플로우를 다뤘습니다. 생성형 탐색과 3D 재구성, 디자이너의 검토를 연결해 AI가 실제 디자인 프로세스 안에서 작동하도록 설계합니다.",
@@ -29,21 +30,21 @@ export const themes = [
 
     position: "생성에서 판단까지,\n디자인 프로세스를 다시 설계합니다.",
     positionEn: "From generation to judgment.\nRedesigning the design process.",
-    evidence: [["AI Design Program Management", "AI 디자인 워크플로우 · 3D 재구성 · 의사결정 지원", "AI design workflows · 3D reconstruction · Decision support", "보안이 요구되는 사내 환경에서 생성형 탐색, 3D 재구성, 디자이너 리뷰를 디자인 프로세스에 통합하는 연구입니다.", "Research into a secure in-house design workflow integrating generative exploration, 3D reconstruction, and designer review."], ["AI-Driven Exterior Design Process", "외장 디자인 · 글로벌 디자인 협업", "Exterior design · Global design collaboration", "글로벌 디자인센터 간 커뮤니케이션을 위한 AI 기반 외장 디자인 워크플로우. 컨셉 탐색부터 리뷰와 평가까지 공동 의사결정의 흐름으로 연결했습니다.", "An AI-assisted exterior design workflow for communication across global design centers, connecting exploration, review, and evaluation into shared decision-making."], ["AI Design Generation Pipeline", "맥락 기반 생성 · 이미지–3D 파이프라인", "Contextual generation · Image-to-3D pipeline", "채팅의 감정·행동·상황을 해석하는 Contextual Emoji Asset 시스템과 이미지 기반 3D 생성 파이프라인을 다루는 국가 R&D 과제입니다.", "National R&D on a Contextual Emoji Asset system that interprets emotion, action, and situation in chat, alongside an image-to-3D generation pipeline."]],
+    evidence: [["AI Design Workflow from 2D to 3D for In-house Studios", "AI 디자인 워크플로우 · 3D 재구성 · 의사결정 지원", "AI design workflows · 3D reconstruction · Decision support", "보안이 요구되는 사내 환경에서 생성형 탐색, 3D 재구성, 디자이너 리뷰를 디자인 프로세스에 통합하는 연구입니다.", "Research into a secure in-house design workflow integrating generative exploration, 3D reconstruction, and designer review."], ["AI-Driven Exterior Design Process", "외장 디자인 · 글로벌 디자인 협업", "Exterior design · Global design collaboration", "글로벌 디자인센터 간 커뮤니케이션을 위한 AI 기반 외장 디자인 워크플로우. 컨셉 탐색부터 리뷰와 평가까지 공동 의사결정의 흐름으로 연결했습니다.", "An AI-assisted exterior design workflow for communication across global design centers, connecting exploration, review, and evaluation into shared decision-making."], ["AI Design Generation Pipeline", "맥락 기반 생성 · 이미지–3D 파이프라인", "Contextual generation · Image-to-3D pipeline", "채팅의 감정·행동·상황을 해석하는 Contextual Emoji Asset 시스템과 이미지 기반 3D 생성 파이프라인을 다루는 국가 R&D 과제입니다.", "National R&D on a Contextual Emoji Asset system that interprets emotion, action, and situation in chat, alongside an image-to-3D generation pipeline."]],
   },
   {
     id: 'spatial-experiences', number: '03', title: '공간과 일상의 새로운 경험', en: 'Spatial and everyday experiences', short: 'Spatial experiences',
     question: '기술이 공간을 만나면,\n어떤 경험이 시작될까요?', questionEn: 'What begins when technology\nbecomes part of a place?',
-    intro: "LG의 AI 브랜드 경험, COEX의 공공 AI 인터페이스, 현대차 정몽구 재단의 《Shared World》 전시까지. 브랜드의 비전을 사람들이 참여하는 공간 경험으로 구현합니다.",
-    introEn: "From LG’s AI brand experience and a public AI interface at COEX to Shared World with the Hyundai Motor Chung Mong-Koo Foundation. Translating brand visions into spatial experiences people can participate in.",
+    intro: "LG의 고객과 공감하는 AI 경험, COEX의 공공 AI 인터페이스, 현대차 정몽구 재단과 《Shared World》 기획전, 자하 하디드 아키텍츠와 함께한 DDP 45133 브랜딩과 전시까지. 브랜드의 비전을 공간 경험으로 구현합니다.",
+    introEn: "From an AI experience that empathizes with LG’s customers, a public AI interface at COEX, and the Shared World exhibition with the Hyundai Motor Chung Mong-Koo Foundation to the DDP 45133 brand and exhibition with Zaha Hadid Architects. Translating brand visions into spatial experiences.",
     tags: ['Spatial interaction', 'Customer experience', 'Participatory systems'],
     image: '/img/2025/lg_affectionate_intelligence_0.webp', images: ['/img/2026/onso-shared-world.webp', '/img/2025/lg_affectionate_intelligence_0.webp', '/img/2025/lg_affectionate_intelligence_3.webp', '/img/2025/lg_affectionate_intelligence_4.webp', '/img/2025/lg_affectionate_intelligence_5.webp', '/img/2025/coex_0.webp', '/img/2025/coex_1.webp', '/img/2025/coex_2.webp', '/img/2025/ddp_0.webp', '/img/2025/ddp_1.webp', '/img/2025/ddp_2.webp', '/img/2025/ddp_3.webp', '/img/2025/ddp_4.webp', '/img/2025/ddp_5.webp', '/img/2025/ddp_6.webp'], imageAlt: 'LG Affectionate Intelligence 공간 경험 이미지',
-    premise: "공간은 브랜드와 기술이 직접 경험되는 접점입니다. LG의 Affectionate Intelligence를 전하는 금성전파사와, COEX 미디어 파사드를 공공 AI 인터페이스로 재해석한 GangnamEyes에서는 스토리텔링, 생성형 미디어, 참여형 시스템을 연결해 각 장소에 맞는 인터랙션을 설계했습니다. 현대차 정몽구 재단 온드림 소사이어티의 《Shared World》는 한국예술종합학교 미술원 CRAFT Lab과 cciD가 함께 만든 전시입니다.",
-    premiseEn: "Space is where people experience a brand and its technology directly. From Geumseong Electronics for LG’s Affectionate Intelligence to GangnamEyes at the COEX media facade, we connect storytelling, generative media, and participatory systems into interactions specific to each place. Shared World at the Hyundai Motor Chung Mong-Koo Foundation’s ONDREAM SOCIETY is an exhibition made together by CRAFT Lab and cciD at the Korea National University of Arts.",
+    premise: "공간은 브랜드와 기술이 직접 경험되는 접점입니다. LG의 Affectionate Intelligence를 전하는 금성전파사와, COEX 미디어 파사드를 공공 AI 인터페이스로 재해석한 GangnamEyes에서는 스토리텔링, 생성형 미디어, 참여형 시스템을 연결해 각 장소에 맞는 인터랙션을 설계했습니다. 서울디자인재단과는 자하 하디드 아키텍츠와 협력해 DDP 45133의 브랜드와 런칭 전시를 만들고, 디지털 트윈 기반의 DDP 멤버십 컨셉까지 설계했습니다. 현대차 정몽구 재단 온드림 소사이어티의 《Shared World》는 한국예술종합학교 미술원 CRAFT Lab과 cciD가 함께 만든 전시입니다.",
+    premiseEn: "Space is where people experience a brand and its technology directly. From Geumseong Electronics for LG’s Affectionate Intelligence to GangnamEyes at the COEX media facade, we connect storytelling, generative media, and participatory systems into interactions specific to each place. For the Seoul Design Foundation, we created the DDP 45133 brand and its launch exhibition in collaboration with Zaha Hadid Architects, and designed a digital twin-based membership concept for the DDP. Shared World at the Hyundai Motor Chung Mong-Koo Foundation’s ONDREAM SOCIETY is an exhibition made together by CRAFT Lab and cciD at the Korea National University of Arts.",
 
     position: "브랜드의 비전이\n사람의 경험이 되는 순간.",
     positionEn: "When a brand’s vision\nbecomes a lived experience.",
-    evidence: [["Affectionate Intelligence CX Design", "브랜드 경험 · 공간 CX · 참여형 인터랙션", "Brand experience · Spatial CX · Participatory interaction", "LG의 Affectionate Intelligence 비전을 금성전파사라는 몰입형 공간 경험으로 전개했습니다. 스토리텔링, 인터랙티브 시스템, 미디어 아트와 관객 참여를 통합했습니다.", "Translated LG’s Affectionate Intelligence vision into Geumseong Electronics, an immersive spatial CX platform integrating storytelling, interactive systems, media art, and participation."], ["AI-Driven AR Interaction Platform", "공공 AI 인터페이스 · 생성형 콘텐츠", "Public AI interface · Generative content", "COEX K-POP Square 미디어 파사드를 도시 규모의 AI 인터페이스로 재해석한 GangnamEyes. AI 인프라와 미디어 운영, 생성형 콘텐츠, 관객 참여를 연결했습니다.", "GangnamEyes reimagines the COEX K-POP Square media facade as an urban-scale AI interface, connecting AI infrastructure, media operations, generative content, and audience participation."], ["DDP 45133 Branding & Digital Twin Service", "브랜딩 · 전시 큐레이션 · 디지털 트윈", "Branding · Exhibition curation · Digital twin", "DDP 45133 브랜딩과 런칭 전시 큐레이션, 디지털 트윈 기반 멤버십 컨셉을 통해 브랜드 전략과 공간·디지털 경험을 연결했습니다.", "Connected brand strategy, spatial experience, and digital experience through DDP 45133 branding, launch exhibition curation, and a digital twin membership concept."]],
+    evidence: [["Affectionate Intelligence CX Design", "브랜드 경험 · 공간 CX · 참여형 인터랙션", "Brand experience · Spatial CX · Participatory interaction", "LG의 Affectionate Intelligence 비전을 금성전파사라는 몰입형 공간 경험으로 전개했습니다. 스토리텔링, 인터랙티브 시스템, 미디어 아트와 관객 참여를 통합했습니다.", "Translated LG’s Affectionate Intelligence vision into Geumseong Electronics, an immersive spatial CX platform integrating storytelling, interactive systems, media art, and participation."], ["AI-Driven AR Interaction Platform", "공공 AI 인터페이스 · 생성형 콘텐츠", "Public AI interface · Generative content", "COEX K-POP Square 미디어 파사드를 도시 규모의 AI 인터페이스로 재해석한 GangnamEyes. AI 인프라와 미디어 운영, 생성형 콘텐츠, 관객 참여를 연결했습니다.", "GangnamEyes reimagines the COEX K-POP Square media facade as an urban-scale AI interface, connecting AI infrastructure, media operations, generative content, and audience participation."], ["DDP 45133 Branding & Digital Twin Service", "브랜딩 · 전시 큐레이션 · 디지털 트윈", "Branding · Exhibition curation · Digital twin", "서울디자인재단의 DDP 45133 브랜딩을 맡아 자하 하디드 아키텍츠와 협력한 런칭 전시를 큐레이션하고, 브랜드 전략의 핵심인 디지털 트윈 기반 DDP 멤버십 컨셉을 설계했습니다.", "Created the DDP 45133 brand for the Seoul Design Foundation, curated its launch exhibition in collaboration with Zaha Hadid Architects, and designed a digital twin-based DDP membership concept at the core of the brand strategy."]],
   },
   {
     id: 'human-understanding', number: '04', title: '사람을 이해하는 디자인', en: 'Design that understands people', short: 'Human understanding',
@@ -62,7 +63,7 @@ export const themes = [
 ];
 
 const mapping = {
-  'AI Design Program Management': ['AI 기반 2D–3D 통합 설계전환 체계 및 내재화 핵심기술 개발', ['creative-intelligence']],
+  'AI Design Workflow from 2D to 3D for In-house Studios': ['AI 기반 2D–3D 통합 설계전환 체계 및 내재화 핵심기술 개발', ['creative-intelligence']],
   'Generative User Interface': ['생성형 사용자 인터페이스 연구', ['interfaces']],
   'Affectionate Intelligence CX Design': ['Affectionate Intelligence 고객 경험 디자인', ['spatial-experiences']],
   'AI-Driven AR Interaction Platform': ['AI 에이전트 기반 공공 공간 인터랙션', ['spatial-experiences', 'interfaces']],
@@ -100,11 +101,17 @@ const clientOverrides = {
   'Generative User Interface': ['Samsung Electronics CDO', '삼성전자 CDO'],
 };
 
+// 시트보다 먼저 바꾼 과제명. 시트의 works 탭을 고치면 이 줄은 지운다.
+const renamedTitles = {
+  'AI Design Program Management': 'AI Design Workflow from 2D to 3D for In-house Studios',
+};
+
 export const collaborations = (sheetsStatic.works?.[1] || []).slice(1).flatMap((cell, index) => {
   const separator = cell.indexOf(':');
   if (separator < 0) return [];
   const client = cell.slice(0, separator).trim();
-  const title = cell.slice(separator + 1).trim();
+  const sheetTitle = cell.slice(separator + 1).trim();
+  const title = renamedTitles[sheetTitle] || sheetTitle;
   const year = String(sheetsStatic.works[0][index + 1] || '');
   if (client === 'Meta Wave' || !/^\d{4}$/.test(year)) return [];
   const mapped = mapping[title];

@@ -10,6 +10,8 @@
 //   타자  — 글자 사이 간격이 흔들린다. 자동화는 간격이 일정하거나 키 이벤트 없이 글자를 넣는다.
 //           (간격의 표준편차만 보면 "같은 간격 + 한 번의 긴 멈춤"이 사람처럼 보여서, 같은 간격의 비율도 본다.)
 //   둘러보기 — 섹션에 머물며 읽고, 페이지를 옮겨 다닌다. 혼자서는 약한 증거라 휠과 함께만 쓴다.
+//   메뉴  — 메뉴의 "Let's talk" 을 직접 누르고 들어왔다(스크립트가 보낸 클릭은 세지 않는다). 사이트를 열자마자
+//           메뉴로 바로 온 사람은 다른 손길이 거의 없어, 이것만으로도 사람으로 본다.
 // 자동화 표지(navigator.webdriver)나 크롤러·AI 에이전트의 User-Agent 는 바로 아니라고 본다.
 //
 // 이것은 비용을 지키는 문턱이지 보안 경계는 아니다. 마음먹은 공격은 서버의 IP 한도와 계정 예산이 막는다.
@@ -28,6 +30,7 @@ export function scoreHuman(raw = {}, ua = '') {
     keys: { n: num(raw.keys?.n), gapStd: num(raw.keys?.gapStd), uniform: num(raw.keys?.uniform) },
     views: num(raw.views),
     pages: num(raw.pages),
+    menu: num(raw.menu),
   };
   if (x.webdriver || BOT_UA.test(ua)) return { human: false, why: 'automation' };
   if (x.elapsed < 2500) return { human: false, why: 'too-soon' };
@@ -37,7 +40,8 @@ export function scoreHuman(raw = {}, ua = '') {
   const keys = x.keys.n >= 8 && x.keys.gapStd >= 18 && x.keys.uniform <= 0.45;
   const wheel = x.wheel.n >= 3 && (x.wheel.distinct >= 2 || x.wheel.gapStd >= 25);
   const browse = x.views >= 2 || x.pages >= 2;
+  const menu = x.menu >= 1;
 
-  const human = mouse || touch || keys || (wheel && browse);
-  return { human, why: human ? [mouse && 'mouse', touch && 'touch', keys && 'keys', wheel && browse && 'wheel+browse'].filter(Boolean).join(',') : 'no-signal' };
+  const human = mouse || touch || keys || (wheel && browse) || menu;
+  return { human, why: human ? [mouse && 'mouse', touch && 'touch', keys && 'keys', wheel && browse && 'wheel+browse', menu && 'menu'].filter(Boolean).join(',') : 'no-signal' };
 }

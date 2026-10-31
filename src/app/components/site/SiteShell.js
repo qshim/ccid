@@ -13,13 +13,28 @@ export function useSiteLanguage() { return useContext(Language); }
 export function Arrow({ diagonal = false, className = '' }) {
   return <svg className={`site-arrow ${className}`} viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={diagonal ? 'M5 19 19 5M5 5h14v14' : 'M3 12h17m-7-7 7 7-7 7'} stroke="currentColor" strokeWidth="1.4" /></svg>;
 }
+// 처음 온 사람은 브라우저의 언어 설정을 따른다. 선호 순서대로 보다가 ko 와 en 중 먼저 나오는
+// 쪽으로 정하고, 둘 다 없으면(일본어·중국어 등) 영어로 보여준다. 언어 버튼으로 고른 적이 있으면
+// 그 선택이 이긴다.
+function browserLanguage() {
+  const tags = navigator.languages?.length ? navigator.languages : [navigator.language || ''];
+  for (const tag of tags) {
+    const code = tag.toLowerCase();
+    if (code.startsWith('ko')) return 'ko';
+    if (code.startsWith('en')) return 'en';
+  }
+  return 'en';
+}
 function languageSnapshot() {
-  try { return localStorage.getItem('ccid-language') === 'en' ? 'en' : 'ko'; } catch { return 'ko'; }
+  let saved = null;
+  try { saved = localStorage.getItem('ccid-language'); } catch { saved = null; }
+  return saved === 'en' || saved === 'ko' ? saved : browserLanguage();
 }
 function subscribeLanguage(callback) {
   window.addEventListener('storage', callback);
   window.addEventListener('ccid-language-change', callback);
-  return () => { window.removeEventListener('storage', callback); window.removeEventListener('ccid-language-change', callback); };
+  window.addEventListener('languagechange', callback);
+  return () => { window.removeEventListener('storage', callback); window.removeEventListener('ccid-language-change', callback); window.removeEventListener('languagechange', callback); };
 }
 export function SiteShell({ children }) {
   const lang = useSyncExternalStore(subscribeLanguage, languageSnapshot, () => 'ko');
@@ -78,7 +93,8 @@ export function SiteShell({ children }) {
       entries.forEach(entry => {
         if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); }
       });
-    }, { threshold: 0.08 });
+    // 화면에 들어오기 80px 전에 미리 시작한다 — 들어올 때쯤엔 이미 움직이고 있어 '툭' 나타나지 않는다.
+    }, { threshold: 0, rootMargin: '0px 0px 80px 0px' });
     document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
     return () => observer.disconnect();
   }, [pathname]);
@@ -141,10 +157,10 @@ export function SiteShell({ children }) {
       <Link className="wordmark" href="/" aria-label="cciD home" onClick={e => navigate(e, "/")}>cciD<span className="wordmark-dot" /></Link>
       <nav className="desktop-nav" aria-label="Main navigation">{links.map(l => <Link key={l.href} href={l.href} onClick={e => navigate(e, l.href)} className={l.active ? 'is-active' : ''} aria-current={l.active ? 'page' : undefined}>{l.text}</Link>)}</nav>
       <div className="header-actions"><button className="language-button" onClick={changeLanguage} aria-label={lang === 'ko' ? 'Switch to English' : '한국어로 전환'}>{lang === 'ko' ? 'EN' : 'KO'}</button><button ref={menuButton} className="menu-toggle" aria-controls="mobile-navigation" aria-expanded={menu} aria-label={menu ? 'Close menu' : 'Open menu'} onClick={() => setMenu(v => !v)}><span /><span /></button></div>
-      {menu && <nav id="mobile-navigation" className="mobile-nav" aria-label="Mobile navigation">{links.map((l, i) => <Link key={l.href} href={l.href} onClick={e => navigate(e, l.href)} className={l.active ? 'is-active' : ''} aria-current={l.active ? 'page' : undefined}><span className="micro">0{i + 1}</span>{l.text}<Arrow /></Link>)}<button type="button" onClick={() => { setMenu(false); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); window.dispatchEvent(new Event('ccid-open-contact')); }}><span className="micro" aria-hidden="true" />Let’s talk <Arrow diagonal /></button><p>Center for Creative Intelligence Design</p></nav>}
+      {menu && <nav id="mobile-navigation" className="mobile-nav" aria-label="Mobile navigation">{links.map((l, i) => <Link key={l.href} href={l.href} onClick={e => navigate(e, l.href)} className={l.active ? 'is-active' : ''} aria-current={l.active ? 'page' : undefined}><span className="micro">0{i + 1}</span>{l.text}<Arrow /></Link>)}<button type="button" onClick={(e) => { setMenu(false); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); window.dispatchEvent(new CustomEvent('ccid-open-contact', { detail: { trusted: e.isTrusted } })); }}><span className="micro" aria-hidden="true" />Let’s talk <Arrow diagonal /></button><p>Center for Creative Intelligence Design</p></nav>}
     </header>
     <div inert={menu || undefined}>
     {children}
-    <footer className="site-footer" id="contact"><div className="footer-top"><span className="eyebrow">A conversation is a beginning.</span><p>{lang === 'ko' ? '함께 탐구하고 싶은 질문이 있나요?' : 'What would you like to explore together?'}</p><TalkAgent lang={lang} /></div><div className="footer-bottom"><div className="footer-brand"><Link href="/" className="wordmark">cciD</Link></div><p className="footer-name">Center for Creative Intelligence Design<span className="footer-copy">© {new Date().getFullYear()} cciD</span></p><div><a href="mailto:hello.ccid@gmail.com">hello.ccid@gmail.com</a><a href="tel:+8227469620">+82 2 746 9620</a></div><p>{lang === 'ko' ? '한국예술종합학교 석관동 캠퍼스' : 'Korea National University of Arts'}<br />{lang === 'ko' ? '서울 성북구 화랑로32길 146-37' : '146-37 Hwarang-ro 32-gil, Seoul'}</p></div></footer></div>
+    <footer className="site-footer" id="contact"><div className="footer-top"><span className="eyebrow">A conversation is a beginning.</span><TalkAgent lang={lang} /></div><div className="footer-bottom"><div className="footer-brand"><Link href="/" className="wordmark">cciD</Link></div><p className="footer-name">Center for Creative Intelligence Design<span className="footer-copy">© {new Date().getFullYear()} cciD</span></p><div><a href="mailto:hello.ccid@gmail.com">hello.ccid@gmail.com</a><a href="tel:+8227469620">+82 2 746 9620</a></div><p>{lang === 'ko' ? '한국예술종합학교 석관동 캠퍼스' : 'Korea National University of Arts'}<br />{lang === 'ko' ? '서울 성북구 화랑로32길 146-37' : '146-37 Hwarang-ro 32-gil, Seoul'}</p></div></footer></div>
   </div></Language.Provider>;
 }
