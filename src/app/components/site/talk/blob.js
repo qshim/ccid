@@ -124,7 +124,7 @@ void main() {
 
   // 구의 테두리 안쪽만 그린다. 바깥 한 화소는 테두리 점을 그대로 써서 부드럽게 깎는다.
   float cover = smoothstep(u_rho + u_px, u_rho - u_px, len);
-  if (cover <= 0.0) { gl_FragColor = intro; return; }
+  if (cover <= 0.0) { gl_FragColor = vec4(intro.rgb * intro.a, intro.a); return; }
 
   // 시선(카메라 z=6, 시야 50°)이 구와 만나는 점 → 법선
   vec3 cam = vec3(0.0, 0.0, 6.0);
@@ -168,7 +168,10 @@ void main() {
   // 투명도: 몸은 거의 불투명, 가장자리는 유리처럼 살짝 비친다
   float alpha = mix(0.82, 0.97, smoothstep(1.0, 0.55, rr)) + fres * 0.1;
   vec4 blob = vec4(col, clamp(alpha, 0.0, 1.0) * cover);
-  gl_FragColor = u_intro < 1.0 ? mix(intro, blob, bloomMask) : blob;
+  vec4 outColor = u_intro < 1.0 ? mix(intro, blob, bloomMask) : blob;
+  // 미리 곱한 알파로 내보낸다 — 가장자리의 반투명 화소가 어느 브라우저에서나 바탕과 같은 식으로 섞인다
+  // (iOS Safari 는 곱하지 않은 값을 그대로 더해 둘레에 흰 테가 생겼다).
+  gl_FragColor = vec4(outColor.rgb * outColor.a, outColor.a);
 }
 `;
 
@@ -195,7 +198,7 @@ function shader(gl, type, source) {
 
 // fit 은 기본 크기의 구가 캔버스 반지름에서 차지하는 비율이다. WebGL 을 쓸 수 없으면 null — 그때 화면은 보라 점으로 대신한다.
 export function createBlobForm(canvas, { fit = 0.6 } = {}) {
-  const gl = canvas.getContext("webgl", { alpha: true, antialias: false, premultipliedAlpha: false, powerPreference: "low-power" });
+  const gl = canvas.getContext("webgl", { alpha: true, antialias: false, premultipliedAlpha: true, powerPreference: "low-power" });
   if (!gl) return null;
   const vs = shader(gl, gl.VERTEX_SHADER, VERT);
   const fs = shader(gl, gl.FRAGMENT_SHADER, FRAG);
@@ -249,7 +252,7 @@ export function createBlobForm(canvas, { fit = 0.6 } = {}) {
     // dt 초만큼 흘려 한 장 그린다. snap 이면 새 모습으로 바로 바꾼다(움직임 줄이기).
     frame(dt, level = 0, snap = false) {
       if (gl.isContextLost()) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 3); // 휴대폰(3배)에서 늘려 그리면 가장자리가 흐려진다
       const size = Math.max(1, Math.round(canvas.clientWidth * dpr));
       if (canvas.width !== size) { canvas.width = size; canvas.height = size; }
       gl.viewport(0, 0, size, size);

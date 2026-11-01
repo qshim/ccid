@@ -13,6 +13,10 @@ export function useSiteLanguage() { return useContext(Language); }
 export function Arrow({ diagonal = false, className = '' }) {
   return <svg className={`site-arrow ${className}`} viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={diagonal ? 'M5 19 19 5M5 5h14v14' : 'M3 12h17m-7-7 7 7-7 7'} stroke="currentColor" strokeWidth="1.4" /></svg>;
 }
+// "더 보기" 링크의 더하기(프로젝트 전체 보기 · 함께하는 사람들) — 글자 높이만 하다.
+export function Plus() {
+  return <svg className="site-plus" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v18M3 12h18" stroke="currentColor" strokeWidth="1.6" /></svg>;
+}
 // 처음 온 사람은 브라우저의 언어 설정을 따른다. 선호 순서대로 보다가 ko 와 en 중 먼저 나오는
 // 쪽으로 정하고, 둘 다 없으면(일본어·중국어 등) 영어로 보여준다. 언어 버튼으로 고른 적이 있으면
 // 그 선택이 이긴다.

@@ -1,9 +1,11 @@
 "use client";
 
 // 푸터의 "Let's talk." — 섹션이 화면에 들어오면 글자가 커지고, 마침표가 저절로 깨어나 블롭이 된다. 동시에
-// 화면 아래 가운데에 캡슐 모양의 대화창이 떠올라 글로 먼저 인사한다(아직 누른 손길이 없어 소리는 못 낸다).
+// 블롭 바로 오른쪽에서 캡슐 모양의 대화창이 나와 글로 먼저 인사한다(아직 누른 손길이 없어 소리는 못 낸다).
+// 오른쪽에 자리가 없으면(좁은 화면) 화면 아래 가운데에 뜬다. 대화를 시작한 뒤 푸터를 떠나도 아래 가운데에 떠 있다.
 // 대화창에는 지금 주고받는 말만 있다 — 에이전트의 한마디와 방문자의 한마디. 그 옆에 소리 · 글로 쓰기 ·
-// 마이크(말이 먼저, 바로 아래에 안내나 지금 하는 일) · 닫기가 있다. 높이는 정해져 있어 대답이 길면 창 안에서만 흐른다.
+// 마이크(말이 먼저, 바로 아래에 안내나 지금 하는 일) · 닫기가 있다. 에이전트의 말은 자막처럼 한 줄씩 보인다
+// (Caption): 문장마다 새 줄, 단어가 하나씩 떠오르고, 다음 줄이 오면 앞 줄은 한꺼번에 옅어진다.
 // 마이크를 누르면 바로 마이크를 청한다(인사는 이미 글로 했다). 깨어나기 전에 제목이나 모바일 메뉴로 먼저
 // 말을 걸면 목소리로 인사한 뒤 마이크를 청한다. 마이크를 쓸 수 없으면 글로 쓰는 줄로 넘어간다.
 // 대화를 시작하기 전에 푸터를 떠나면 창은 가라앉고, 시작한 뒤에는 다른 곳을 봐도 떠 있다(닫기 전까지).
@@ -25,7 +27,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AgentForm from "./AgentForm";
 import { TalkEngine } from "./engine";
 import { noteMenuTap, notePage, talkPass, watchHuman } from "./human";
@@ -34,7 +36,6 @@ import "./talk.css";
 const COPY = {
   ko: {
     placeholder: "질문을 입력하세요",
-    ask: "질문 보내기",
     talk: "말로 하기",
     hint: "누르고 말해보세요",
     close: "대화창 닫기",
@@ -60,7 +61,6 @@ const COPY = {
   },
   en: {
     placeholder: "Type a question",
-    ask: "Ask",
     talk: "Talk",
     hint: "Tap and talk",
     close: "Close the conversation",
@@ -102,9 +102,6 @@ function CloseIcon() {
 function MicIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" /></svg>;
 }
-function ArrowIcon() {
-  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="M3 12h17m-7-7 7 7-7 7" /></svg>;
-}
 function SpeakerIcon({ off }) {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />{off ? <path d="m16 9.5 5 5m0-5-5 5" /> : <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />}</svg>;
 }
@@ -117,9 +114,161 @@ function mailto(draft, t) {
 
 // 대답 속 "People 페이지", "Projects page" 같은 말을 그 페이지로 가는 링크로. 눌러도 대화는 이어진다.
 const PAGES = { Projects: "/collaborations", People: "/people", Research: "/#research", About: "/#about" };
-function linkify(text) {
-  const parts = text.split(/\b((?:Projects|People|Research|About)(?: 페이지| page))/g);
-  return parts.map((part, i) => (i % 2 ? <Link key={i} href={PAGES[part.split(" ")[0]]}>{part}</Link> : part));
+const PAGE_NAME = /\b(?:Projects|People|Research|About)(?: 페이지| page)/g;
+
+// ---------- 자막 ----------
+// 에이전트의 말을 한 줄씩. 문장(과 줄바꿈)마다 새 줄에서 시작하고, 한 줄에 들어가지 않는 문장은 고르게
+// 나눈다(반쯤 찼으면 쉼표 뒤에서). 줄은 제 글과 단어 자리를 들고 다녀(at = 원문 속 시작), 원문이 늘거나
+// 화면 폭이 바뀌어도 지금 보이는 줄은 그대로다.
+const STEP = 80; // 단어 사이(ms)
+const LEAD = 150; // 앞 줄이 옅어지기 시작한 뒤 새 줄의 첫 단어까지
+const OUT = 400; // 앞 줄이 물러나는 시간
+const hold = (chars) => Math.min(3400, Math.max(1000, chars * 62)); // 소리 없이 읽을 때 한 줄을 두는 시간
+
+let pen; // 글 폭을 재는 캔버스(하나만)
+function measurer({ font, spacing }) {
+  pen ||= document.createElement("canvas").getContext("2d");
+  return (s) => {
+    pen.font = font;
+    if ("letterSpacing" in pen) pen.letterSpacing = spacing;
+    return pen.measureText(s).width;
+  };
+}
+
+function captionLines(text, width, max) {
+  const words = [...text.matchAll(/\S+/g)].map((m) => ({ start: m.index, end: m.index + m[0].length }));
+  const links = [...text.matchAll(PAGE_NAME)].map((m) => ({ start: m.index, end: m.index + m[0].length, href: PAGES[m[0].split(" ")[0]] }));
+  const sentences = [];
+  let run = [];
+  words.forEach((w, i) => {
+    run.push(w);
+    const next = words[i + 1];
+    if (!next || /[.!?。…]["'”’)]*$/.test(text.slice(w.start, w.end)) || text.slice(w.end, next.start).includes("\n")) { sentences.push(run); run = []; }
+  });
+  const span = (ws) => width(text.slice(ws[0].start, ws[ws.length - 1].end));
+  const lines = [];
+  for (const sentence of sentences) {
+    const count = Math.ceil(span(sentence) / max);
+    const target = span(sentence) / count;
+    let line = [];
+    sentence.forEach((w, i) => {
+      if (line.length && span([...line, w]) > max) { lines.push(line); line = []; }
+      line.push(w);
+      const last = i === sentence.length - 1;
+      if (count > 1 && !last && (span(line) >= target * 0.92 || (/[,，、]$/.test(text.slice(w.start, w.end)) && span(line) >= target * 0.55))) { lines.push(line); line = []; }
+    });
+    if (line.length) lines.push(line);
+  }
+  return lines.map((ws) => {
+    const at = ws[0].start;
+    const end = ws[ws.length - 1].end;
+    return {
+      at,
+      text: text.slice(at, end),
+      words: ws.map((w) => ({ start: w.start - at, end: w.end - at })),
+      links: links.filter((l) => l.end > at && l.start < end).map((l) => ({ start: l.start - at, end: l.end - at, href: l.href })),
+    };
+  });
+}
+
+// 한 줄을 그린다. 단어 앞의 빈칸은 그 단어와 함께 떠오르고, 페이지 이름은 단어를 가로질러 한 링크로 묶는다.
+function CaptionLine({ line, on, upto = line.words.length, tail }) {
+  const parts = [];
+  line.words.slice(0, upto).forEach((w, i) => {
+    let a = i ? line.words[i - 1].end : w.start;
+    const marks = line.links.flatMap((l) => [l.start, l.end]).filter((x) => x > a && x < w.end).sort((x, y) => x - y);
+    for (const b of [...marks, w.end]) {
+      const link = line.links.find((l) => a >= l.start && a < l.end);
+      parts.push({ text: line.text.slice(a, b), word: i, href: link?.href });
+      a = b;
+    }
+  });
+  const groups = [];
+  for (const part of parts) {
+    const last = groups[groups.length - 1];
+    if (last && last.href === part.href) last.parts.push(part); else groups.push({ href: part.href, parts: [part] });
+  }
+  const word = (part, k) => <span key={k} className={part.word < on ? "is-on" : undefined}>{part.text}</span>;
+  return (
+    <>
+      {groups.map((g, k) => (g.href ? <Link key={k} href={g.href}>{g.parts.map(word)}</Link> : g.parts.map((part, j) => word(part, `${k}.${j}`))))}
+      {tail && <span className="is-on">…</span>}
+    </>
+  );
+}
+
+// source: { key, text, shown, synced, cut, notice } — 지금 보일 말. 다른 말로 바뀌면 보이던 줄은 물러나고 새 말은
+// 첫 줄부터(이미 다 본 말로 돌아오면 그 마지막 줄을 그대로). 단어는 드러내도 되는 데(shown)까지만 떠오른다.
+// 다음 줄로는 소리가 거기 닿으면 바로, 소리 없이 읽을 때는 이 줄을 읽을 시간이 지나면 넘어간다.
+function Caption({ source }) {
+  const slot = useRef(null);
+  const [metrics, setMetrics] = useState(null);
+  useEffect(() => {
+    const el = slot.current;
+    const read = () => {
+      const s = getComputedStyle(el);
+      setMetrics({ width: el.clientWidth, font: `${s.fontWeight} ${s.fontSize} ${s.fontFamily}`, spacing: s.letterSpacing });
+    };
+    const resize = new ResizeObserver(read);
+    resize.observe(el);
+    document.fonts?.ready.then(read);
+    return () => resize.disconnect();
+  }, []);
+
+  const key = source?.key ?? null;
+  const text = source?.text || "";
+  const shown = source?.shown ?? 0;
+  const synced = !!source?.synced;
+  const lines = useMemo(() => (metrics?.width && text ? captionLines(text, measurer(metrics), metrics.width * 0.98) : []), [text, metrics]);
+
+  const [play, setPlay] = useState({ key: null, index: 0, line: null, on: 0, full: 0, seen: {} });
+  const [out, setOut] = useState(null);
+  if (play.key !== key) {
+    const seen = play.key == null ? play.seen : { ...play.seen, [play.key]: play.index };
+    const back = seen[key];
+    if (play.line && play.on) setOut({ id: `${play.key}:${play.index}`, line: play.line, notice: play.notice });
+    const index = back ?? 0;
+    const line = lines[index] || null;
+    setPlay({ key, index, line, on: back != null && line ? line.words.length : 0, full: back != null ? 1 : 0, notice: source?.notice, seen });
+  }
+
+  useEffect(() => {
+    if (!out) return;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timer = setTimeout(() => setOut(null), reduce ? 0 : OUT + 60);
+    return () => clearTimeout(timer);
+  }, [out]);
+
+  useEffect(() => {
+    if (play.key !== key) return;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const later = (ms, fn) => { const timer = setTimeout(fn, ms); return () => clearTimeout(timer); };
+    const line = play.line;
+    if (!line) return lines[play.index] ? later(0, () => setPlay((p) => ({ ...p, line: lines[p.index], on: 0, full: 0 }))) : undefined;
+    const avail = line.words.filter((w) => line.at + w.start < shown).length;
+    if (play.on < avail) {
+      const on = reduce ? avail : play.on + 1;
+      return later(reduce ? 0 : play.on ? STEP : LEAD, () => setPlay((p) => ({ ...p, on, full: on === line.words.length ? performance.now() : 0 })));
+    }
+    if (play.on < line.words.length) return; // 소리가 거기까지 오기를 기다린다
+    const next = lines[play.index + 1];
+    if (!next || next.at >= shown) return; // 다음 줄이 아직 없다
+    const wait = synced ? 0 : hold(line.text.length) - (performance.now() - play.full);
+    return later(Math.max(0, wait), () => {
+      setOut({ id: `${play.key}:${play.index}`, line, notice: play.notice });
+      setPlay((p) => ({ ...p, index: p.index + 1, line: next, on: 0, full: 0 }));
+    });
+  }, [play, key, lines, shown, synced]);
+
+  const line = play.key === key ? play.line : null;
+  const avail = line ? line.words.filter((w) => line.at + w.start < shown).length : 0;
+  const cut = source?.cut && line && play.on >= avail;
+  return (
+    <div className="talk-cap" ref={slot}>
+      {out && <p key={out.id} className={`is-out${out.notice ? " is-notice" : ""}`} aria-hidden="true"><CaptionLine line={out.line} on={Infinity} /></p>}
+      {line && <p key={`${key}:${play.index}`} className={play.notice ? "is-notice" : undefined}><CaptionLine line={line} on={play.on} upto={cut ? avail : undefined} tail={cut} /></p>}
+    </div>
+  );
 }
 
 // 팀에 보낼 메시지의 미리보기. 고치는 칸이 없다 — 고치는 것은 말로 하고, 보내는 것은 "네"라고 답하거나
@@ -141,6 +290,8 @@ export default function TalkAgent({ lang }) {
   const inputRef = useRef(null);
   const nowRef = useRef(null);
   const titleRef = useRef(null);
+  const talkRef = useRef(null);
+  const [room, setRoom] = useState("none"); // 블롭 오른쪽에 대화창이 들어갈 자리: wide(한 줄) · narrow(두 줄) · none
   const [awake, setAwake] = useState(false); // 마침표가 블롭이 되었는가(한 번 깨면 그대로)
   const [open, setOpen] = useState(false); // 대화창(캡슐)이 떠 있는가
   const dismissed = useRef(false); // 방문자가 닫았다 — 다시 푸터에 와도 저절로 뜨지 않는다(제목을 누르면 뜬다)
@@ -199,6 +350,33 @@ export default function TalkAgent({ lang }) {
     return () => observer.disconnect();
   }, []);
 
+  // 블롭 오른쪽의 자리를 잰다: 마침표의 왼쪽 + 블롭(0.70em, 구른 뒤 0.08em 비켜 섬) + 틈. 제목이 커지는
+  // 동안(scale)에도 맞도록 배율을 나눈다. 대화창은 제목 높이의 가운데에 맞춰 선다(--dock-x · --dock-y · --dock-w).
+  useEffect(() => {
+    const talk = talkRef.current;
+    const title = titleRef.current;
+    if (!talk || !title) return;
+    const measure = () => {
+      const dot = title.querySelector(".talk-dot");
+      if (!dot || !title.offsetWidth) return;
+      const box = title.getBoundingClientRect();
+      const scale = box.width / title.offsetWidth || 1;
+      const size = parseFloat(getComputedStyle(title).fontSize);
+      const x = (dot.getBoundingClientRect().left - box.left) / scale + 0.78 * size + Math.max(20, 0.3 * size);
+      const free = talk.clientWidth - x;
+      talk.style.setProperty("--dock-x", `${Math.round(x)}px`);
+      talk.style.setProperty("--dock-y", `${Math.round(title.offsetTop + title.offsetHeight / 2)}px`);
+      talk.style.setProperty("--dock-w", `${Math.round(Math.min(640, free))}px`);
+      setRoom(free >= 600 ? "wide" : free >= 440 ? "narrow" : "none");
+    };
+    measure();
+    const resize = new ResizeObserver(measure);
+    resize.observe(talk);
+    document.fonts?.ready.then(measure);
+    title.addEventListener("transitionend", measure);
+    return () => { resize.disconnect(); title.removeEventListener("transitionend", measure); };
+  }, []);
+
   // 제목이 다 보이면 잠깐 뒤 저절로 깨어나 대화창을 띄우고 글로 인사한다. 대화를 시작하기 전에 푸터를
   // 떠나면 창은 가라앉는다. 관찰은 한 번 붙이고, 그때그때의 상태는 ref 로 읽는다.
   const arrive = useRef(null);
@@ -207,7 +385,7 @@ export default function TalkAgent({ lang }) {
     if (dismissed.current) return;
     setAwake(true);
     setOpen(true);
-    engine.current?.greet({ silent: true, instant: matchMedia("(prefers-reduced-motion: reduce)").matches });
+    engine.current?.greet({ silent: true });
   };
   leave.current = () => {
     if (!engine.current?.voice && !typingRef.current && !turns.some((x) => x.role === "user")) setOpen(false);
@@ -362,9 +540,17 @@ export default function TalkAgent({ lang }) {
   const said = lastUser >= 0 ? turns[lastUser] : null;
   const answer = lastUser >= 0 ? turns.slice(lastUser + 1) : turns.slice(-1);
   const invite = !voice && !typing && !said && !ended;
+  // 자막에 보일 말: 대화 줄의 알림(오래 조용해 마이크를 껐다 등)이 있으면 그것, 아니면 지금 대답.
+  const reply = [...answer].reverse().find((x) => x.role === "assistant");
+  const extra = notice && !TYPE_NOTICES.includes(notice) ? notice : null;
+  const caption = extra
+    ? { key: `notice:${extra}`, text: t.notice[extra], shown: Infinity, notice: true }
+    : reply && { key: reply.id, text: reply.text, shown: reply.shown, synced: reply.synced, cut: reply.interrupted, notice: reply.notice };
+  const spoken = [...turns].reverse().find((x) => x.role === "assistant");
+  const heard = spoken ? spoken.text.slice(0, spoken.shown) : ""; // 끊긴 대답은 들린 데까지만
 
   return (
-    <div className="talk">
+    <div className="talk" ref={talkRef}>
       <button type="button" className="footer-talk talk-title" ref={titleRef} data-awake={(awake && !ended) || undefined} aria-label="Let’s talk" onClick={() => (typing ? (setOpen(true), inputRef.current?.focus({ preventScroll: true })) : begin())} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}>
         <span className="talk-word" aria-hidden="true">{[...TITLE].map((ch, i) => <span key={i} style={{ "--i": i }}>{ch}</span>)}</span>
         <span className="talk-dot" data-phase={phase} aria-hidden="true">
@@ -372,19 +558,14 @@ export default function TalkAgent({ lang }) {
         </span>
       </button>
 
-      {/* 대화창 — 화면 아래 가운데에 뜨는 캡슐. 테두리의 빛(talk-halo)이 듣고 · 생각하고 · 말하는 것을 보인다. */}
-      <section className="talk-float" data-open={open || undefined} data-phase={phase} data-voice={voice || undefined} inert={!open} aria-label={t.region} onKeyDown={(e) => { if (e.key === "Escape") { if (phase === "speaking") engine.current?.interrupt(); else close(); } }}>
+      {/* 대화창 — 블롭 오른쪽(dot)이나 화면 아래 가운데(float)에 뜨는 캡슐. 테두리의 빛(talk-halo)이
+          듣고 · 생각하고 · 말하는 것을 보인다. */}
+      <section className="talk-float" data-dock={room !== "none" && inView ? "dot" : "float"} data-room={room} data-open={open || undefined} data-phase={phase} data-voice={voice || undefined} inert={!open} aria-label={t.region} onKeyDown={(e) => { if (e.key === "Escape") { if (phase === "speaking") engine.current?.interrupt(); else close(); } }}>
         <i className="talk-halo" aria-hidden="true" />
         <div className={`talk-capsule${answer.some((x) => x.role === "draft") ? " is-tall" : ""}`}>
           <div className="talk-now" ref={nowRef} onScroll={(e) => { const n = e.currentTarget; pinned.current = n.scrollHeight - n.scrollTop - n.clientHeight < 24; markOver(n); }}>
-            {answer.map((turn) => turn.role === "draft" ? (
-              <Preview key={turn.id} draft={turn.draft} status={turn.status} t={t} />
-            ) : (
-              <p key={turn.id} className={`talk-line is-${turn.role}${turn.interrupted ? " is-cut" : ""}${turn.notice ? " is-notice" : ""}`}>
-                {turn.role === "assistant" ? linkify(turn.text.slice(0, turn.shown)) : turn.text}
-              </p>
-            ))}
-            {notice && !TYPE_NOTICES.includes(notice) && <p className="talk-line is-notice">{t.notice[notice]}</p>}
+            {answer.filter((x) => x.role === "draft").map((turn) => <Preview key={turn.id} draft={turn.draft} status={turn.status} t={t} />)}
+            <Caption source={caption} />
           </div>
 
           {typing ? (
@@ -406,10 +587,9 @@ export default function TalkAgent({ lang }) {
                 autoComplete="off"
                 onChange={(e) => { if (e.target.value.length > text.length) cueRef.current?.("key"); setText(e.target.value); }}
               />
-              <button type="submit" className="talk-ask" aria-label={t.ask} disabled={!text.trim()}><ArrowIcon /></button>
             </form>
           ) : (
-            said && <p className="talk-you">{said.text}</p>
+            said && <p key={said.id} className="talk-you">{said.text}</p>
           )}
 
           <div className="talk-tools">
@@ -441,10 +621,12 @@ export default function TalkAgent({ lang }) {
           </div>
 
         </div>
+        {/* 테두리를 따라 도는 크롬 금빛 반사 — 번짐(바깥 요소의 blur)과 날카로운 선(::after)이 함께 돈다. */}
+        <i className="talk-glint" aria-hidden="true"><i /></i>
       </section>
 
       {/* 화면 낭독기에는 대답을 다 만든 뒤 한 번에 읽힌다(글자가 드러나는 동안 계속 읽히지 않게). */}
-      <p className="sr-only" aria-live="polite">{phase === "idle" || phase === "listening" ? [...turns].reverse().find((x) => x.role === "assistant")?.text || "" : ""}</p>
+      <p className="sr-only" aria-live="polite">{phase === "idle" || phase === "listening" ? heard : ""}</p>
     </div>
   );
 }

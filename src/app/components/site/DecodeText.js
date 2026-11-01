@@ -42,8 +42,9 @@ const LONG_MS = 1900;      // 문단 전체가 풀리는 목표 시간
 const SHORT_MS = 1000;
 const easeOut = (t) => 1 - Math.pow(1 - t, 3);
 
-// "\n"은 <br />로. 원문에 줄바꿈이 있던 문장(히어로·섹션 제목)을 그대로 쓴다.
-const withBreaks = (s) => String(s).split("\n").map((line, i) => <span key={i}>{i > 0 && <br />}{line}</span>);
+// "\n"은 <br />로. 원문에 줄바꿈이 있던 문장(히어로·섹션 제목)을 그대로 쓴다. 앞에 빈칸을 하나 둬서, 좁은 화면이
+// 줄바꿈을 숨기면(display:none) 두 줄이 빈칸으로 이어진다. 줄바꿈이 보일 때 줄 끝 빈칸은 보이지 않는다.
+const withBreaks = (s) => String(s).split("\n").map((line, i) => <span key={i}>{i > 0 && <>{" "}<br /></>}{line}</span>);
 
 export default function DecodeText({ text, onView = false, className }) {
   const [shown, setShown] = useState({ done: text, tail: "" });

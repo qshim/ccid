@@ -1,12 +1,12 @@
 /* Let's talk 에이전트 (TalkAgent.js).
    "Let's talk." 의 마침표가 에이전트로 깨어나 블롭이 되고, 대화는 화면 아래 가운데에 뜨는 캡슐에서 한다.
-   캡슐에는 지금 주고받는 말(에이전트 한마디 · 방문자 한마디)과 말 거는 도구, 알림만 있고 높이는 정해져 있다. */
+   캡슐에는 지금 주고받는 말(에이전트의 자막 한 줄 · 방문자 한마디)과 말 거는 도구만 있고, 높이는 그 두 줄만큼이다. */
 
 .ccid-site{--talk-muted:#5a4370}
 
 /* ---------- 제목과 마침표 ---------- */
 
-.ccid-site .talk{display:flex;flex-direction:column;align-items:flex-start}
+.ccid-site .talk{position:relative;display:flex;flex-direction:column;align-items:flex-start}
 
 /* "Let's talk" 는 절반 크기로 있다가, 섹션이 화면에 들어오면 왼쪽을 축으로 제 크기까지 자란다. */
 .ccid-site .talk>.talk-title{display:block;background:none;border:0;padding:0;color:inherit;text-align:left;cursor:pointer;transform:scale(.5);transform-origin:left center;transition:transform 1s var(--ease-out)}
@@ -51,18 +51,53 @@
 
 /* ---------- 대화창: 떠 있는 캡슐 ---------- */
 
-/* 화면 아래 가운데, 허공에 뜬 유리. 높이가 정해져 있고(말이 길면 안에서 흐른다) 양끝은 완전히 둥글다.
+/* 화면 아래 가운데, 허공에 뜬 유리. 높이가 정해져 있고(에이전트의 말은 한 줄씩 바뀐다) 양끝은 완전히 둥글다.
    바탕은 거의 투명해 뒤의 페이지가 흐리게 비친다(밝기를 살짝 올려 어두운 그림 위에서도 글이 읽힌다).
    그림자는 옅게, 테두리는 위쪽 빛 한 줄과 블롭 빛깔(보라 · 라일락 · 페리윙클 · 청록)이 천천히 도는 선. */
 @property --talk-spin{syntax:"<angle>";inherits:false;initial-value:0deg}
-.ccid-site .talk-float{--cap-h:112px;position:fixed;z-index:60;left:50%;bottom:max(20px,calc(env(safe-area-inset-bottom) + 12px));width:min(700px,calc(100vw - 32px));opacity:0;visibility:hidden;transform:translate(-50%,22px) scale(.97);transition:opacity .22s ease,transform .26s var(--ease-out),visibility 0s linear .26s}
+.ccid-site .talk-float{--cap-h:92px;position:fixed;z-index:60;left:50%;bottom:max(20px,calc(env(safe-area-inset-bottom) + 12px));width:min(700px,calc(100vw - 32px));opacity:0;visibility:hidden;transform:translate(-50%,22px) scale(.97);transition:opacity .22s ease,transform .26s var(--ease-out),visibility 0s linear .26s}
 .ccid-site .talk-float[data-open]{opacity:1;visibility:visible;transform:translate(-50%,0);transition:opacity .45s ease,transform .6s var(--ease-drawer),visibility 0s}
-/* 캡슐이 떠 있는 동안 푸터 끝에 그만큼 자리를 더 두어, 맨 아래 연락처가 캡슐 위로 올라와 읽힌다. */
-.ccid-site .site-footer:has(.talk-float[data-open]){padding-bottom:calc(var(--cap-h, 112px) + 52px)}
+/* 아래 가운데에 떠 있는 동안 푸터 끝에 그만큼 자리를 더 두어, 맨 아래 연락처가 캡슐 위로 올라와 읽힌다. */
+.ccid-site .site-footer:has(.talk-float[data-open][data-dock="float"]){padding-bottom:144px}
 
-.ccid-site .talk-capsule{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"now tools" "you tools";align-items:center;align-content:center;column-gap:18px;height:var(--cap-h);padding:14px 16px 14px 38px;border-radius:calc(var(--cap-h) / 2);background:linear-gradient(180deg,rgba(255,255,255,.46),rgba(255,255,255,.22));-webkit-backdrop-filter:blur(28px) saturate(1.8) brightness(1.06);backdrop-filter:blur(28px) saturate(1.8) brightness(1.06);box-shadow:0 20px 48px -22px rgba(56,32,96,.26),inset 0 1px 0 rgba(255,255,255,.85),inset 0 -1px 0 rgba(255,255,255,.25);transition:height .45s var(--ease-drawer),border-radius .45s var(--ease-drawer)}
+/* 블롭 오른쪽 — 제목 높이의 가운데에 맞춰 서고, 블롭에서 나오듯 왼쪽을 축으로 오른쪽으로 펴진다.
+   자리가 넉넉하면 한 줄(말 · 도구), 모자라면 두 줄(말 / 방문자 · 도구). 두 줄일 때도 양끝은 완전히 둥글다. */
+.ccid-site .talk-float[data-dock="dot"]{position:absolute;left:var(--dock-x);top:var(--dock-y);bottom:auto;width:var(--dock-w);transform:translate(-16px,-50%) scale(.96);transform-origin:left center}
+.ccid-site .talk-float[data-dock="dot"][data-open]{transform:translate(0,-50%)}
+.ccid-site .talk-float[data-dock="dot"][data-open]{animation:talk-emerge .6s var(--ease-drawer)}
+.ccid-site .talk-float[data-dock="float"][data-open]{animation:talk-rise .6s var(--ease-drawer)}
+@keyframes talk-emerge{from{opacity:0;transform:translate(-16px,-50%) scale(.96)}}
+@keyframes talk-rise{from{opacity:0;transform:translate(-50%,22px) scale(.97)}}
+/* 두 줄 캡슐 — 블롭 옆 자리가 좁을 때와 좁은 화면(아래 미디어 쿼리). 위에는 말(에이전트의 자막 한 줄, 그 아래
+   방문자의 한마디나 입력 줄이 캡슐 폭 그대로), 아래에는 도구 한 줄: 왼쪽에 소리 · 글로 쓰기, 오른쪽에 안내 · 마이크 ·
+   닫기. 안내는 마이크 바로 왼쪽에 선다. 말 줄은 위아래 남는 자리의 가운데에 놓인다.
+   블롭 옆에서는 제목보다 높아 아래 구분선에 가까우므로, 가운데를 조금 위로 올린다. */
+.ccid-site .talk-float[data-dock="dot"][data-room="narrow"]{--cap-h:136px;top:calc(var(--dock-y) - 10px)}
+.ccid-site .talk-float[data-dock="dot"][data-room="narrow"] .talk-capsule{grid-template-columns:minmax(0,1fr);grid-template-rows:1fr auto auto 1fr auto;grid-template-areas:"." "now" "you" "." "tools";padding:14px 24px 12px 36px}
+.ccid-site .talk-float[data-dock="dot"][data-room="narrow"] .talk-capsule .talk-now{grid-area:now;align-self:auto}
+.ccid-site .talk-float[data-dock="dot"][data-room="narrow"] .talk-tools,.ccid-site .talk-float[data-dock="dot"][data-room="narrow"] .talk-tools:has(.talk-mic-hint:not(:empty)){transform:none;margin:6px 0 0 -9px}
+.ccid-site .talk-float[data-dock="dot"][data-room="narrow"] .talk-mic-wrap{margin-left:auto;flex-direction:row-reverse;align-items:center;gap:10px}
+.ccid-site .talk-float[data-dock="dot"][data-room="narrow"] .talk-mic-hint{position:static;transform:none;font-size:12px}
+.ccid-site .talk-float[data-dock="dot"][data-room="narrow"] .talk-mic{width:40px;height:40px}
+.ccid-site .talk-float[data-dock="dot"][data-room="narrow"] .talk-icon:not(.talk-close){width:36px;height:36px}
+
+.ccid-site .talk-capsule{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"now tools" "you .";align-items:center;align-content:center;column-gap:18px;height:var(--cap-h);padding:14px 16px 14px 38px;border-radius:calc(var(--cap-h) / 2);background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.16));-webkit-backdrop-filter:blur(28px) saturate(1.8) brightness(1.06);backdrop-filter:blur(28px) saturate(1.8) brightness(1.06);box-shadow:0 20px 48px -22px rgba(56,32,96,.26),inset 0 1px 0 rgba(255,255,255,.85),inset 0 -1px 0 rgba(255,255,255,.25);transition:height .45s var(--ease-drawer),border-radius .45s var(--ease-drawer)}
 .ccid-site .talk-capsule::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:conic-gradient(from var(--talk-spin),#7050a7,#b79be0,#8ea2f2,#4fb8b0,#c39ad8,#7050a7);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);opacity:.45;pointer-events:none;animation:talk-spin 9s linear infinite;transition:opacity .4s ease,padding .2s ease}
 @keyframes talk-spin{to{--talk-spin:360deg}}
+
+/* 화이트 골드 반사: 지금의 빛깔 테두리 위로, 좁은 금속 띠(샴페인 → 흰 반짝임 → 샴페인)가 테두리를 따라 돈다.
+   띠의 양쪽 가장자리에는 다이아몬드처럼 빛이 갈라진 무지개 테(보라 · 하늘 / 분홍 · 연노랑)가 살짝 선다.
+   반대편에는 옅은 두 번째 반사. 같은 띠를 바깥에서 흐리게 한 번 더 그려(.talk-glint) 빛이 번진다.
+   테두리처럼 처음엔 없다가 0.5초 뒤 두꺼워질 때 함께 켜진다. */
+@property --talk-glint{syntax:"<angle>";inherits:false;initial-value:-70deg}
+.ccid-site .talk-capsule::after,.ccid-site .talk-glint>i{--talk-chrome:conic-gradient(from var(--talk-glint),transparent 0deg,rgba(176,156,255,0) 3deg,rgba(176,156,255,.55) 8deg,rgba(132,222,255,.7) 12deg,#ddd0b0 15.5deg,#f3ecda 18deg,#fffdf7 21deg,#ffffff 22.5deg,#f5eedd 25.5deg,#dcd0b2 28deg,rgba(255,206,236,.75) 31deg,rgba(255,238,170,.6) 34.5deg,transparent 41deg,transparent 176deg,rgba(186,226,255,.45) 184deg,rgba(255,252,242,.8) 190deg,rgba(255,214,238,.45) 196deg,transparent 204deg)}
+.ccid-site .talk-capsule::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:var(--talk-chrome);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);opacity:0;pointer-events:none;animation:talk-glint 6.5s cubic-bezier(.45,.05,.55,.95) infinite;transition:opacity .2s ease,padding .2s ease}
+.ccid-site .talk-float[data-open] .talk-capsule::after{padding:2.5px;opacity:1;transition:opacity .6s ease .5s,padding .6s var(--ease-out) .5s}
+.ccid-site .talk-glint{position:absolute;inset:-3px;border-radius:calc(var(--cap-h) / 2 + 3px);filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .2s ease}
+.ccid-site .talk-glint>i{position:absolute;inset:0;border-radius:inherit;padding:6px;background:var(--talk-chrome);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);animation:talk-glint 6.5s cubic-bezier(.45,.05,.55,.95) infinite}
+.ccid-site .talk-float[data-open] .talk-glint{opacity:.9;transition:opacity .8s ease .5s}
+.ccid-site .talk-float:has(.talk-capsule.is-tall) .talk-glint{border-radius:37px}
+@keyframes talk-glint{to{--talk-glint:290deg}}
 
 /* 캡슐이 뜨면 가는 테두리가 먼저 보이고, 0.5초 뒤 테두리가 두꺼워지며(1 → 2.5px) 밖으로 빛이 번진다.
    그 뒤 듣고 말하는 동안은 소리 크기(--level)만큼 더 밝아지고, 생각하는 동안 빨리 돈다. 닫힐 때는 바로 꺼진다. */
@@ -76,61 +111,69 @@
 .ccid-site .talk-float[data-open][data-phase="thinking"] .talk-capsule::before{animation-duration:2.4s;opacity:.95}
 .ccid-site .talk-float[data-open][data-voice] .talk-capsule::before{opacity:.95}
 
-/* 에이전트의 한마디 — 두 줄 자리. 길면 안에서 흐르고, 넘친 위쪽은 옅게 사라진다(지금 하는 말이 늘 보인다). */
-.ccid-site .talk-now{grid-area:now;align-self:end;display:flex;flex-direction:column;gap:6px;max-height:2.9em;font-size:18px;line-height:1.45;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+/* 에이전트의 한마디 — 자막처럼 한 줄(TalkAgent 의 Caption 이 문장과 폭에 맞춰 나눈다). 방문자의 한마디가
+   아직 없으면 캡슐 높이의 가운데에 선다. 미리보기가 있을 때(is-tall)만 이 칸이 키를 늘려 안에서 흐른다. */
+.ccid-site .talk-now{grid-area:now;align-self:center;display:flex;flex-direction:column;gap:8px;min-width:0;font-size:16px;line-height:1.45}
+.ccid-site .talk-capsule:not(:has(.talk-you,.talk-input)) .talk-now{grid-row:1 / -1;align-self:center}
+.ccid-site .talk-capsule.is-tall .talk-now{max-height:206px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
 .ccid-site .talk-now[data-over]{-webkit-mask:linear-gradient(transparent,#000 .7em);mask:linear-gradient(transparent,#000 .7em)}
 .ccid-site .talk-now::-webkit-scrollbar{display:none}
-.ccid-site .talk-line{margin:0;white-space:pre-line;word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty;transition:opacity .4s ease,transform .5s var(--ease-out)}
-@starting-style{.ccid-site .talk-line{opacity:0;transform:translateY(6px)}}
-.ccid-site .talk-line.is-assistant{font-size:inherit;letter-spacing:-.022em;font-weight:500;color:var(--ink)}
-.ccid-site .talk-line.is-cut::after{content:"…";color:var(--talk-muted)}
-.ccid-site .talk-line.is-notice{font-size:15px;line-height:1.5;color:var(--talk-muted)}
-.ccid-site .talk-line.is-assistant:empty{display:none}
 
-/* 대답 속 페이지 이름 링크 — 글자는 그대로, 보라 밑줄만. */
-.ccid-site .talk-line a{color:inherit;text-decoration:underline;text-decoration-color:var(--purple);text-decoration-thickness:1px;text-underline-offset:.2em;transition:color .2s}
-.ccid-site .talk-line a:hover{color:var(--purple)}
+/* 단어마다 흐림 속에서 살짝 떠오르고(.5초), 다음 줄이 오면 앞 줄은 한꺼번에 위로 옅어진다(.4초). 새 줄은 앞 줄이
+   물러나기 시작하고 조금 뒤에 온다 — 잠깐 겹치는 동안은 흐림이 둘을 하나의 바뀜처럼 잇는다. */
+.ccid-site .talk-cap{position:relative;height:1.45em;font-weight:500;letter-spacing:-.022em;color:var(--ink);white-space:pre}
+.ccid-site .talk-cap>p{position:absolute;left:0;top:0;margin:0;transition:opacity .4s ease,transform .4s cubic-bezier(.45,0,.55,1),filter .4s ease}
+@starting-style{.ccid-site .talk-cap>p{opacity:0}}
+.ccid-site .talk-cap>p.is-notice{color:var(--talk-muted)}
+.ccid-site .talk-cap>p.is-out{opacity:0;transform:translateY(-.35em);filter:blur(3px)}
+.ccid-site .talk-cap span{display:inline-block;opacity:0;filter:blur(5px);transform:translateY(.2em);transition:opacity .5s ease,filter .5s ease,transform .6s var(--ease-out)}
+.ccid-site .talk-cap span.is-on{opacity:1;filter:none;transform:none}
+
+/* 대답 속 페이지 이름 링크 — 글자는 그대로, 보라 밑줄만(단어마다 떠오르므로 밑줄은 단어에 긋는다). */
+.ccid-site .talk-cap a{color:inherit;text-decoration:none;transition:color .2s}
+.ccid-site .talk-cap a>span{text-decoration:underline;text-decoration-color:var(--purple);text-decoration-thickness:1px;text-underline-offset:.2em}
+.ccid-site .talk-cap a:hover{color:var(--purple)}
 
 /* 방문자의 한마디. 한 줄, 넘치면 말줄임. 아직 말하지 않았으면 이 줄은 없다. 글로 쓸 때는 이 자리가 입력 줄이 된다. */
-.ccid-site .talk-you{grid-area:you;margin:3px 0 0;font-size:14.5px;line-height:1.5;font-weight:450;color:var(--talk-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ccid-site .talk-input{grid-area:you;display:flex;align-items:center;gap:4px;margin:1px 0 0;border-bottom:1px solid rgba(36,34,38,.2);transition:border-color .2s}
+.ccid-site .talk-you{grid-area:you;margin:3px 0 0;font-size:14px;line-height:1.5;font-weight:450;color:var(--talk-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .4s ease}
+@starting-style{.ccid-site .talk-you{opacity:0}}
+.ccid-site .talk-input{grid-area:you;display:flex;align-items:center;margin:1px 0 0;border-bottom:1px solid rgba(36,34,38,.2);transition:border-color .2s}
 .ccid-site .talk-input:focus-within{border-bottom-color:var(--purple)}
 .ccid-site .talk-input input{flex:1;min-width:0;font:inherit;font-size:16px;line-height:1.4;padding:3px 0 4px;background:transparent;border:0;color:var(--ink);outline:none}
 .ccid-site .talk-input input::placeholder{color:#7a6c90}
 /* 말로 할 수 없을 때의 알림이 입력 칸 안에 잠깐 보였다가, 옅어지며 "질문을 입력하세요"와 엇갈려 바뀐다. */
 .ccid-site .talk-input{position:relative}
-.ccid-site .talk-input-note{position:absolute;left:0;right:36px;top:0;bottom:1px;pointer-events:none;font-size:16px;line-height:1.4}
+.ccid-site .talk-input-note{position:absolute;left:0;right:0;top:0;bottom:1px;pointer-events:none;font-size:16px;line-height:1.4}
 .ccid-site .talk-input-note>span{position:absolute;left:0;right:0;bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .6s ease}
 .ccid-site .talk-input-note>span:first-child{color:var(--purple)}
 .ccid-site .talk-input-note>span:last-child{color:#7a6c90;opacity:0}
 .ccid-site .talk-input-note.is-out>span:first-child{opacity:0}
 .ccid-site .talk-input-note.is-out>span:last-child{opacity:1}
 .ccid-site .talk-input input:disabled{cursor:not-allowed}
-.ccid-site .talk-ask{display:grid;place-items:center;width:32px;height:32px;flex:none;padding:0;background:none;border:0;color:var(--ink);cursor:pointer;transition:opacity .2s,transform .16s var(--ease-out)}
-.ccid-site .talk-ask svg{width:19px;height:19px}
-.ccid-site .talk-ask:disabled{opacity:.3;cursor:default}
-.ccid-site .talk-ask:not(:disabled):active{transform:translateX(2px)}
 
 
-/* 오른쪽 도구: 소리 · 글로 쓰기 · 마이크(가장 큰 원, 말이 먼저) · 닫기. */
+/* 오른쪽 도구: 소리 · 글로 쓰기 · 마이크(가장 큰 원, 짙은 보라 — 말이 먼저) · 닫기. */
 .ccid-site .talk-tools{grid-area:tools;display:flex;align-items:center;gap:4px}
-.ccid-site .talk-tools:has(.talk-mic-hint:not(:empty)){transform:translateY(-8px)}
-.ccid-site .talk-icon{display:grid;place-items:center;width:40px;height:40px;flex:none;padding:0;background:none;border:0;border-radius:50%;color:var(--talk-muted);cursor:pointer;transition:background .2s,color .2s,transform .16s var(--ease-out)}
-.ccid-site .talk-icon svg{width:20px;height:20px}
+/* 도구는 에이전트의 줄과 한 줄로 선다(그 아래 방문자의 한마디 옆으로 마이크 안내가 내려온다). */
+.ccid-site .talk-icon{display:grid;place-items:center;width:36px;height:36px;flex:none;padding:0;background:none;border:0;border-radius:50%;color:var(--talk-muted);cursor:pointer;transition:background .2s,color .2s,transform .16s var(--ease-out)}
+.ccid-site .talk-icon svg{width:18px;height:18px}
 .ccid-site .talk-icon:hover{background:rgba(112,80,167,.1);color:var(--ink)}
 .ccid-site .talk-icon:active{transform:scale(.94)}
 .ccid-site .talk-icon[aria-pressed="true"]{color:var(--purple)}
 .ccid-site .talk-icon:disabled{opacity:.4;cursor:default}
-.ccid-site .talk-close{width:34px;height:34px;margin-left:2px}
-.ccid-site .talk-close svg{width:17px;height:17px}
-.ccid-site .talk-mic-wrap{position:relative;display:flex;flex:none;margin:0 2px 0 6px}
-.ccid-site .talk-mic-hint{position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%);font-size:11px;line-height:1.3;letter-spacing:-.01em;color:var(--talk-muted);white-space:nowrap;pointer-events:none;transition:opacity .3s ease}
+.ccid-site .talk-close{width:32px;height:32px;margin-left:2px}
+.ccid-site .talk-close svg{width:15px;height:15px}
+.ccid-site .talk-mic-wrap{position:relative;display:flex;flex:none;margin:0 4px 0 6px}
+.ccid-site .talk-mic-hint{position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);font-size:11px;line-height:1.3;letter-spacing:-.01em;color:var(--talk-muted);white-space:nowrap;pointer-events:none;transition:opacity .3s ease}
 @starting-style{.ccid-site .talk-mic-hint{opacity:0}}
-.ccid-site .talk-mic{position:relative;display:grid;place-items:center;width:56px;height:56px;flex:none;margin:0;padding:0;border:0;border-radius:50%;background:var(--ink);color:var(--paper);cursor:pointer;transition:background .25s,transform .16s var(--ease-out),box-shadow .3s}
-.ccid-site .talk-mic svg{width:23px;height:23px}
-.ccid-site .talk-mic:hover{background:var(--purple)}
+/* 마이크 — 회색이 도는 보라에 위에서 빛이 비치는 금속 결(위 밝게 · 아래 짙게, 위 가장자리에 가는 빛줄). 올리거나
+   듣는 동안에는 그 위로 cciD 보라가 옅게 덮인다(그라디언트끼리는 바로 바뀌므로 덮개의 투명도로 넘긴다). */
+.ccid-site .talk-mic{position:relative;display:grid;place-items:center;width:38px;height:38px;flex:none;margin:0;padding:0;border:0;border-radius:50%;background:linear-gradient(160deg,#8d84a3 0%,#6c6283 46%,#574d6e 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -1px 1px rgba(36,26,58,.22),0 2px 6px -2px rgba(56,40,86,.35);color:var(--paper);cursor:pointer;transition:transform .16s var(--ease-out),box-shadow .3s}
+.ccid-site .talk-mic::before{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(160deg,#8a6cc0,var(--purple) 55%,#5f4392);opacity:0;transition:opacity .25s ease}
+.ccid-site .talk-mic svg{position:relative;width:17px;height:17px}
+.ccid-site .talk-mic:hover::before,.ccid-site .talk-mic[aria-pressed="true"]::before{opacity:1}
 .ccid-site .talk-mic:active{transform:scale(.95)}
-.ccid-site .talk-mic[aria-pressed="true"]{background:var(--purple);box-shadow:0 0 0 calc(3px + var(--level, 0) * 9px) rgba(112,80,167,.22)}
+.ccid-site .talk-mic[aria-pressed="true"]{box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 0 calc(3px + var(--level, 0) * 9px) rgba(112,80,167,.22)}
 .ccid-site .talk-mic:disabled{opacity:.55;cursor:progress}
 /* 아직 말을 걸기 전 — 마이크 둘레에 잔물결이 퍼져 누를 곳을 알린다. */
 .ccid-site .talk-mic.is-invite::after{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--purple);opacity:0;animation:talk-invite 2.4s var(--ease-out) infinite}
@@ -157,20 +200,24 @@
 .ccid-site .talk-yes:active{transform:scale(.97)}
 @starting-style{.ccid-site .talk-yes{opacity:0;transform:translateY(6px)}}
 
-.ccid-site .talk-mic:focus-visible,.ccid-site .talk-ask:focus-visible,.ccid-site .talk-icon:focus-visible,.ccid-site .talk-yes:focus-visible,.ccid-site .talk-title:focus-visible,.ccid-site .talk-line a:focus-visible,.ccid-site .talk-mail:focus-visible{outline:2px solid var(--purple);outline-offset:3px}
+.ccid-site .talk-mic:focus-visible,.ccid-site .talk-icon:focus-visible,.ccid-site .talk-yes:focus-visible,.ccid-site .talk-title:focus-visible,.ccid-site .talk-cap a:focus-visible,.ccid-site .talk-mail:focus-visible{outline:2px solid var(--purple);outline-offset:3px}
 
-/* 좁은 화면 — 글이 들어갈 자리를 위해 도구를 둘째 줄 오른쪽으로 내리고, 모서리는 덜 둥글게(28px). */
+/* 좁은 화면 — 위의 두 줄 캡슐과 같은 짜임(말 위 · 도구 한 줄 아래), 모서리는 덜 둥글게(28px). */
 @media(max-width:560px){
-  .ccid-site .talk-float{--cap-h:142px;width:calc(100vw - 24px)}
-  .ccid-site .talk-capsule{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"now now" "you tools";column-gap:8px;padding:14px 12px 11px 20px;border-radius:28px}
-  .ccid-site .talk-now{font-size:16px}
+  .ccid-site .talk-float{--cap-h:132px;width:calc(100vw - 24px)}
+  .ccid-site .site-footer:has(.talk-float[data-open][data-dock="float"]){padding-bottom:184px}
+  .ccid-site .talk-capsule{grid-template-columns:minmax(0,1fr);grid-template-rows:1fr auto auto 1fr auto;grid-template-areas:"." "now" "you" "." "tools";padding:14px 12px 10px 20px;border-radius:28px}
+  .ccid-site .talk-capsule .talk-now,.ccid-site .talk-capsule:not(:has(.talk-you,.talk-input)) .talk-now{grid-area:now;align-self:auto}
+  .ccid-site .talk-tools,.ccid-site .talk-tools:has(.talk-mic-hint:not(:empty)){transform:none;margin:6px 0 0 -9px}
+  .ccid-site .talk-mic-wrap{margin-left:auto;flex-direction:row-reverse;align-items:center;gap:10px}
+  .ccid-site .talk-mic-hint{position:static;transform:none;font-size:12px}
+  .ccid-site .talk-now{font-size:15px}
   .ccid-site .talk-you{font-size:14px}
-  .ccid-site .talk-input-note>span:first-child{white-space:normal;font-size:13px;line-height:1.3}
-  .ccid-site .talk-icon{width:38px;height:38px}
-  .ccid-site .talk-mic{width:48px;height:48px}
-  .ccid-site .talk-mic-wrap{margin-left:2px}
-  .ccid-site .talk-tools:has(.talk-mic-hint:not(:empty)){transform:none;padding-bottom:16px}
+  .ccid-site .talk-input-note>span:first-child{font-size:14px}
+  .ccid-site .talk-icon:not(.talk-close){width:36px;height:36px}
+  .ccid-site .talk-mic{width:40px;height:40px}
   .ccid-site .talk-capsule.is-tall{--cap-h:340px}
+  .ccid-site .talk-glint{border-radius:31px}
   .ccid-site .talk-float:has(.talk-capsule.is-tall){--cap-h:340px}
 }
 
@@ -179,8 +226,9 @@
   .ccid-site .talk>.talk-title{transform:none;transition:none}
   .ccid-site .talk-dot{transform:none;animation:none;transition:none}
   .ccid-site .talk-dot[data-phase="thinking"]{opacity:.5}
-  .ccid-site .talk-line,.ccid-site .talk-preview,.ccid-site .talk-yes,.ccid-site .talk-word>span{transition:none}
+  .ccid-site .talk-cap>p,.ccid-site .talk-cap span,.ccid-site .talk-you,.ccid-site .talk-preview,.ccid-site .talk-yes,.ccid-site .talk-word>span{transition:none;filter:none;transform:none}
   .ccid-site .talk-dot.is-ellipsis .talk-ell{animation:none;opacity:.7}
   .ccid-site .talk-float,.ccid-site .talk-float[data-open]{transform:translate(-50%,0);transition:opacity .2s ease,visibility 0s}
-  .ccid-site .talk-capsule::before,.ccid-site .talk-halo,.ccid-site .talk-mic.is-invite::after{animation:none}
+  .ccid-site .talk-capsule::before,.ccid-site .talk-halo,.ccid-site .talk-mic.is-invite::after,.ccid-site .talk-float[data-open],.ccid-site .talk-capsule::after,.ccid-site .talk-glint>i{animation:none}
+  .ccid-site .talk-float[data-dock="dot"],.ccid-site .talk-float[data-dock="dot"][data-open]{transform:translate(0,-50%)}
 }

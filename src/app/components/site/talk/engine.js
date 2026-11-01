@@ -105,12 +105,12 @@ function sentences(onSentence) {
   };
 }
 
-// 몇 글자가 들렸는지에 맞춰 화면의 글자를 단어 끝까지 드러낸다.
+// 몇 글자가 들렸는지에 맞춰 화면의 글자를 단어 끝까지 드러낸다(줄바꿈도 단어 사이로 본다).
 function revealTo(text, fraction) {
   if (fraction >= 1) return text.length;
   const n = Math.round(text.length * Math.max(0, fraction));
-  const space = text.indexOf(' ', n);
-  return space < 0 ? text.length : space;
+  const gap = text.slice(n).search(/\s/);
+  return gap < 0 ? text.length : n + gap;
 }
 
 const isKorean = (s) => /[가-힣]/.test(s);
@@ -121,7 +121,10 @@ export class TalkEngine {
     this.onChange = onChange; // ({ turns, phase, voice, muted, notice, ended }) 중 바뀐 것
     this.getPass = getPass; // 사람으로 보일 때만 통행증을 준다(human.js). 없으면 대화를 시작하지 않는다.
     this.pass = '';
-    this.turns = []; // 화면: { id, role, text, shown, interrupted } · 미리보기는 { id, role: 'draft', draft, status }
+    // 화면: { id, role, text, shown, synced, interrupted } · 미리보기는 { id, role: 'draft', draft, status }
+    // shown 은 드러내도 되는 글자 수, synced 는 그 값을 지금 소리가 끌고 가는가(화면은 자막처럼 한 줄씩 보인다 —
+    // 소리와 함께면 들리는 대로, 아니면 읽을 시간을 두고 넘긴다).
+    this.turns = [];
     this.history = []; // 서버로: { role, content }
     this.draft = null;
     this.phase = 'idle'; // idle · listening · hearing · thinking · speaking
@@ -236,9 +239,9 @@ export class TalkEngine {
   // 처음 말을 걸 때의 인사(대화에서 한 번). 문구는 greeting.json, 소리는 scripts/generate_talk_greeting.mjs 로
   // 만든 public/talk/{lang}-greet.mp3. 소리에 맞춰 글을 단어 끝까지 드러내고, 소리를 껐거나 없으면 글로만.
   // 대답처럼 끊을 수 있다(interrupt) — 방문자가 먼저 말하거나 묻으면 멈춘다.
-  // silent: 푸터에 닿아 저절로 깨어날 때. 아직 누른 손길이 없어 소리를 낼 수 없으니 글로만, 앞은 빠르고
-  // 끝으로 갈수록 느리게 드러낸다(instant 면 한 번에).
-  async greet({ silent = false, instant = false } = {}) {
+  // silent: 푸터에 닿아 저절로 깨어날 때. 아직 누른 손길이 없어 소리를 낼 수 없으니 글로만 — 드러내는
+  // 빠르기는 화면이 정한다.
+  async greet({ silent = false } = {}) {
     if (this.greeted || this.ended) return;
     this.greeted = true;
     const text = GREETING[this.lang] || GREETING.en;
@@ -246,20 +249,7 @@ export class TalkEngine {
     this.turns.push(turn);
     this.history.push({ role: 'assistant', content: text });
     this.setTurns();
-    if (silent) {
-      const duration = instant ? 0 : Math.min(2200, text.length * 34);
-      const start = performance.now();
-      await new Promise((resolve) => {
-        const step = (now) => {
-          const t = duration ? Math.min(1, (now - start) / duration) : 1;
-          turn.shown = revealTo(text, 1 - (1 - t) ** 3);
-          this.setTurns();
-          if (t < 1) requestAnimationFrame(step); else resolve();
-        };
-        requestAnimationFrame(step);
-      });
-      return;
-    }
+    if (silent) { turn.shown = text.length; this.setTurns(); return; }
     const ctx = await this.ensureAudio();
     let buffer = null;
     try {
@@ -270,6 +260,7 @@ export class TalkEngine {
     source.buffer = buffer;
     source.connect(this.master);
     this.greeting = source;
+    turn.synced = true;
     this.setPhase('speaking');
     const start = ctx.currentTime;
     source.start();
@@ -285,6 +276,7 @@ export class TalkEngine {
     });
     const cut = this.greeting !== source;
     this.greeting = null;
+    turn.synced = false;
     if (cut) { turn.interrupted = true; this.setTurns(); return; }
     turn.shown = text.length;
     this.setTurns();
@@ -352,8 +344,14 @@ export class TalkEngine {
 
     let replyLang = null;
     let queue = Promise.resolve();
+    // 화면 글은 문장이 끝날 때마다 늘어난다(자막 줄이 문장 단위로 나뉘어, 덜 끝난 문장이 보이지 않게).
     const onSentence = (sentence) => {
-      if (!voiced) return;
+      if (!voiced) {
+        turn.text = turn.text ? `${turn.text} ${sentence}` : sentence;
+        turn.shown = turn.text.length;
+        this.setTurns();
+        return;
+      }
       replyLang ||= isKorean(sentence) ? 'ko' : 'en';
       const part = { text: sentence, start: 0, end: 0, chars: null, times: null, audio: 0 };
       const previous = cur.parts.map((p) => p.text).join(' ');
@@ -391,7 +389,6 @@ export class TalkEngine {
           buf = buf.slice(cut + 1);
           if (msg.t === 'text') {
             split.push(msg.d);
-            if (!voiced) { turn.text += msg.d; turn.shown = turn.text.length; this.setTurns(); }
           } else if (msg.t === 'draft') {
             // 미리보기는 대화 안, 지금 대답 바로 앞에 놓는다. 고쳐서 다시 오면 앞의 것을 대신한다.
             this.draft = msg.draft;
@@ -418,12 +415,14 @@ export class TalkEngine {
       if (voiced) await this.until(cur, () => this.ctx.currentTime >= cur.cursor);
       if (this.current !== cur) return;
       turn.shown = turn.text.length;
+      turn.synced = false;
       this.history.push({ role: 'assistant', content: turn.text });
       this.finish();
     } catch (error) {
       if (ctrl.signal.aborted || this.current !== cur) return;
       turn.text = error.message === 'busy' ? this.copy('busy') : this.copy('failed');
       turn.shown = turn.text.length;
+      turn.synced = false;
       turn.notice = true;
       this.finish();
     }
@@ -463,6 +462,7 @@ export class TalkEngine {
       part.audio += buffer.duration;
       if (!cur.started) {
         cur.started = true;
+        cur.turn.synced = true;
         clearTimeout(this.thinkTimer);
         this.setPhase('speaking');
         this.reveal(cur);
@@ -532,7 +532,8 @@ export class TalkEngine {
     });
   }
 
-  // 대답을 멈춘다. 소리가 나던 중이면 줄이며 멈추고, 들린 데까지만 기록에 남긴다.
+  // 대답을 멈춘다. 소리가 나던 중이면 줄이며 멈추고, 들린 데까지만 기록에 남긴다(화면도 거기까지 — 글은
+  // 그대로 두고 shown 만 줄여, 보이던 자막 줄이 다시 나뉘지 않게 한다).
   // 아직 소리가 나기 전이면(생각 중) 그 차례를 없던 일로 하고, 방문자의 말은 다음 말과 합친다.
   interrupt({ merge = false } = {}) {
     if (this.greeting) { try { this.greeting.stop(); } catch { /* 이미 끝남 */ } this.greeting = null; }
@@ -558,8 +559,8 @@ export class TalkEngine {
         heardText = heardText ? `${heardText} ${piece}` : piece;
         if (f < 1) break;
       }
-      turn.text = heardText;
       turn.shown = heardText.length;
+      turn.synced = false;
       turn.interrupted = true;
       if (heardText) this.history.push({ role: 'assistant', content: `${heardText} [interrupted]` });
       else this.turns = this.turns.filter((t) => t !== turn);
