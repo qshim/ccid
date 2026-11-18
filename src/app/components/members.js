@@ -6,10 +6,10 @@ import { sheetsStatic } from "@/app/data/sheetsStatic";
 import GreyPlaceholder from "@/app/components/common/GreyPlaceholder";
 import Reveal from "@/app/components/common/Reveal";
 
-// 사이트에 나오는 구성원 사진. 37명 모두 같은 틀(552×648, 눈높이·얼굴 크기 맞춤,
-// 밝은 회색 배경, 흑백)로 정리한 한 벌이라 사람마다 위치·배율을 따로 고치지 않는다.
+// 사이트에 나오는 구성원 사진. 디렉터를 뺀 36명 모두 같은 틀(552×648, 눈높이·얼굴 크기
+// 맞춤, 밝은 회색 배경, 흑백)로 정리한 한 벌이라 사람마다 위치·배율을 따로 고치지 않는다.
 const PEOPLE_PHOTOS = Object.fromEntries([
-  "Kyuha Shim, FRSA", "Taery Kim", "Ingee Jeong", "Yoonha Jeong", "Kiryung Nam", "Chanwoo Lee", "Seonbin Yun",
+  "Taery Kim", "Ingee Jeong", "Yoonha Jeong", "Kiryung Nam", "Chanwoo Lee", "Seonbin Yun",
   "Boram Lee", "Jiyeon Lee", "Yunhyeong Park", "Hankak Lee", "Changmin Kim",
   "Juwan Kim", "Juhae Kim", "Hyebin Park", "Suhyeon Cho", "Minseo Kang", "Sooyoun Jo", "Hyunji Lee", "Jiyu Shin",
   "Taeeun Kim", "Seojin Hong", "Minjeong Joo", "Hyosun Son", "Hayeon Jeon", "Sara Kang", "Da in Kim",
@@ -17,8 +17,9 @@ const PEOPLE_PHOTOS = Object.fromEntries([
   "Minji Park", "Seungju Lee", "Euna Jang", "Jiwon Park", "Inyoung Kim", "Yoonseo Oh", "Hyeji Jeong",
 ].map((name) => [name, `/img/people/${name.replace(/,.*$/, "").toLowerCase().replace(/\s+/g, "-")}.png`]));
 
-// 사이트에서 숨긴 사람(Lab Ops 배정에만 쓰임)의 예전 사진.
+// 디렉터는 예전 사진을 그대로 쓴다. 나머지는 사이트에서 숨긴 사람(Lab Ops 배정에만 쓰임)의 예전 사진.
 const LOCAL_PHOTOS = {
+  "Kyuha Shim, FRSA": "/img/members/sheet/kyuha-shim-frsa.png",
   "Eunseol Kim": "/img/members/eunseol-kim.png",
   "Jeremy Lee": "/img/members/jeremy-lee.png",
   "Ji min Rhee": "/img/members/jeremy-lee.png",
