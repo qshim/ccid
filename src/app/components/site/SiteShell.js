@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { pxGrotesk, pretendardR } from '@/fonts/fonts';
 import './site.css';
-import './portraits.css';
 import TalkAgent from './talk/TalkAgent';
 import GradualBlur from './GradualBlur';
 

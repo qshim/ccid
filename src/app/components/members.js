@@ -6,61 +6,23 @@ import { sheetsStatic } from "@/app/data/sheetsStatic";
 import GreyPlaceholder from "@/app/components/common/GreyPlaceholder";
 import Reveal from "@/app/components/common/Reveal";
 
-// Manual photo overrides (keyed by name). These take precedence over the
-// sheet image — used when a member has no sheet photo or the sheet URL is broken.
+// 사이트에 나오는 구성원 사진. 37명 모두 같은 틀(552×648, 눈높이·얼굴 크기 맞춤,
+// 밝은 회색 배경, 흑백)로 정리한 한 벌이라 사람마다 위치·배율을 따로 고치지 않는다.
+const PEOPLE_PHOTOS = Object.fromEntries([
+  "Kyuha Shim, FRSA", "Taery Kim", "Ingee Jeong", "Yoonha Jeong", "Kiryung Nam", "Chanwoo Lee", "Seonbin Yun",
+  "Boram Lee", "Jiyeon Lee", "Yunhyeong Park", "Hankak Lee", "Changmin Kim",
+  "Juwan Kim", "Juhae Kim", "Hyebin Park", "Suhyeon Cho", "Minseo Kang", "Sooyoun Jo", "Hyunji Lee", "Jiyu Shin",
+  "Taeeun Kim", "Seojin Hong", "Minjeong Joo", "Hyosun Son", "Hayeon Jeon", "Sara Kang", "Da in Kim",
+  "Yunso Jung", "Heeyun Sul", "Yeju Chung",
+  "Minji Park", "Seungju Lee", "Euna Jang", "Jiwon Park", "Inyoung Kim", "Yoonseo Oh", "Hyeji Jeong",
+].map((name) => [name, `/img/people/${name.replace(/,.*$/, "").toLowerCase().replace(/\s+/g, "-")}.png`]));
+
+// 사이트에서 숨긴 사람(Lab Ops 배정에만 쓰임)의 예전 사진.
 const LOCAL_PHOTOS = {
-  "Yoonha Jeong": "/img/members/yoonha-jeong.png",
-  "Seonbin Yun": "/img/members/seonbin-yun.png",
-  "Ingee Jeong": "/img/members/ingee-jeong.png",
-  "Chanwoo Lee": "/img/members/chanwoo-lee.png",
-  "Yoonseo Oh": "/img/members/yoonseo-oh.png",
-  "Hyebin Park": "/img/members/hyebin-park.png",
-  "Sooyoun Jo": "/img/members/sooyoun-jo.png",
-  "Hayeon Jeon": "/img/members/hayeon-jeon.png",
-  "Hyosun Son": "/img/members/hyosun-son.png",
-  "Da in Kim": "/img/members/dain-kim.png",
   "Eunseol Kim": "/img/members/eunseol-kim.png",
   "Jeremy Lee": "/img/members/jeremy-lee.png",
   "Ji min Rhee": "/img/members/jeremy-lee.png",
-  "Juhae Kim": "/img/members/juhae-kim.png",
-  "Yunhyeong Park": "/img/members/yunhyeong-park.png",
-  "Seojin Hong": "/img/members/seojin-hong.png",
-  "Minjeong Joo": "/img/members/minjeong-joo.png",
-  "Sara Kang": "/img/members/sara-kang.png",
-  "Minseo Kang": "/img/members/minseo-kang.png",
   "Taeho Kim": "/img/members/taeho-kim.png",
-  "Changmin Kim": "/img/members/changmin-kim.png",
-  "Yunso Jung": "/img/members/yunso-jung.png",
-};
-
-// Sheet photos mirrored locally (downloaded from the Google Drive thumbnail URLs
-// in the sheet). Used as a fast fallback so cards don't wait on Google Drive,
-// which throttles thumbnail requests and made some photos pop in late.
-// LOCAL_PHOTOS (hand-picked) still wins over these.
-const SHEET_PHOTOS = {
-  "Kyuha Shim, FRSA": "/img/members/sheet/kyuha-shim-frsa.png",
-  "Taery Kim": "/img/members/sheet/taery-kim.png",
-  "Boram Lee": "/img/members/sheet/boram-lee.png",
-  "Jiyeon Lee": "/img/members/sheet/jiyeon-lee.png",
-  "Hankak Lee": "/img/members/sheet/hankak-lee.png",
-  "Kiryung Nam": "/img/members/sheet/kiryung-nam.png",
-  "Yunhyeong Park": "/img/members/sheet/yunhyeong-park.png",
-  "Suhyeon Cho": "/img/members/sheet/suhyeon-cho.png",
-  "Hyunji Lee": "/img/members/sheet/hyunji-lee.png",
-  "Jiyu Shin": "/img/members/sheet/jiyu-shin.png",
-  "Taeeun Kim": "/img/members/sheet/taeeun-kim.png",
-  "Minseo Kang": "/img/members/sheet/minseo-kang.png",
-  "Seojin Hong": "/img/members/sheet/seojin-hong.png",
-  "Minjeong Joo": "/img/members/sheet/minjeong-joo.png",
-  "Sara Kang": "/img/members/sheet/sara-kang.png",
-  "Minji Park": "/img/members/sheet/minji-park.png",
-  "Seungju Lee": "/img/members/sheet/seungju-lee.png",
-  "Euna Jang": "/img/members/sheet/euna-jang.png",
-  "Jiwon Park": "/img/members/sheet/jiwon-park.png",
-  "Inyoung Kim": "/img/members/sheet/inyoung-kim.png",
-  "Juwan Kim": "/img/members/sheet/juwan-kim.png",
-  "Hyeji Jeong": "/img/members/sheet/hyeji-jeong.png",
-  "Heeyun Sul": "/img/members/heeyun-sul.png",
 };
 
 // Members hidden from the mobile People view only (still shown on desktop).
@@ -72,32 +34,17 @@ const HIDDEN_MEMBERS = new Set(["Ji min Rhee", "Eunseol Kim", "Taeho Kim"]);
 // Per-member object-position override for the circular avatar crop, so heads/faces
 // aren't cut off. Tall portraits default to center; these shift the crop window up.
 const PHOTO_POSITION = {
-  "Changmin Kim": "center 18%",
   "Taeho Kim": "center 18%",
 };
 function photoPosition(name) {
   return PHOTO_POSITION[(name || "").trim()];
 }
 
-// Per-member crop zoom (transform scale). Used to match head sizes across a row
-// when a source photo is framed wider/further back than its neighbours. Falls
-// back to the small 1.04 nudge used for locally-hosted member photos.
-const PHOTO_SCALE = {
-  "Yeju Chung": 1.32, // 110% of the previous 1.2
-};
-// Transform-origin per scaled member, so zooming the crop anchors near the top
-// of the head instead of the center (center-origin scaling crops the forehead).
-const PHOTO_ORIGIN = {
-  "Yeju Chung": "center 20%",
-};
+// The small 1.04 nudge for the older locally-hosted photos (hidden members only).
+// The /img/people set is already framed alike, so it gets no zoom.
 function photoTransform(name, imageSrc) {
-  const s = PHOTO_SCALE[(name || "").trim()];
-  if (s) return `scale(${s})`;
   if (imageSrc && String(imageSrc).startsWith("/img/members/")) return "scale(1.04)";
   return undefined;
-}
-function photoOrigin(name) {
-  return PHOTO_ORIGIN[(name || "").trim()];
 }
 
 // 프로젝트 리딩 선생님들은 로스터에 없는 애드혹 항목이라("최덕수 선생님" 같은
@@ -116,8 +63,8 @@ export function resolvePhoto(name, image) {
   const key = (name || "").trim();
   const bare = key.replace(/\s*선생님\s*$/, "");
   return (
+    PEOPLE_PHOTOS[key] ||
     LOCAL_PHOTOS[key] ||
-    SHEET_PHOTOS[key] ||
     ADHOC_PHOTOS[bare] ||
     String(image || "").trim() ||
     ""
@@ -218,7 +165,7 @@ export default function Members() {
               src={imageSrc}
               alt={name || "member"}
               className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]`}
-              style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc), transformOrigin: photoOrigin(name) }}
+              style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc) }}
               loading="lazy"
               referrerPolicy="no-referrer"
               onError={(e) => {
@@ -265,7 +212,7 @@ export default function Members() {
                 src={imageSrc}
                 alt={name || "member"}
                 className={`absolute inset-0 w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]`}
-                style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc), transformOrigin: photoOrigin(name) }}
+                style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc) }}
                 loading="lazy"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
@@ -394,7 +341,7 @@ export default function Members() {
                                 src={imageSrc}
                                 alt={name || "member"}
                                 className={`w-full h-full object-cover filter grayscale brightness-[0.95] contrast-[1.05]`}
-                                style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc), transformOrigin: photoOrigin(name) }}
+                                style={{ objectPosition: photoPosition(name), transform: photoTransform(name, imageSrc) }}
                                 loading="lazy"
                                 referrerPolicy="no-referrer"
                                 onError={(e) => {

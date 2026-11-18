@@ -230,8 +230,9 @@ html[lang="en"] .ccid-site .join-section h2{line-height:1.14}
 .ccid-site .people-group-label h2{font:22px var(--display)}
 .ccid-site .people-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:34px 20px}
 .ccid-site .person-image{position:relative;width:64%;aspect-ratio:1;overflow:hidden;background:#e6e1e9;margin-bottom:13px;border-radius:3px}
-.ccid-site .person-image>img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;position:relative;z-index:1;filter:grayscale(1);transform:scale(1.12);transition:filter .5s,transform .5s}
-.ccid-site .person:hover .person-image>img{transform:scale(1.15)}
+/* 사진은 모두 552×648 한 틀(눈높이·얼굴 크기 맞춤)이라 확대 없이 그대로 쓴다. 정사각 칸에서는 위를 6%만 잘라 머리카락이 위 가장자리에 닿지 않는다. */
+.ccid-site .person-image>img{width:100%;height:100%;object-fit:cover;object-position:50% 6%;position:relative;z-index:1;filter:grayscale(1);transition:filter .5s,transform .5s}
+.ccid-site .person:hover .person-image>img{transform:scale(1.03)}
 .ccid-site .person-initials{position:absolute;inset:0;display:grid;place-items:center;font:32px var(--display);color:#b4a4c7;z-index:0}
 .ccid-site .person h3{font:15px var(--display);margin-bottom:3px}
 .ccid-site .person p{white-space:pre-line;font-size:11px;color:var(--muted);line-height:1.55}

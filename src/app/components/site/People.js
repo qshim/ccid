@@ -24,10 +24,7 @@ function Portrait({ member, more, ko }) {
   const role = roleOverrides[name] ?? rawRole;
   const bio = bioOverrides[name] ?? rawBio;
   const image = resolvePhoto(name, source);
-  // 사진마다 얼굴 크기·위치가 달라, 파일명을 키로 개별 보정값(확대율·크롭 중심)을
-  // CSS에서 찾아 쓴다. 값은 얼굴 검출로 계산했다 — portraits.css 참고.
-  const portrait = image.startsWith("/") ? image.split("/").pop().replace(/\.[^.]+$/, "") : "";
-  return <article className="person"><div className="person-image" data-portrait={portrait || undefined}>{image && <Image unoptimized={!image.startsWith('/')} src={image} sizes="(max-width: 760px) 45vw, 25vw" alt={name} loading="lazy" width="360" height="430" onError={e => { e.currentTarget.style.display = 'none'; }} />}<span className="person-initials" aria-hidden="true">{name.split(' ').map(w => w[0]).slice(0,2).join('')}</span></div><h3>{name}</h3>{role && <p>{role}</p>}{bio && <p className="person-bio">{bio.replace(/formerly\s*\n/i, '').replace(/\.\s(?=[A-Z])/g, ', ')}</p>}{more && <MoreBio paragraphs={more} ko={ko} />}</article>;
+  return <article className="person"><div className="person-image">{image && <Image unoptimized={!image.startsWith('/')} src={image} sizes="(max-width: 760px) 45vw, 25vw" alt={name} loading="lazy" width="552" height="648" onError={e => { e.currentTarget.style.display = 'none'; }} />}<span className="person-initials" aria-hidden="true">{name.split(' ').map(w => w[0]).slice(0,2).join('')}</span></div><h3>{name}</h3>{role && <p>{role}</p>}{bio && <p className="person-bio">{bio.replace(/formerly\s*\n/i, '').replace(/\.\s(?=[A-Z])/g, ', ')}</p>}{more && <MoreBio paragraphs={more} ko={ko} />}</article>;
 }
 export default function People() {
   const { lang } = useSiteLanguage(); const ko = lang === 'ko';
